@@ -55,7 +55,7 @@
 
 = Introduction
   #rt([
-  - exosphere
+  - Earth's Exosphere and Hydrogen
       - definition, why do we care about exosphere (baliukin pg 2)
           - H exosphere indicates presence of water (important for planetary/exoplanetary exploration)
           - unknown exosphere Lyman-α contributions pollute astronomical UV studies
@@ -65,36 +65,36 @@
           - ballistic, satellite, escaping
       - responds to radiation pressure from sun (baliukin pg 2 → thomas & bohlin)
           - photon absorption provides antisolar momentum, reemission is anisotropic → net antisolar momentum
-  - exosphere response to storm
-      - time varying
-  - Carruthers mission background
-      - Why not already studied - limited view geometry from LOS, easier to study from L1
-      - Advantages of L1, vantage, low fuel maintenance cost, solar power
+      - time varying response to storm
+  - Carruthers Mission Overview
+      - Why has exosphere not already been studied?
+          - past measurements have been limited by either low cadence or poor vantage
+      - Advantages of L1: good vantage, low fuel maintenance cost, solar power
       - Direct sensing with mass spec. impractical (too large)
-  - previous measurements and retrievals
+  - Prior Exospheric Measurements and Retrievals
       - #link(label("previous_mission"))[(figure) relative positions of missions]
-      - show results here - refer to historical techniques in @static_retrieval
-          - OGO-5 - 1968, 24 Re apogee
-              - early studies of Hydrogen geocorona, detectors saturated
-              - detected H out to 7 Re
-              - later proved existence of Lyman-α background due to interstellar hydrogen flowing through solar system (baliukin pg 2)
-              - showed existence of geotail (thomas and bohlin)
-          - Apollo 16 camera - 1872, 63 Re apogee
-          - Galileo
-              - took 1/2 day from perigee (1990-12-08) to get to Moon (62Re)
-              - picture taken ~1990-12-13 → 5.5 days → 5.5x2x62 → 680 Re
-          - hisaki 1D (exceed instrument) @hisaki
-              - 1000km apogee
-              - discovered exosphere extends out to 38 Re
-          - SWAN/SOHO (1996)
-              - discovered geocorona extends to 100Re, beyond moon @baliukin
-          - PROCYON/LAICA - lyman alpha imaging camera (2015)
-          - dynamics explorer 1 (rairden, 1986) - spherically symmetric fit
-              - based on numerical solution to RT
-          - IMAGE (2000)
-              - geocoronal imager (GEO) instrument
-              - Østgaard retrieval @ostgaard
-          - Cucho-Padin & Zoennchen
+      // - show results here - refer to historical techniques in @static_retrieval
+      - OGO-5 - 1968, 24 Re apogee
+          - early studies of Hydrogen geocorona, detectors saturated
+          - detected H out to 7 Re
+          - later proved existence of Lyman-α background due to interstellar hydrogen flowing through solar system (baliukin pg 2)
+          - showed existence of geotail (thomas and bohlin)
+      - Apollo 16 camera - 1872, 63 Re apogee
+      - Galileo
+          - took 1/2 day from perigee (1990-12-08) to get to Moon (62Re)
+          - picture taken ~1990-12-13 → 5.5 days → 5.5x2x62 → 680 Re
+      - hisaki 1D (exceed instrument) @hisaki
+          - 1000km apogee
+          - discovered exosphere extends out to 38 Re
+      - SWAN/SOHO (1996)
+          - discovered geocorona extends to 100Re, beyond moon @baliukin
+      - PROCYON/LAICA - lyman alpha imaging camera (2015)
+      - dynamics explorer 1 (rairden, 1986) - spherically symmetric fit
+          - based on numerical solution to RT
+      - IMAGE (2000)
+          - geocoronal imager (GEO) instrument
+          - Østgaard retrieval @ostgaard
+      - TWINS
       #figure(
         grid(columns: 2, column-gutter: 1pt,
             subfigure(image("figures/procyon.png", height: 10em), "meas", "PROCYON/LAICA"),
@@ -103,9 +103,10 @@
           caption: "Previous measurements of exospheric Lyman-α"
       )
 
-  - main contributions of thesis
+  - Contributions of This Thesis
       - spherical raytracer that can be adapted to other missions studying planetary atmospheres
       - reconstruction algorithms built for the Carruthers mission
+  - Thesis Organization
   ])
 
   #figure(
@@ -113,20 +114,30 @@
       caption: "Past observations of exospheric Hydrogen at Lyman-α.\n* not representative of actual spacecraft location"
   ) <previous_mission>
 
+  == Earth's Exosphere and Hydrogen
 
-= Measurement Constraints
+  == Carruthers Mission Overview
+
+  == Prior Exospheric Measurements and Retrievals
+
+  == Contributions of This Thesis
+
+  == Thesis Organization
+
+
+= Measurement Constraints <measurement_constraints>
 
   #rt([
-  - intro section
+  - Chapter introduction section
       - what is lyman-α - spectral line of hydrogen
           - a useful indicator of hydrogen. sun is strong source of Lyman-α photons that are absorbed and reemitted through resonance scattering at the same wavelength
       - Carruthers carries two UV cameras capable of detecting Lyman-α
-          - NFI: 3.6°, 30 min for fast inner exosphere evolution
-          - WFI: 18°, 60 mins for global estimation of slowly-changing outer exosphere
-  - Carruthers camera orbit details
+          - NFI for fast inner exosphere evolution
+          - WFI for global estimation of slowly-changing outer exosphere
+  - Carruthers Camera and Orbit Details
       - carruthers will be inserted in a halo orbit around langrange point L1 1.5e6 km from the Earth
           - from distant vantage, should be able to observe full 100Re radial extent of exosphere (soho/swan)
-          - full orbit takes approximately 6 months (FIXME: SOHO claims 1 yr orbit, how?)
+          - full orbit takes approximately 6 months (FIXME: SOHO claims 1 yr orbit, how?) (lara: there are other kinds of orbits, probably ok)
           - about ±7 degrees off sun-earth north/south (FIXME: terminology)
           - about ±28 degrees off sun-earth east/west (FIXME: terminology)
           - orbital ellipse limits: dX 71 Re, dY 221 Re, 54
@@ -134,65 +145,156 @@
       - #link(label("viewgeom1"))[(figure) viewing geometry, orbit around L1]
       - #link(label("viewgeom3"))[(figure) camera details, FOV, int. time, etc.]
       - #link(label("viewgeom2"))[(figure) static 3D picture of multiple view geometries captured for 1month baseline]
-      - sampling cadence
-      - spatial resolution
-          - NFI: X°/pixel (Y Re when projected to Earth)
-          - WFI: X°/pixel (Y Re when projected to Earth)
-  - emission model
+      - Camera details
+          - NFI: 3.6°, 30 min for fast inner exosphere evolution
+          - WFI: 18°, 60 mins for global estimation of slowly-changing outer exosphere
+          - spatial resolution
+              - #link(label("los_evolution"))[(figure) LOS evolution over 15 days]
+              - NFI: X°/pixel (Y Re when projected to Earth)
+              - WFI: X°/pixel (Y Re when projected to Earth)
+  - Emission Model
       - definition of optically thin and importance of this assumption on emission model computational complexity
       - definition of optical depth (zoennchen 2015)
       - #link(label("scatteringphase"))[(figure) scattering phase function]
       - #link(label("emissionmod"))[(figure) column line integral]
+      - g-factor
       - definition of albedo (gonzalo thesis appendix c)
       - other sources of signal
           - IPH, moon, stars
           - diagram showing hydrogen density in solar system?
-  - simulation, calibration and other post-processing
-      - simulation and calibration details left to appendix
+  - Simulation, Calibration and Post-Processing
+      - ability to simulate realistic images is critical to validate algorithm performance under noise conditions
       - brief description of MCP, KBr photocathode, etc. (use overview list from Instrument Model section)
       - IPH subtraction and instrument calibration
       - science pixel binning - computational simplificity
       - masking - 3Re, moon,
+      - see @appendix_sim for simulation and calibration details
+      - g-factor estimation (from Pratik) and conversion of calibrated radiance to column density
   ])
 
   #image("figures/viewgeom1.svg", height: 5em) <viewgeom1>
   #image("figures/viewgeom2.gif", height:5em) <viewgeom2>
   #image("figures/viewgeom3.png", height:5em) <viewgeom3>
+  #image("figures/los_evolution_15d.png", height:5em) <los_evolution>
   #image("figures/emissionmod.png", height:5em) <emissionmod>
   #image("figures/scatteringphase.png", height: 5em) <scatteringphase>
+
+  == Carruthers Cameras and Orbit Details
+
+  == Emission Model
+
+  == Simulation, Calibration and Post-Processing
 
 = Inverse Problem Formulation <inverse_problem>
 
   #rt([
-  WIP outline
-
-  - math notation (model, operator, coeffs, measurements, density), etc.
-  - discretization
-      - discretization allows numerical approximations to be made for complicated analytical expressions
-      -
-      - also rediscretize measurements to reduce computational burden (refer to section XXX. FIXME)
-  - inverse problem
-      - what is an inverse problem
-      - problem is generally ill posed and ill conditioned
-          - fixed through regularization, low rank models
-      - direct least squares minimization, SVD, RRPE
-      - direct inversion of the tomographic operator requires that the forward matrix L be non-singular in order for an inverse L^-1 to exist
-      - selecting hyperparameter values - trial and error, GCV, many others (gonz thesis pg 49)
-      - solve with iterative method
-      - #link(label("codeoverview"))[(figure) retrieval block diagram]
+      WIP outline
+      - [x] purpose of tomography is retrieval of a volumetric structure which produced a set of measurements
+          - this process is generally known as an inverse problem
+      - [x] discretization
+          - discretization necessary for numerical approximations to be made when analytic solution is infeasible
+          - also rediscretize measurements to reduce computational burden (refer to section XXX. FIXME)
+          - [x] spherical grid definition in GSE coordinates
+      - inverse problem
+          - under conditions described in @measurement_constraints (namely, single scattering in optically thin regime), tomographic inversion can be formulated as solution to the linear inverse problem $y = L x$ (ignoring noise)
+          - direct inversion of the tomographic operator requires that the forward matrix L be non-singular in order for an inverse L^-1 to exist
+          - measurement constraints are limited - less rows than free variables. ill posed
+          - not injective (not one-to-one) (measurement might correspond to more than one potential solution)
+          - not surjective (not onto) (a measurement may not necessarily even correspond to a feasible solution, e.g. noise)
+          - still necessarily enough to get good retrieval under presence of noise
+          - changes in density do not have significant impact on measurements.
+          - inversely, small changes in measurements have large effects on solution during retrieval - ill conditioned @illposed
+              - potentially problematic in the presence of noise
+          - ill posedness and conditioning fixed through regularization, low rank models
+          - concepts defined mathematically by hadamard @hadamard
+          - generalized inverse (moore-penrose pseudoinverse), direct least squares minimization, SVD, RRPE
+          - selecting hyperparameter values - trial and error, GCV, many others (gonz thesis pg 49)
+          - solve with iterative method
+      - math notation (model, operator, coeffs, measurements, density), etc.
   ])
 
-  #figure(
-      image("figures/retrieval_overview.png", height: 35em),
-      caption: "Diagram of simulator and retrieval loop used during validation"
 
-  ) <codeoverview>
+  #figure(
+      pad(x: -50%,
+          table(
+              table.header([Symbol], [Meaning], [Description], [Shape]),
+              align: horizon,
+              columns: (5em, 10em, 14em, 12em),
+              $f$, [Forward operator], [Mapping from 3D H-density to column density], [$f: bb(R)^3 → bb(R)^3$ (static) \ $f: bb(R)^4→bb(R)^3$ (dynamic)],
+              $m$, [Model], [Mapping from model \ parameters to 3D H-density], [$m: bb(R)^* → bb(R)^3$ (static) \ $m: bb(R)^* → bb(R)^4$ (dynamic)],
+              $bold(c)$, [Model \ params./coeffs.], "Free model variables,\n usually low-dimensional.", [$bold(c) ∈ bb(R)^*$ \ \* model dependent],
+              $bold(x)$, [H density], [Spatial distribution of \ exospheric Hydrogen], [$bold(x) ∈ bb(R)^3$ (static) \ $bold(x) ∈ bb(R)^4$ (dynamic)],
+              $bold(y)$, [Measurements.], "Column densities measured\n by instrument", [$bold(y) ∈ bb(R)^3$],
+          ),
+      ),
+      caption: [Symbols],
+      // FIXME: move to glossary section?
+  )
+
+  An inverse problem is the procedure of determining the causative factors of a set of measurements derived from some observation process.  In exospheric tomography, the factor driving the intensity of column density measurements is the distribution of hydrogen in the regions being observed.  In general, a direct analytic solution to tomography or other inverse problems is not feasible, so numerical approximations and discretization become necessary.  In this chapter, I lay out key concepts of linear inverse problems, detail discretization for approaching tomographic inversion numerically, and introduce notation which will be used later in the manuscript to describe tomographic retrieval algorithms.
+
+  == Discretization
+
+    #rt("WIP")
+
+  In general, direct analytic solutions to tomographic estimation problems are infeasible, necessitating a numerical approach.  Instead, numerical methods usually divide the solution space into a finite grid of $N$ non-overlapping regions called #glspl("voxel") where density is assumed to be constant.  There is a large variety of grids to choose from, including regular grids where voxels are uniformly spaced in some domain (e.g. spherical, cylindrical, cartesian) and non-regular grids which may utilize hierarchical structures (e.g. octree) or tetrahedral meshes.  Some of these discretizations schemes have been designed to adaptively update voxel boundaries during retrieval to better fit the object being retrieved @adaptivemesh1.
+
+    - figure: types of grids. cartesian, spherical, octree, etc
+
+  Choosing a discretization grid which is well-suited to the data is critical, as an improper grid can create aliasing and other artifacts which causes the numerical result to deviate from the functions they approximate.  Since the exosphere is well-understood to smoothly vary with density gradients increasing at lower altitudes, a regular spherical grid with logarithmically spaced radial bins is appropriate.  The nature of regular grids allows for a simple multidimensional array as the underlying data structure, and the property of shared boundaries between voxels simplifies tomography calculations, as demonstrated in @raytracer.
+
+    This manuscript uses a regular spherical grid with zero-elevation pole aligned to ecliptic north (+Z Cartesian GSE axis) and azimuth branch point (±180°) pointed away from the sun (-X Cartesian GSE axis), as shown in @grid_details.
+
+    #figure(
+        box(width:100pt, height:100pt, stroke:1pt),
+        caption: [Spherical grid definition and a spherical voxel\ #rt([FIXME: WIP])]
+    ) <grid_details>
+
+    This manuscript uses convention $r$, $e$, $a$ when referring to radial, elevational, and azimuthal dimensions to avoid ambiguity with astrophysical versus mathematical conventions for spherical coordinates as in @sph_convention.
+
+
+    #figure(
+        table(
+            columns: (100pt, auto, auto, auto),
+            align: center + horizon,
+            table.header([Dimension], [This\ Manuscript], [Physics\ Convention], [Mathematical\ Convention]),
+            [Radial], $r$, $r$, $r$,
+            [Elevational], $e$, $theta$, $phi$,
+            [Azimuthal], $a$, $phi$, $theta$
+        ),
+        caption: [Spherical coordinate conventions]
+    ) <sph_convention>
+
+  == Inverse Problem
+
+    #rt("WIP")
+
+  Under the conditions described in @measurement_constraints (single scattering in optically-thin exosphere) and ignoring noise, tomographic inversion can be formulated as the solution to the linear inverse problem
+
+  #math.equation(
+      $bold(y) = L bold(x)$
+  )
+
+    Direct inversion of the tomographic operator requires that the matrix $L$ be non-singular in order for an inverse $L^(-1)$ to exist.  However, tomography problems generally have fewer measurement constraints (#gls("LOS")) than free variables (#glspl("voxel")), known as an _underdetermined system_, making inversion of $L$ impossible as there are infinitely many solutions for $x$.
+    A _generalized inverse_, such as the Moore-Penrose pseudoinverse, can be constructed from $L$ which selects the solution with the smallest norm or that best fits the measurements.  Another approach is to assume that $x$ has some low degree-of-freedom representation on a subspace (linear) or manifold (non-linear) on the space of solutions.  Such a mapping $m$ is referred to as a #gls("model") in this manuscript and is represented as
+
+    #math.equation(
+        $bold(x) = m(bold(c))$
+    )
+
+    where $bold(c)$ are the low degree-of-freedom coefficients.  If the model is sufficiently low-dimensional, then uniqueness is guaranteed if a solution exists.
+
+    #rt([FIXME: awkward.  terminology: "instability"])
+
+    Even when a unique solution exists, this solution may be sensitive to small perturbations in measurements $y$, which is problematic in the presence of noise.  This is especially true of computational imaging, where smoothing effects of integration dampen hight frequency information about $bold(x)$ in the measurements $bold(y)$.
+
+    - define regularization
+
+    The issues of solution existence and sensitivity in inverse problems were formally defined by Hadamard in the early 20th century and are known as _ill-posed_ and _ill-conditioned_ inverse problems @hadamard @illposed.
 
 
 
 = Raytracing Optically Thin Gases <raytracer>
-
-  #rt("This whole chapter is written in active voice, which I prefer for ease of reading and writing")
 
   // Tomography is a method for determining the internal structure of objects from a set of measurements which penetrate into the object being measured.
 Fast tomographic reconstruction algorithms that implement explicit inversion formulas typically work only for specific view geometries (such as circular or helical path) and are referred to as _filtered back projection_ (FBP) algorithms @fbp.
@@ -212,6 +314,8 @@ Fast tomographic reconstruction algorithms that implement explicit inversion for
   In cases where a simultaneous computation for every pixel of every measurement would consume more memory than is available, some algorithms operate _out-of-core_, where they parallelize as many tasks as will fit into available memory, then serially queue the remaining tasks for processing after current tasks are complete.  TomoSphero is not capable of out-of-core operation, so a characterization of its memory usage is also available in @benchmarking.
 
 === Object Discretization
+
+  #rt([FIXME: make this mesh with prevoius section about discretization, or delete])
 
   Another consideration in tomographic reconstruction is the choice of grid type for discretization of the reconstructed object.  Most publications consider a regular rectilinear grid, which is a reasonable choice when the underlying structure of the object is completely unknown or the scale of features is uniform throughout the object.  However, in cases where some prior information is known about the location of high-detail regions within the object, or when symmetries in the view geometry exist @thibaudeau, a good choice of coordinate system can sample the object more efficiently for decreased computational requirements and lower quantization errors.
   The primary focus of TomoSphero is in the domain of atmospheric tomography, where regular spherical grids are well-suited for modeling solar and planetary atmospheres which exhibit spherical symmetries @solartomography1 @solartomography2.
@@ -446,6 +550,8 @@ Fast tomographic reconstruction algorithms that implement explicit inversion for
 === Step 4 - Line Integration
 
     The final step of the raytracer is to perform a weighted sum of the object values at the voxel indices given in the table in the previous section with the $Delta t$ column as weights.
+
+  // FIXME - use x instead of rho
 
     #math.equation(
         $sum_(i=0)^(2(N_r + 1) + \ 2(N_e + 1) + \ (N_a + 1) - 1) bold(rho)[r_i, e_i, a_i] * Delta t_i = innerproduct(rho, Delta t)$
@@ -985,7 +1091,14 @@ Fast tomographic reconstruction algorithms that implement explicit inversion for
           - #link(label("quietbins"))[(table) quiet time discretization]
       - definition of cartesian coordinate system (GSE) and spherical coordinate system, sph coordinate convention (e/a instead of phi/theta)
       - calibration bias - g factor, future work: IPH, radiation
+      - #link(label("codeoverview"))[(figure) retrieval block diagram]
   ])
+
+  #figure(
+      image("figures/retrieval_overview.png", width: 90%),
+      caption: "Diagram of simulator and retrieval loop used during validation"
+
+  ) <codeoverview>
 
   #rt("needs citations for each row")
 
@@ -1404,6 +1517,30 @@ A summary of all variables and sources of randomness is given in @knownvariables
           &= xi e + 6 nu mu e + mu^3 ((e + 3e^2 + e^3) - 7e)\
           &= xi e + 6 nu mu e + mu^3 (-6e + 3e^2 + e^3)\
   $)
+
+= Appendix - Discretization Considerations <discretization>
+
+  #rt([
+      WIP
+
+      - 3 sources of discretization error (below)
+          + science pixel binning too coarse for col density → binning has implicit assumption that does not hold
+              - i.e. values of pixels being binned are all roughly equal
+              - column densities are being undersampled at 3Re from large H-density gradients
+          + grid is too coarse for data
+          + same as #1, but for shadow region instead of 3Re region
+      - procedure for verifying that grids are sufficiently fine:
+          + obtain col. dens. measurements with very high resolution grid
+          + obtain col. dens. measurements with target grid
+          + check that % err between #1 and #2 is below some threshold
+      - this is pretty ad-hoc.  how to choose fine grid? threshold?
+          - can this be made more formal? ask Farzad
+  ])
+
+  #figure(
+      image("figures/discretization_considerations.jpg"),
+      caption: "Potential discretization Issues"
+  )
 
 == Glossary <symbols>
 

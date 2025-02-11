@@ -63,4 +63,14 @@
         short: "RRPE",
         long: "robust, regularized, positive estimation"
     ),
+    (
+        key: "voxel",
+        short: "voxel",
+        description: [volume pixel. single bin of a discretized volume]
+    ),
+    (
+        key: "model",
+        short: "model",
+        description: [mapping from low-dimensional set of parameters to full density]
+    ),
 )
