@@ -73,4 +73,29 @@
         short: "model",
         description: [mapping from low-dimensional set of parameters to full density]
     ),
+    (
+        key: "GSE",
+        short: "GSE",
+        long: [geocentric solar ecliptic]
+    ),
+    (
+        key: "GCI",
+        short: "GCI",
+        long: [GeoCoronal Imager]
+    ),
+    (
+        key: "NFI",
+        short: "NFI",
+        long: [Narrow Field Imager]
+    ),
+    (
+        key: "WFI",
+        short: "WFI",
+        long: [Wide Field Imager]
+    ),
+    (
+        key: "FOV",
+        short: "FOV",
+        long: [field of view]
+    ),
 )
