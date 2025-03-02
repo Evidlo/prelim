@@ -3,7 +3,7 @@
 
 <svg
    sodipodi:docname="physics_tomography2.svg"
-   inkscape:version="1.2.2 (b0a8486, 2022-12-01)"
+   inkscape:version="1.4 (e7c3feb, 2024-10-09)"
    id="svg5"
    version="1.1"
    viewBox="0 0 130 100"
@@ -13,7 +13,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns:ns3="http://www.iki.fi/pav/software/textext/">
+   xmlns:ns4="http://www.iki.fi/pav/software/textext/">
   <sodipodi:namedview
      id="namedview7"
      pagecolor="#ffffff"
@@ -24,13 +24,13 @@
      inkscape:pagecheckerboard="true"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="1.1342707"
-     inkscape:cx="39.232257"
-     inkscape:cy="138.41493"
-     inkscape:window-width="1594"
-     inkscape:window-height="871"
+     inkscape:zoom="1.0278349"
+     inkscape:cx="107.50754"
+     inkscape:cy="176.09832"
+     inkscape:window-width="1914"
+     inkscape:window-height="1049"
      inkscape:window-x="0"
-     inkscape:window-y="23"
+     inkscape:window-y="25"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1"
      inkscape:snap-global="false"
@@ -461,8 +461,8 @@
          style="font-size:18.6667px"
          id="tspan5388">Intensity</tspan></text>
     <path
-       style="font-variation-settings:normal;vector-effect:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;marker-start:url(#Arrow2Sstart);marker-end:url(#Arrow2Send);paint-order:markers fill stroke;stop-color:#000000"
-       d="M 17.991617,86.441901 125.55645,13.368702"
+       style="font-variation-settings:normal;vector-effect:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;marker-end:url(#Arrow2Send);paint-order:markers fill stroke;stop-color:#000000"
+       d="M 15.430295,88.164703 125.55645,13.368702"
        id="path14850"
        sodipodi:nodetypes="cc" />
     <circle
@@ -479,16 +479,16 @@
        r="1.4238307" />
     <g
        transform="matrix(0.529167,0,0,0.529167,63.806208,39.981201)"
-       ns3:version="1.8.2"
-       ns3:texconverter="pdflatex"
-       ns3:pdfconverter="inkscape"
-       ns3:text="$\\vec{r}$"
-       ns3:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns3:scale="1.5"
-       ns3:alignment="middle center"
-       ns3:stroke-to-path="0"
-       ns3:inkscapeversion="1.2.2"
-       ns3:jacobian_sqrt="0.529167"
+       ns4:version="1.8.2"
+       ns4:texconverter="pdflatex"
+       ns4:pdfconverter="inkscape"
+       ns4:text="$\\vec{r}$"
+       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns4:scale="1.5"
+       ns4:alignment="middle center"
+       ns4:stroke-to-path="0"
+       ns4:inkscapeversion="1.2.2"
+       ns4:jacobian_sqrt="0.529167"
        id="g58011">
       <defs
          id="id-a377138b-533a-402b-9a7a-ed397ce5bb95">
@@ -539,16 +539,16 @@
     </g>
     <g
        transform="matrix(0.529167,0,0,0.529167,29.96753,11.759663)"
-       ns3:version="1.8.2"
-       ns3:texconverter="pdflatex"
-       ns3:pdfconverter="inkscape"
-       ns3:text="$g$"
-       ns3:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns3:scale="1.5"
-       ns3:alignment="middle center"
-       ns3:stroke-to-path="0"
-       ns3:inkscapeversion="1.2.2"
-       ns3:jacobian_sqrt="0.529167"
+       ns4:version="1.8.2"
+       ns4:texconverter="pdflatex"
+       ns4:pdfconverter="inkscape"
+       ns4:text="$g$"
+       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns4:scale="1.5"
+       ns4:alignment="middle center"
+       ns4:stroke-to-path="0"
+       ns4:inkscapeversion="1.2.2"
+       ns4:jacobian_sqrt="0.529167"
        id="g58256">
       <defs
          id="id-4f1cf30a-71ba-4ef9-9cac-24e9e999b557">
@@ -579,22 +579,22 @@
       </g>
     </g>
     <path
-       style="font-variation-settings:normal;vector-effect:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;marker-start:url(#Arrow2Sstart-6);marker-end:url(#Arrow2Send-3);paint-order:markers fill stroke;stop-color:#000000"
-       d="M 17.991615,86.441901 110.28016,9.2844818"
+       style="font-variation-settings:normal;vector-effect:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;marker-end:url(#Arrow2Send-3);paint-order:markers fill stroke;stop-color:#000000"
+       d="M 15.430295,88.164703 110.28016,9.2844818"
        id="path14850-4"
        sodipodi:nodetypes="cc" />
     <g
        transform="matrix(0.705556,0,0,0.705556,25.9209,66.375066)"
-       ns3:version="1.8.2"
-       ns3:texconverter="pdflatex"
-       ns3:pdfconverter="inkscape"
-       ns3:text="$v_{i,j}$"
-       ns3:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns3:scale="2.0"
-       ns3:alignment="middle center"
-       ns3:stroke-to-path="0"
-       ns3:inkscapeversion="1.2.2"
-       ns3:jacobian_sqrt="0.705556"
+       ns4:version="1.8.2"
+       ns4:texconverter="pdflatex"
+       ns4:pdfconverter="inkscape"
+       ns4:text="$v_{i,j}$"
+       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns4:scale="2.0"
+       ns4:alignment="middle center"
+       ns4:stroke-to-path="0"
+       ns4:inkscapeversion="1.2.2"
+       ns4:jacobian_sqrt="0.705556"
        id="g1651">
       <defs
          id="id-1122963e-06a3-4828-b096-911d245e73cd">
@@ -673,16 +673,16 @@
     </g>
     <g
        transform="matrix(0.529166,0,0,0.529166,118.80347,5.6585282)"
-       ns3:version="1.8.2"
-       ns3:texconverter="pdflatex"
-       ns3:pdfconverter="inkscape"
-       ns3:text="$\\bm{x}$"
-       ns3:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns3:scale="1.5"
-       ns3:alignment="middle center"
-       ns3:stroke-to-path="0"
-       ns3:inkscapeversion="1.2.2"
-       ns3:jacobian_sqrt="0.529166"
+       ns4:version="1.8.2"
+       ns4:texconverter="pdflatex"
+       ns4:pdfconverter="inkscape"
+       ns4:text="$\\bm{x}$"
+       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns4:scale="1.5"
+       ns4:alignment="middle center"
+       ns4:stroke-to-path="0"
+       ns4:inkscapeversion="1.2.2"
+       ns4:jacobian_sqrt="0.529166"
        id="g104900">
       <defs
          id="id-a625704b-a2f4-4413-af85-dc7175009589">
@@ -745,16 +745,16 @@
        id="path112616" />
     <g
        transform="matrix(0.529167,0,0,0.529167,-98.011562,34.726363)"
-       ns3:version="1.8.2"
-       ns3:texconverter="pdflatex"
-       ns3:pdfconverter="inkscape"
-       ns3:text="$d\\Omega$"
-       ns3:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns3:scale="1.5"
-       ns3:alignment="middle center"
-       ns3:stroke-to-path="0"
-       ns3:inkscapeversion="1.2.2"
-       ns3:jacobian_sqrt="0.529167"
+       ns4:version="1.8.2"
+       ns4:texconverter="pdflatex"
+       ns4:pdfconverter="inkscape"
+       ns4:text="$d\\Omega$"
+       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns4:scale="1.5"
+       ns4:alignment="middle center"
+       ns4:stroke-to-path="0"
+       ns4:inkscapeversion="1.2.2"
+       ns4:jacobian_sqrt="0.529167"
        id="g112882">
       <defs
          id="id-c951b1d1-e4f9-492e-b202-f3612370fd25">
@@ -807,16 +807,16 @@
     </g>
     <g
        transform="matrix(0.529167,0,0,0.529167,102.18961,19.665892)"
-       ns3:version="1.8.2"
-       ns3:texconverter="pdflatex"
-       ns3:pdfconverter="inkscape"
-       ns3:text="$d\\Omega$"
-       ns3:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns3:scale="1.5"
-       ns3:alignment="middle center"
-       ns3:stroke-to-path="0"
-       ns3:inkscapeversion="1.2.2"
-       ns3:jacobian_sqrt="0.529167"
+       ns4:version="1.8.2"
+       ns4:texconverter="pdflatex"
+       ns4:pdfconverter="inkscape"
+       ns4:text="$d\\Omega$"
+       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns4:scale="1.5"
+       ns4:alignment="middle center"
+       ns4:stroke-to-path="0"
+       ns4:inkscapeversion="1.2.2"
+       ns4:jacobian_sqrt="0.529167"
        id="g112882-7">
       <defs
          id="id-c951b1d1-e4f9-492e-b202-f3612370fd25-5">
@@ -869,16 +869,16 @@
     </g>
     <g
        transform="matrix(0.529167,0,0,0.529167,-37.273098,50.572467)"
-       ns3:version="1.8.2"
-       ns3:texconverter="pdflatex"
-       ns3:pdfconverter="inkscape"
-       ns3:text="$dA$"
-       ns3:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns3:scale="1.5"
-       ns3:alignment="middle center"
-       ns3:stroke-to-path="0"
-       ns3:inkscapeversion="1.2.2"
-       ns3:jacobian_sqrt="0.529167"
+       ns4:version="1.8.2"
+       ns4:texconverter="pdflatex"
+       ns4:pdfconverter="inkscape"
+       ns4:text="$dA$"
+       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns4:scale="1.5"
+       ns4:alignment="middle center"
+       ns4:stroke-to-path="0"
+       ns4:inkscapeversion="1.2.2"
+       ns4:jacobian_sqrt="0.529167"
        id="g113290">
       <defs
          id="id-28e3b0dc-db8d-4c12-9399-5bcc166611db">

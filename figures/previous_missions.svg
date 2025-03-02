@@ -25,13 +25,13 @@
      inkscape:deskcolor="#a1a1a1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="2.5636329"
-     inkscape:cx="199.52155"
-     inkscape:cy="48.758931"
+     inkscape:zoom="2.1171542"
+     inkscape:cx="202.39433"
+     inkscape:cy="63.764841"
      inkscape:window-width="1594"
-     inkscape:window-height="869"
+     inkscape:window-height="847"
      inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-y="50"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1"
      showborder="true"
@@ -645,17 +645,17 @@
        xml:space="preserve"
        style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"
        x="72.524155"
-       y="40.707394"
+       y="41.765728"
        id="text12-7"><tspan
          sodipodi:role="line"
          id="tspan12-8"
          style="font-style:italic;font-size:2.11667px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1"
          x="72.524155"
-         y="40.707394">Carruthers</tspan><tspan
+         y="41.765728">Carruthers</tspan><tspan
          sodipodi:role="line"
          style="font-style:normal;font-size:2.11667px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1"
          x="72.524155"
-         y="42.824062"
+         y="43.882397"
          id="tspan36">235 Re</tspan></text>
     <text
        xml:space="preserve"
@@ -666,15 +666,15 @@
        transform="translate(0.0955299,-21.806455)"><tspan
          x="12.246643"
          y="88.222404"
-         id="tspan3"><tspan
+         id="tspan6"><tspan
            style="stroke:none"
-           id="tspan2">
+           id="tspan5">
 </tspan></tspan><tspan
          x="12.246643"
          y="91.044626"
-         id="tspan9"><tspan
+         id="tspan8"><tspan
            style="stroke:none"
-           id="tspan4">0</tspan></tspan></text>
+           id="tspan7">0</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:2.82222px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:1.6, 0.8;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke;stop-color:#000000"
@@ -890,5 +890,12 @@
            x="16.482344"
            y="45.854733">B</tspan></text>
     </g>
+    <rect
+       style="font-variation-settings:normal;opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke;stop-color:#000000;stop-opacity:1"
+       id="rect1"
+       width="12.752927"
+       height="5.3053026"
+       x="66.425873"
+       y="39.558594" />
   </g>
 </svg>

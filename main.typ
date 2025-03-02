@@ -135,71 +135,67 @@
 = Measurement Constraints <measurement_constraints>
 
   #rt([
-  - Chapter introduction section
+  - [x] Chapter introduction section
       - What is Lyman-α - Spectral line of hydrogen
-          - Useful indicator of hydrogen. sun is strong source of Lyman-α photons that are absorbed and reemitted through resonance scattering at the same wavelength
-      - Carruthers carries two UV cameras capable of detecting Lyman-α
-          - NFI for fast inner exosphere evolution
-          - WFI for global estimation of slowly-changing outer exosphere
-  - Carruthers Camera and Orbit Details
+          - Only practical indicator of hydrogen distribution
+      - Carruthers carries two UV-capable cameras to provide constraints on hydrogen distribution
+      - Chapter summary: Carruthers orbit, camera specs, emission model, post-processing
+  - [x] Carruthers Orbit and Camera Details
+      - Definition of #gls("GSE") coordinate system
       - Carruthers will be inserted in a halo orbit around langrange point L1 1.5e6 km from the Earth
           - From distant vantage, should be able to observe full extent of geocorona (soho/swan)
-          - Definition of #gls("GSE") coordinate system
-          - Full orbit takes approximately 6 months (FIXME: SOHO claims 1 yr orbit, how?) (lara: there are other kinds of orbits, probably ok)
-          - About ±7 degrees off sun-earth axis in eciptic north/south
-          - About ±28 degrees off sun-earth axis in noon-midnight direction (FIXME: noon-midnight isn't right)
-          - Orbital ellipse limits: dX 71 Re, dY 221 Re, 54
-              - FIXME: dY seems huge.  mistake?
+          - Orbit duration information and lateral deviation (important for tomographic meas. diversity)
       - #link(label("viewgeom1"))[(figure) viewing geometry, orbit around L1]
       - #link(label("viewgeom2"))[(figure) static 3D picture of multiple view geometries captured for 1month baseline]
-      - Camera details
+      - [x] Camera details
           - NFI: 3.6°, 30 min for fast inner exosphere evolution
           - WFI: 18°, 60 mins for global estimation of slowly-changing outer exosphere
           - #link(label("viewgeom3"))[(figure) camera details, FOV, int. time, etc.]
-          - Spatial resolution
-              - #link(label("los_evolution"))[(figure) LOS evolution over 15 days]
-              - NFI: X°/pixel (Y Re when projected to Earth)
-              - WFI: X°/pixel (Y Re when projected to Earth)
+          - #link(label("camera_specs"))[(table) camera geometry specifications]
+          - #link(label("carruthers_orbit"))[(figure) LOS evolution over 15 days]
   - Emission Model
-      - what is an emission model
-          - In order to recover a hydrogen density distribution from radiance measurements, it is necessary to mathematically model the process by which Lyman-α photons travel through the exosphere and scatter.
-      - this manuscript focuses on optically thin outer exosphere where scattering occurs only once, simplifying emission model
-      - Definition of optically thin and importance of this assumption on emission model computational complexity (zoennchen 2015)
-      - A correction term applied by Gonzalo, but left out of this manuscript
+      - [x] Definition of emission model - necessary for retrieval
+      - [x] Definition of optically thin and importance of this assumption on emission model computational complexity (zoennchen 2015)
+      - [x] A correction term applied by Gonzalo, but left out of this manuscript
           - Note that raytracer is capable of implementing these correction terms.  See appendix XXX for an overview of implementing correction terms usingraytracer
-      - #link(label("scatteringphase"))[(figure) Scattering phase function]
-      - #link(label("emissionmod"))[(figure) Column line integral]
-      - g-factor
+      - #link(label("emission_model_physics"))[(figure) Physics of emission model]
+      - g-factor - FIXME: varies with radial distance but assumed constant, see @static_validation for bias
       - Definition of albedo (gonzalo thesis appendix c)
-      - Other sources of signal
+      - Background sources
           - IPH, moon, stars
           - Diagram showing hydrogen density in solar system?
-  - Simulation, Calibration and Post-Processing
+          - One component of background radiance is IPH
+              - tenuous distribution of hydrogen between solar-system planets are illuminated and contribute to radiance measurement in a LOS-dependent way
+              - estimating IPH is involved, carruthers will measure in annulus around earth where exospheric hydrogen radiance is nearly zero and interpolate over the exosphere FOV
+              - this manuscript assumes IPH is known, bias introduced from IPH estimation process are considered in @static_validation
+  - Instrument, Calibration
+      - #rt([less detailed version of @calibration])
+      - equation for calibrated column density
+
       - Ability to simulate realistic images is critical to validate algorithm performance under noise conditions
+      - Previous section described model for interaction between photons and hydrogen
+      - This section will describe model for interaction of photons and instrument
       - Brief description of MCP, KBr photocathode, etc. (use overview list from Instrument Model section)
-      - IPH subtraction and instrument calibration
-      - Science pixel binning - computational simplificity
-      - Masking - optically thick region, moon, stars
       - See @appendix_sim for simulation and calibration details
-      - g-factor estimation (from Pratik) and conversion of calibrated radiance to column density
+          - Science pixel binning - computational simplicity
+          - Masking - optically thick region, moon, stars
+  - Post-Processing
   ])
 
-  #image("figures/viewgeom1.svg", height:10em) <viewgeom1>
-  #image("figures/viewgeom2.gif", height:10em) <viewgeom2>
-  #image("figures/viewgeom3.png", height:10em) <viewgeom3>
-  #image("figures/los_evolution_15d.png", height:10em) <los_evolution>
-  #image("figures/emissionmod.png", height:10em) <emissionmod>
-  #image("figures/scatteringphase.png", height:10em) <scatteringphase>
+  #rt([lara has better version?]) #image("figures/viewgeom1.svg", height:10em) <viewgeom1>
+  #rt([delete]) #image("figures/viewgeom2.gif", height:10em) <viewgeom2>
+  #rt([delete]) #image("figures/viewgeom3.png", height:10em) <viewgeom3>
+  // #image("figures/emissionmod.png", height:10em) <emissionmod>
 
   The Sun is a strong source of Lyman-α photons, which enter the Earth's atmosphere and interact with neutral hydrogen atoms before being reemitted in a process known as resonant scattering.  Aside from in-situ spectrometric measurements of hydrogen (impractical for global atmospheric measurements), this Lyman-α emission is the only available indicator of hydrogen in the exosphere.
   Carruthers is equipped with UV-capable cameras and will observe the entirety of the exosphere at Lyman-α from a distant vantage, providing constraints on the global distribution of hydrogen.
 
-  This chapter will describe the Carruthers observational orbit, camera specifications, an emission model explaining how Lyman-α interacts with exospheric hydrogen before reaching the cameras, and end with an overview of the post-processing procedure for converting raw sensor measurements to usable science constraints.
+  This chapter will describe the Carruthers observational orbit, camera geometry, an emission model of Lyman-α interaction with and propagation through exospheric hydrogen, instrument model, and end with an overview of the post-processing procedure for converting raw sensor measurements to usable science constraints.
 
 
-  == Carruthers Orbit and Cameras
+  == Carruthers Orbit and Camera Geometry
 
-    The #gls("GSE") coordinate system (shown in @gse_coordinates) is a natural fit when describing spacecraft position and exospheric hydrogen distribution, since properties of the exosphere such as the hypothesized nightside tail are best described in an Earth-Sun frame.  The rest of this manuscript uses #gls("GSE") in units of Earth radii (1 Re = 6371 km) either in cartesian or spherical coordinates.
+    The #gls("GSE") coordinate system (shown in @gse_coordinates) is a natural fit when describing spacecraft position and exospheric hydrogen distribution, since properties of the exosphere such as the hypothesized nightside tail are aligned to an Earth-Sun frame.  The rest of this manuscript uses #gls("GSE") in units of Earth radii (1 Re = 6371 km) either in cartesian or spherical coordinates.
 
     #figure(
         box(width:100pt, height:100pt, stroke:1pt),
@@ -209,14 +205,13 @@
 
     Carruthers will be inserted into a halo orbit around the L1 Lagrange point (about 1.5 million km from Earth, 235 Re), which is distant enough to observe the entirety of the geocorona from an outside vantage @baliukin over a long period.
     Shown in @carruthers_orbit, this orbit deviates above/below the ecliptic plane by ±7° (xxx Re #rt([FIXME])) and ±28° (xxx Re #rt([FIXME])) in the dawn/dusk direction, providing important angular measurement diversity for tomographic analysis.
-    While multiple spacecraft would be ideal for improving spatiotemporal measurement resolution from the relatively slow 6 month orbit, analysis in @static_validation shows that an observation window of just 2 weeks is sufficient to meet mission retrieval requirements during quiet exospheric conditions.
+    While multiple spacecraft would be ideal for improving spatiotemporal measurement resolution from the relatively slow 6 month orbital period, analysis in @static_validation shows that an observation window of just 2 weeks is sufficient to meet mission retrieval requirements during quiet exospheric conditions.
 
     #figure(
         grid(
-            columns: 2, gutter: 12pt,
+            columns: 2, gutter: 5pt,
             subfigure(box(width:100pt, height:100pt, stroke:1pt), "orbitfig", "6 month Carruthers orbit around L1"),
-            subfigure(box(width:100pt, height:100pt, stroke:1pt), "orbitfig", "Angular diversity of orbit in ecliptic plane")
-
+            subfigure(image("figures/los_evolution_15d.png"), "orbitfig", "Angular diversity of orbit in ecliptic plane")
         ),
         caption: [#rt([FIXME: placeholder.]) Carruthers orbit details]
     ) <carruthers_orbit>
@@ -227,7 +222,6 @@
     #figure(
         image("figures/scratch_fov.jpg"),
         caption: [#rt([FIXME: placeholder.])  (a) Carruthers camera FOV projected onto Earth tangent plane. (b) FOV relative to outer exosphere boundaries.]
-
     ) <earth_fov>
 
     #figure(
@@ -241,18 +235,152 @@
         caption: [Camera geometry specifications.\ Spatial resolution is projected onto Earth tangent plane as in @earth_fov(a)]
     ) <camera_specs>
 
+
   == Emission Model
 
     In order to recover a hydrogen density distribution from radiance measurements, it is necessary to mathematically model the process by which Lyman-α photons travel through the exosphere and scatter.
     This is known as an emission model and is a central component of tomographic retrieval algorithms.
 
-    Implementation of a fully-precise model of a n model is a computational complex task, as photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interactions between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the _optically thin_ regime), it is possible to assume photons scatter only once without significant loss of accuracy.  This significantly simplifies computational requirements and complexity of numerical implementations of the emission model.
+    Numerically modelling the physics of radiative transfer is a computationally complex task, as photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interactions between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the _optically thin_ regime), it is possible to assume photons scatter only once without significant loss of accuracy, simplifying computational requirements and implementation complexity of the emission model.
 
-    Anderson and Hord Jr. @opticaldepththin, define the optically thin regime as starting when $tau <= 0.1$, where optical depth $tau$ is #rt([FIXME: optical depth description]).
+    Anderson and Hord Jr. @opticaldepththin, define the optically thin regime as starting when $tau <= 0.1$, where optical depth $tau$ is a measure of #rt([FIXME: optical depth description]).
 
-    Zoennchen et al. #rt([cite gonzalo]) have found that extending the basic optically thin assumptions to additionally model extinction along the LOS #rt([(FIXME: and the other term)]) reduced discrepancy between tomographic retrievals and physics-based simulations.  The scope of this manuscript does not include these correction terms, but @appendix_extra_physics describes the procedure for implementing these terms with the raytracer in @raytracer.
+    With these assumptions, the radiance measured by the spacecraft is proportional to a volume integral of the total mass of hydrogen present in the atmosphere within the #gls("FOV") of a particular pixel, given by
 
-  == Simulation, Calibration and Post-Processing
+    // knlown as a #gls("LOS"), an example of the Fredholm integral of the first kind.
+
+
+    // #math.equation(
+    //     $y prop integral_V bold(rho)(v) dif v$
+    // )
+
+    #math.equation(
+        $I_"exo" = g phi.alt(beta) integral_V bold(a)(vc(r)) bold(rho)(vc(r)) dif v$
+    ) <integral1>
+
+    where $bold(rho)$ represents the 3D object and $V$ is the volume in the #gls("FOV").  $phi.alt$, known as the _scattering phase function_, represents the directional distribution of reemission of resonantly-scattered photons relative to the direction of the sun, shown in @scatteringphase.
+
+    #figure(
+        image("figures/physics_scattering.svg", height: 15em),
+        caption: [Scattering phase function]
+    ) <scatteringphase>
+
+    Angular solar g-factor $g$ (phot/s/atom/sr) relates hydrogen quantity (atoms) to photon flux emitted per unit solid angle (phot/s/sr).  This quantity is directly related to solar activity and is assumed to be a known, external input to the emission model.
+    @gfactor_difference illustrates the important $4 pi$ difference between angular g-factor (per steradian) and _isotropic_ g-factor (per whole sphere), which are sometimes not explicitly distinguished in literature.
+
+    #figure(
+        grid(
+            columns: 2, gutter: 12pt,
+            subfigure(box(width:100pt, height:100pt, stroke:1pt), "gfact", "Isotropic"),
+            subfigure(box(width:100pt, height:100pt, stroke:1pt), "gfact", "Angular"),
+        ),
+        caption: [Isotropic vs angular g-factor\ #rt([FIXME: WIP])]
+    ) <gfactor_difference>
+
+    Finally, $bold(a)(vc(r))$ is a unitless multiplicative correction factor (assumed known) to account for high-density regions of the inner optically-thick exosphere which act as a secondary source of Lyman-α photons illuminating the outer exosphere from below.
+
+    - #rt([FIXME: derivation of line integral from first principles here.  Make use of etendue, pixel area, paraxial approximation to convert volume integral to line integral.  Should this go into instrument simulation instead?])
+
+    While the volume integral in @integral1 is accurate for any pixel geometry, the expression can be simplified to a line integral when the pixel #gls("FOV") is small.  Using conservation of etendue and the paraxial approximation (pixel #gls("FOV") lies close to the optical axis), @integral1 can be written
+
+    #math.equation(
+        $I_"exo" = g phi.alt(beta) integral_l bold(a)(vc(r))  bold(rho)(vc(r)) dif s$
+    ) <integral2>
+
+    // #math.equation(
+    //     $y' = g phi.alt(beta_(i,j)) integral_(l=0)^(infinity) bold(a)(vc(x) + vc(n)l) bold(rho)(vc(x) + vc(n)l) dif l$
+    // ) <integral2>
+
+    #rt([FIXME: notation inconsistent with other sections])
+
+
+    where $l$ is the pixel #gls("LOS") and $vc(r)$ is position in space, illustrated in @emission_model_physics.
+    Through Beer's law and a logarithmic transform, this integral equation is also valid for many modalities featuring absorptive rather than emissive media. #rt([FIXME: citation])
+
+
+    #figure(
+        image("figures/physics.svg"),
+        caption: [foo]
+    ) <emission_model_physics>
+
+    @emission_units gives an overview of different measurement quantities and their units.
+
+    #figure(
+        table(
+            columns: 3,
+            align: horizon,
+            table.header([Quantity], [Symbol], [Units]),
+            "Density", $bold(rho)$, "atom/cm³",
+            "Non-spectral radiance", $y$, "phot/s/atom/cm²/sr",
+            "Isotropic g-factor", $g$, "phot/s/atom/sr",
+            "Albedo", $bold(a)$, "unitless",
+            [Scattering phase function], $phi.alt$, "unitless"
+            // "Emissivity", "", "",
+            // "Pixel solid angle", "Ω", "steradian (sr)",
+            // "Pixel area", "A", "cm²",
+        )
+    ) <emission_units>
+
+    Zoennchen et al. #rt([(FIXME: cite gonzalo)]) have found that extending the basic optically thin assumptions to additionally model extinction along the LOS #rt([(FIXME: and the other term)]) reduced discrepancy between tomographic retrievals and physics-based simulations.  The scope of this manuscript does not include these correction terms, but @appendix_extra_physics describes the procedure for implementing these terms with the raytracer in @raytracer.
+
+    A tenuous distribution of hydrogen throughout the solar sytem, known as #gls("IPH"), also contributes to the radiance detected by the spacecraft.  Estimation of #gls("IPH") is an involved process, and Carruthers will dedicate a portion of on-orbit operations to making observations of an annulus around the Earth where exospheric hydrogen is not present.  @iph shows a typical #gls("IPH") distribution expected to be observed during the mission.  #gls("IPH") radiance contribution from behind the exosphere envelope is interpolated from the measured annulus.  The impact of biases introduced by #gls("IPH") estimation are considered in @static_validation.
+    Other background sources of Lyman-α background signal include the moon and stars, as shown in @moon_stars, but these sources will be masked out instead of estimated.
+
+
+    #figure(
+        box(width:100pt, height:100pt, stroke:1pt),
+        caption: [#rt([FIXME: placeholder]) IPH distribution and observation annulus]
+    ) <iph>
+
+    #figure(
+        grid(
+            columns: 2, gutter: 10pt,
+            subfigure(box(width:100pt, height:100pt, stroke:1pt), "moonstars", "Moon in WFI FOV"),
+            subfigure(box(width:100pt, height:100pt, stroke:1pt), "moonstars", "Stars in WFI FOV"),
+        ),
+        caption: [#rt([FIXME: placeholder]) More sources of IPH background]
+    ) <moon_stars>
+
+    // The quantity in @integral1 is known as _column density_, but on orbit the spacecraft is actually measuring _photon flux_ shown in @integral2, the total photon rate entering the instrument.
+
+  == Instrument Model and Calibration
+
+    As mentioned in the previous section, accurately modelling the physical processes involved in obtaining tomographic measurements of a density distribution is critical for retrieval accuracy.  While the emission model describes the physics of Lyman-α photons interacting with the exosphere, an instrument model explains how photon radiance received at the front of the instrument passes through the stages of the #gls("GCI") and is converted to digital measurements.
+
+  #math.equation(numbering:none,
+      $e_"phot" &= f_"opt" epsilon(lambda_0) (I_"exo" + I_"bkg") dot.op Omega dot.op A gt("(events/s)")$
+  )
+
+  #math.equation(numbering:none,
+      $E_"phot" tilde.op "Pois"(t_"fr" e_"phot") gt("(events)")$
+  )
+
+  #math.equation(numbering: none,
+      $Y &= (f_"mcp" sum_(l=1)^(E_"phot" + E_"mcp") G_"mcp,l" + C_"aps" + C_"dark") g_"aps" + R gt("(DN)")$
+  )
+
+  == Post-Processing
+    - science pixel binning
+    - masking
+    - temporal binning
+
+    #figure(
+        image("figures/scratch_fov.jpg"),
+        caption: [#rt([FIXME: placeholder.])  (a) Polar-binned camera FOV projected onto Earth tangent plane. (b) Polar-binned FOV relative to outer exosphere boundaries.]
+    ) <earth_fov_science>
+
+    #figure(
+        table(
+            table.header([Camera], [FOV\ (degrees)], [Resolution\ (pixels)], [Angular Res.\ (degrees)], [Spatial Res.\ (Re, projected)]),
+            align: horizon,
+            [Polar WFI], [18°], [50x100], [xxx radial\ yyy azimuthal], [xxx radial],
+            [Polar NFI], [3.6°], [50x100], [xxx radial\ yyy azimuthal], [xxx radial],
+            columns: (auto, auto, auto, auto, auto),
+        ),
+        caption: [Circular camera geometry specifications.\ Spatial resolution is projected onto Earth tangent plane as in @earth_fov(a)]
+    ) <camera_specs2>
+
+    - #rt([motivation for])
 
 = Inverse Problem Formulation <inverse_problem>
 
@@ -314,6 +442,7 @@
   == Discretization
 
     #rt("WIP")
+    #rt("convert line integral to discrete sum")
 
   In general, direct analytic solutions to tomographic estimation problems are infeasible, necessitating a numerical approach where the solution space is divided into a finite grid of $N$ non-overlapping regions called #glspl("voxel") where density is assumed to be constant.  There are a large variety of grid types to choose from, including regular grids where voxels are uniformly spaced in some domain (e.g. spherical, cylindrical, cartesian) and non-regular grids which may utilize hierarchical structures (e.g. octree) or tetrahedral meshes as shown in @grid_examples.  Some of these discretizations schemes have been designed to adaptively update voxel boundaries during retrieval to better fit the object being retrieved @adaptivemesh1.
 
@@ -1202,7 +1331,7 @@
 
   #figure(
       image("figures/scratch_static_assumption.png", height: 20em),
-      caption: [A static algorithm returns a retrieval which ideally should be close to the average density over a given temporal window.  By the mean value]
+      caption: [A static algorithm returns a retrieval which ideally should be close to the average density over a given temporal window by the mean value theorem]
   ) <static_assumption>
 
   #figure(
@@ -1425,6 +1554,24 @@ A summary of all variables and sources of randomness is given in @knownvariables
     @integrationtime gives an overview of the stacking and binning parameters selected in order to meet mission #gls("SNR") requirements and maintain an acceptable loss of spatial and temporal resolution given prior knowledge of the exosphere @gonzalostorm. #rt("(clarify this is not a contribution of the thesis?)")
 
     #figure(
+        table(
+            columns: 3,
+            inset: 4pt,
+            align: horizon,
+            table.header(
+                [Parameter], [NFI], [WFI],
+            ),
+            table.hline(stroke: 2pt),
+            [Total Integration Time (minutes)], [30], [60],
+            [Stacked Frames (frames)], [14400], [28800],
+            table.hline(stroke: 2pt),
+            [Binning Factor (unitless)], [2x2], [4x4],
+            [Downlinked Resolution (pixels)], [1024x1024], [512x512],
+        ),
+        caption: "Camera Integration Time and Frame Stacking"
+    ) <integrationtime>
+
+    #figure(
         table(columns: 4, align: horizon,
             table.header("Binning\nType", "Derivation\n(2x2 binning example)", "", "Read Noise\n(NxN binning)"),
             table.hline(stroke: 2pt),
@@ -1459,24 +1606,6 @@ A summary of all variables and sources of randomness is given in @knownvariables
         ),
         caption: "Binned read noise for different detector binning types"
     ) <binningtype>
-
-  #figure(
-      table(
-          columns: 3,
-          inset: 4pt,
-          align: horizon,
-          table.header(
-              [Parameter], [NFI], [WFI],
-          ),
-          table.hline(stroke: 2pt),
-          [Total Integration Time (minutes)], [30], [60],
-          [Stacked Frames (frames)], [14400], [28800],
-          table.hline(stroke: 2pt),
-          [Binning Factor (unitless)], [2x2], [4x4],
-          [Downlinked Resolution (pixels)], [1024x1024], [512x512],
-      ),
-      caption: "Camera Integration Time and Frame Stacking"
-  ) <integrationtime>
 
     Let subscripts $m$, $n$, and $l$ denote i.i.d. copies of the random variables defined in the previous section.
 
@@ -1530,22 +1659,21 @@ A summary of all variables and sources of randomness is given in @knownvariables
         caption: [Monte Carlo simulation of actual distribution of $Z$ vs CLT approximation]
     ) <clt>
 
-    == Berry-Esseen Bound
+  //   == Berry-Esseen Bound
 
-    #rt([Section incomplete.  Derivation of $ex(|Y^3|)$ is very complicated but necessary for Berry-Essen bound which gives theoretically guarantees about the convergence of the blue→red lines in the plots above.  May remove this section])
+  //   #rt([Section incomplete.  Derivation of $ex(|Y^3|)$ is very complicated but necessary for Berry-Essen bound which gives theoretically guarantees about the convergence of the blue→red lines in the plots above.  May remove this section])
 
-    #math.equation(numbering:none,
-        $ex(Y^2) = var(Y) + ex(Y)^2$
-    )
+  //   #math.equation(numbering:none,
+  //       $ex(Y^2) = var(Y) + ex(Y)^2$
+  //   )
 
-  - #rt("WIP: CLT verification experiments")
-  - #rt("WIP: Berry-Esseen Theorem")
+  // - #rt("WIP: CLT verification experiments")
+  // - #rt("WIP: Berry-Esseen Theorem")
 
-    #image("figures/clt_wfi.png", height: 15em)
-    #image("figures/clt_nfi.png", height: 15em)
+  //   #image("figures/clt_wfi.png", height: 15em)
+  //   #image("figures/clt_nfi.png", height: 15em)
 
-    === Calibration and Subtraction <calibration>
-
+    == Calibration and Subtraction <calibration>
 
   - #rt("WIP")
 
@@ -1665,7 +1793,8 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   - #rt([come up with a better name - "second-order correction terms"])
 
-== Glossary <symbols>
+
+= Glossary <symbols>
 
 
 
@@ -1673,12 +1802,10 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   #print-glossary(glossary)
 
-  - *MCP* - microchannel plate 23, 24
-  - *SNR* - signal-to-noise ratio 26, 27
-  - *UV* - ultraviolet: description goes here 22, 23
+  // - *MCP* - microchannel plate 23, 24
+  // - *SNR* - signal-to-noise ratio 26, 27
+  // - *UV* - ultraviolet: description goes here 22, 23
 
-
-= Figures
 
 
 #bibliography("refs.bib")

@@ -98,4 +98,9 @@
         short: "FOV",
         long: [field of view]
     ),
+    (
+        key: "IPH",
+        short: "IPH",
+        long: [interplanetary hydrogen]
+    ),
 )
