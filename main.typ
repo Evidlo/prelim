@@ -49,7 +49,6 @@
 #show heading: set block(above: 1.4em, below: 1em)
 #set text(bottom-edge: "descender")
 #set grid(row-gutter: 0.5em,)
-// #show figure: set block(inset: (top: 0.5em, bottom: 1em))
 
 #outline(indent: auto, depth: 2)
 
@@ -198,7 +197,7 @@
     The #gls("GSE") coordinate system (shown in @gse_coordinates) is a natural fit when describing spacecraft position and exospheric hydrogen distribution, since properties of the exosphere such as the hypothesized nightside tail are aligned to an Earth-Sun frame.  The rest of this manuscript uses #gls("GSE") in units of Earth radii (1 Re = 6371 km) either in cartesian or spherical coordinates.
 
     #figure(
-        box(width:100pt, height:100pt, stroke:1pt),
+        image("figures/gse_coordinates_placeholder.jpg", height: 10em),
         caption: [#rt([FIXME: placeholder.]) GSE coordinate system.  +X is Sunwards, +Y is Earth wake (approximately dusk), +Z is ecliptic North]
 
     ) <gse_coordinates>
@@ -210,7 +209,7 @@
     #figure(
         grid(
             columns: 2, gutter: 5pt,
-            subfigure(box(width:100pt, height:100pt, stroke:1pt), "orbitfig", "6 month Carruthers orbit around L1"),
+            subfigure(image("figures/carruthers_orbit_placeholder.jpg", width: 15em), "orbitfig", "6 month Carruthers orbit around L1"),
             subfigure(image("figures/los_evolution_15d.png"), "orbitfig", "Angular diversity of orbit in ecliptic plane")
         ),
         caption: [#rt([FIXME: placeholder.]) Carruthers orbit details]
@@ -238,14 +237,14 @@
 
   == Emission Model
 
-    In order to recover a hydrogen density distribution from radiance measurements, it is necessary to mathematically model the process by which Lyman-α photons travel through the exosphere and scatter.
+    In order to recover a hydrogen density distribution from radiance measurements, it is necessary to mathematically model the process by which Lyman-α photons propagate through the exosphere and enter the camera.
     This is known as an emission model and is a central component of tomographic retrieval algorithms.
 
-    Numerically modelling the physics of radiative transfer is a computationally complex task, as photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interactions between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the _optically thin_ regime), it is possible to assume photons scatter only once without significant loss of accuracy, simplifying computational requirements and implementation complexity of the emission model.
+    Numerically modelling the physics of radiative transfer is a computationally complex task, as photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interdependencies between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the _optically thin_ regime #rt([FIXME: citation])), it is possible to assume photons scatter only once without significant loss of accuracy, simplifying computational requirements and implementation complexity of the emission model.
 
     Anderson and Hord Jr. @opticaldepththin, define the optically thin regime as starting when $tau <= 0.1$, where optical depth $tau$ is a measure of #rt([FIXME: optical depth description]).
 
-    With these assumptions, the radiance measured by the spacecraft is proportional to a volume integral of the total mass of hydrogen present in the atmosphere within the #gls("FOV") of a particular pixel, given by
+    With these assumptions, the radiance measured by the spacecraft is proportional to a volume integral of the total mass of hydrogen present in the atmosphere within the #gls("FOV") of a particular pixel, given by photon radiance
 
     // knlown as a #gls("LOS"), an example of the Fredholm integral of the first kind.
 
@@ -255,36 +254,36 @@
     // )
 
     #math.equation(
-        $I_"exo" = g phi.alt(beta) integral_V bold(a)(vc(r)) bold(rho)(vc(r)) dif v$
+        $I_"exo,t" = g^*_t phi.alt(beta) integral_V bold(a)_t (vc(r)) bold(rho)_t (vc(r)) dif v #gt([(phot/s/cm²/sr)])$
     ) <integral1>
 
-    where $bold(rho)$ represents the 3D object and $V$ is the volume in the #gls("FOV").  $phi.alt$, known as the _scattering phase function_, represents the directional distribution of reemission of resonantly-scattered photons relative to the direction of the sun, shown in @scatteringphase.
+    where $g^*_t$ is angular g-factor, $t$ is time, $phi.alt_t$ is scattering phase function, $bold(a)_t$ is albedo, $vc(r)$ is position vector, $bold(rho)$ is hydrogen density and $V$ is the exosphere volume in the #gls("FOV").  $phi.alt$, known as the _scattering phase function_, represents the directional distribution of reemission of resonantly-scattered photons relative to the direction of the sun, shown in @scatteringphase.
 
     #figure(
         image("figures/physics_scattering.svg", height: 15em),
         caption: [Scattering phase function]
     ) <scatteringphase>
 
-    Angular solar g-factor $g$ (phot/s/atom/sr) relates hydrogen quantity (atoms) to photon flux emitted per unit solid angle (phot/s/sr).  This quantity is directly related to solar activity and is assumed to be a known, external input to the emission model.
+    Angular solar g-factor $g^*_t$ (phot/s/atom/sr) relates hydrogen quantity (atoms) to photon flux emitted per unit solid angle (phot/s/sr).  This quantity is directly related to solar activity and is assumed to be a known, external input to the emission model.
     @gfactor_difference illustrates the important $4 pi$ difference between angular g-factor (per steradian) and _isotropic_ g-factor (per whole sphere), which are sometimes not explicitly distinguished in literature.
 
     #figure(
         grid(
             columns: 2, gutter: 12pt,
-            subfigure(box(width:100pt, height:100pt, stroke:1pt), "gfact", "Isotropic"),
-            subfigure(box(width:100pt, height:100pt, stroke:1pt), "gfact", "Angular"),
+            subfigure(image("figures/g_factor_angular.svg", height:8em), "gfact", "Angular"),
+            subfigure(image("figures/g_factor.svg", height:8em), "gfact", "Isotropic"),
         ),
-        caption: [Isotropic vs angular g-factor\ #rt([FIXME: WIP])]
+        caption: [Angular vs. Isotropic g-factor],
     ) <gfactor_difference>
 
-    Finally, $bold(a)(vc(r))$ is a unitless multiplicative correction factor (assumed known) to account for high-density regions of the inner optically-thick exosphere which act as a secondary source of Lyman-α photons illuminating the outer exosphere from below.
+    Finally, $bold(a)_t (vc(r))$ is a unitless multiplicative correction factor (assumed known) to account for high-density regions of the inner optically-thick exosphere which act as a secondary source of Lyman-α photons illuminating the outer exosphere from below.
 
-    - #rt([FIXME: derivation of line integral from first principles here.  Make use of etendue, pixel area, paraxial approximation to convert volume integral to line integral.  Should this go into instrument simulation instead?])
+    - #rt([FIXME: derivation of line integral from first principles?  Make use of etendue, pixel area, paraxial approximation to convert volume integral to line integral])
 
     While the volume integral in @integral1 is accurate for any pixel geometry, the expression can be simplified to a line integral when the pixel #gls("FOV") is small.  Using conservation of etendue and the paraxial approximation (pixel #gls("FOV") lies close to the optical axis), @integral1 can be written
 
     #math.equation(
-        $I_"exo" = g phi.alt(beta) integral_l bold(a)(vc(r))  bold(rho)(vc(r)) dif s$
+        $I_"exo,t" = g^*_t phi.alt(beta) integral_l bold(a)_t (vc(r))  bold(rho)_t (vc(r)) dif s #gt([(phot/s/cm²/sr)])$
     ) <integral2>
 
     // #math.equation(
@@ -294,13 +293,13 @@
     #rt([FIXME: notation inconsistent with other sections])
 
 
-    where $l$ is the pixel #gls("LOS") and $vc(r)$ is position in space, illustrated in @emission_model_physics.
+    where $l$ is the pixel #gls("LOS"), illustrated in @emission_model_physics.
     Through Beer's law and a logarithmic transform, this integral equation is also valid for many modalities featuring absorptive rather than emissive media. #rt([FIXME: citation])
 
 
     #figure(
-        image("figures/physics.svg"),
-        caption: [foo]
+        image("figures/physics.svg", height:20em),
+        caption: [Emission model overview for a #gls("LOS")]
     ) <emission_model_physics>
 
     @emission_units gives an overview of different measurement quantities and their units.
@@ -324,63 +323,257 @@
     Zoennchen et al. #rt([(FIXME: cite gonzalo)]) have found that extending the basic optically thin assumptions to additionally model extinction along the LOS #rt([(FIXME: and the other term)]) reduced discrepancy between tomographic retrievals and physics-based simulations.  The scope of this manuscript does not include these correction terms, but @appendix_extra_physics describes the procedure for implementing these terms with the raytracer in @raytracer.
 
     A tenuous distribution of hydrogen throughout the solar sytem, known as #gls("IPH"), also contributes to the radiance detected by the spacecraft.  Estimation of #gls("IPH") is an involved process, and Carruthers will dedicate a portion of on-orbit operations to making observations of an annulus around the Earth where exospheric hydrogen is not present.  @iph shows a typical #gls("IPH") distribution expected to be observed during the mission.  #gls("IPH") radiance contribution from behind the exosphere envelope is interpolated from the measured annulus.  The impact of biases introduced by #gls("IPH") estimation are considered in @static_validation.
-    Other background sources of Lyman-α background signal include the moon and stars, as shown in @moon_stars, but these sources will be masked out instead of estimated.
+    Other unwanted sources of Lyman-α signal which violate emission model assumptions include the moon and stars and optically thick exosphere, as shown in @moon_stars, but these sources will be masked out and ignored during retrieval instead of estimated.  Together, these radiance sources are referred to as $I_"bkg"$.
 
 
     #figure(
-        box(width:100pt, height:100pt, stroke:1pt),
+        image("figures/iph_placeholder.jpg", height: 10em),
         caption: [#rt([FIXME: placeholder]) IPH distribution and observation annulus]
     ) <iph>
 
-    #figure(
-        grid(
-            columns: 2, gutter: 10pt,
-            subfigure(box(width:100pt, height:100pt, stroke:1pt), "moonstars", "Moon in WFI FOV"),
-            subfigure(box(width:100pt, height:100pt, stroke:1pt), "moonstars", "Stars in WFI FOV"),
-        ),
-        caption: [#rt([FIXME: placeholder]) More sources of IPH background]
-    ) <moon_stars>
-
     // The quantity in @integral1 is known as _column density_, but on orbit the spacecraft is actually measuring _photon flux_ shown in @integral2, the total photon rate entering the instrument.
 
-  == Instrument Model and Calibration
+  == Instrument Model <instrument_model>
+
+    #rt([FIXME: question for Lara: past section uses standard convention $I_"exo"$, but this is incompatible with convention of capitalized letters being random variables.  Would $i_"exo"$ be OK?])
 
     As mentioned in the previous section, accurately modelling the physical processes involved in obtaining tomographic measurements of a density distribution is critical for retrieval accuracy.  While the emission model describes the physics of Lyman-α photons interacting with the exosphere, an instrument model explains how photon radiance received at the front of the instrument passes through the stages of the #gls("GCI") and is converted to digital measurements.
 
-  #math.equation(numbering:none,
-      $e_"phot" &= f_"opt" epsilon(lambda_0) (I_"exo" + I_"bkg") dot.op Omega dot.op A gt("(events/s)")$
+  This section describes a statistical model for the instrument noise and background signals present in the NFI and WFI cameras during measurement of exospheric Lyman-α.  Modelling these processes is important for converting raw sensor measurements in digital numbers (DN) as telemetered by the spacecraft to corresponding radiances that can be used for tomographic reconstruction.   A statistical model is also important for generating synthetic noisy measurements to validate the performance of retrieval algorithms.  As a result, the Carruthers cameras have undergone extensive laboratory characterization to determine instrument model parameters and periodic on-orbit calibration is planned to account for parameter drift due to exposure to the space environment.
+
+    The Carruthers spacecraft contains two #gls("UV") cameras designed for detecting exospheric Lyman-α emission, an indicator of the amount of atomic hydrogen present along a #gls("LOS").  These cameras utilize a design which has heritage with other #gls("UV") instruments such as ICON @icon and GUVI @guvi and contain the following stages @rider (shown in @instrument_stages):
+
+  // TODO: WIP
+
+  - *optical filter wheel* - provides multispectral capability for out-of-band signal measurement used in thick exosphere retrievals
+  - *KBr photocathode* - potassium bromide photocathode for converting #gls("UV") photons to electrons (known as _photoelectrons_)
+  - *#gls("MCP")* - amplifies individual photoelectrons to a detectable shower of electrons
+  - *phosphor and #gls("CCD")* - phosphor produces light pulses from electrons which are detected by a #gls("CCD") and converted to an electrical charge
+  - *ADC* - #gls("ADC") for reading out #gls("CCD") charge.  (together with the #gls("CCD") this is sometimes referred to as an #gls("APS"))
+
+  #figure(
+      box(width:100pt, height:100pt, stroke:1pt),
+      caption: [#rt([FIXME: obtain figure from Lara]) Optical stages of instrument.]
+  ) <instrument_stages>
+
+    The rest of this section will consist of a derivation of a single pixel noisy measurement in #gls("DN") given a photon spectral radiance and other quantities in @knownvariables and @randomvariables.
+
+  Let $L_("exo")(lambda) + L_("bkg")(lambda)$ represent exospheric photon spectral radiance and background.
+    After entering the instrument and passing through several optical stages, photon spectral radiance is converted to a photon flux
+  #math.equation(numbering: none,
+      $p_("phot")(lambda) = lr(\[D(L_("exo")(lambda) + L_("bkg")(lambda)) * h)\]_j dot.op A dot.op Omega gt("(phot/s/nm)")$
   )
+    where $A dot.op Omega$ is pixel etendue, $D$ is a non-linear spatial distortion, and $h$ is a convolutional kernel representing optical blur.  Subscript $j$ denotes that only a single pixel is considered of the spatially-distorted and blurred signal.
+  After entering the instrument, the photons pass through an optical filter and photocathode where they are converted to a stream of photoelectrons (also known as _events_) with rate $e_"phot"$.  This conversion happens with efficiency $f_"opt" epsilon(lambda)$ (events/phot) where unitless scaling factor $f_"opt"$ (known as a _flat-field_) accounts for spatial variation in the optics, filters and photocathode.
+
+  #math.equation(numbering: none,
+      $e_"phot" = f_"opt" integral_lambda p_("phot")(lambda) epsilon(lambda) dif lambda gt("(events/s)")$
+  )
+
+  Alternatively, if $L_"exo"$ and $L_"bkg"$ are monochromatic with intensity $I_"exo"$ and $I_"bkg"$ and wavelength $lambda_0$
+
+  #math.equation(numbering:none,
+      $e_"phot" &= f_"opt" integral_lambda p_("phot")(lambda) epsilon(lambda) dif lambda \
+          &= f_"opt" lr(\[D(integral_lambda L_("exo")(lambda) epsilon(lambda) dif lambda + integral_lambda L_("bkg")(lambda)  epsilon(lambda) dif lambda) * h\])_j dot.op A dot.op Omega \
+          &= f_"opt" epsilon(lambda_0) \[D(I_"exo" + I_"bkg") * h\]_j dot.op A dot.op Omega gt("(events/s)")$
+
+  )
+
+  Assuming Lyman-α photons are emitted in a Poisson process, the actual number of photoelectrons created in a single camera frame of duration $t_"fr"$ is given by random variable
 
   #math.equation(numbering:none,
       $E_"phot" tilde.op "Pois"(t_"fr" e_"phot") gt("(events)")$
   )
 
+  In general, single photoelectrons are difficult to detect, so the Carruthers cameras employ an #gls("MCP") for turning a single particle into a detectable shower of particles.  #glspl("MCP") consist of an array of small glass tubes (channels) which are electrically charged so that a photoelectron striking the wall of one of these tubes will cause a cascade of particles via secondary emission @microchannelplate.  The small size of these channels ensures that the subsequent shower of particles exits the #gls("MCP") in the same location as the photoelectron, preserving image spatial resolution.  Due to the nature of secondary emission, the number of particles created by the #gls("MCP") from a photoelectron is given by the discrete random variable $G_"mcp"$, whose distribution has been measured in the laboratory.  The number of electrons leaving the MCP #rt([(known as _counts_)]) due to Lyman-α photoelectrons is given by
+
+  #math.equation(numbering: none,
+      $f_"mcp" sum_(l=1)^(E_"phot") G_"mcp,l" gt("(counts)")$
+  )
+
+  where $f_"mcp"$ is a flat-field representing spatial gain variation on the #gls("MCP").
+
+  Energetic particles from space which directly penetrate the spacecraft body and impinge on the MCP are modeled by $E_"mcp" tilde.op "Pois"(t_"fr" e_"mcp")$ and the number of counts is given by
+
+  #math.equation(numbering: none,
+      $f_"mcp" sum_(l=1)^(E_"mcp") G_"mcp,l" gt("(counts)")$
+  )
+
+  Additional sources of electron counts are energetic particles impinging on the #gls("APS") ($C_"aps"$), as well as thermally generated electrons from the instrument electronics known as _dark current_ ($C_"dark"$).  The charge from these electrons accumulates in the #gls("CCD") until it is amplified and read out by the #gls("ADC") as #gls("DN") given by
+
   #math.equation(numbering: none,
       $Y &= (f_"mcp" sum_(l=1)^(E_"phot" + E_"mcp") G_"mcp,l" + C_"aps" + C_"dark") g_"aps" + R gt("(DN)")$
   )
 
+
+  where $R$ is normally distributed read noise with bias introduced during readout and $g_"aps"$ is configurable gain in the #gls("APS") electronics.
+
+
+  @bd_annotated shows the Lyman-α signal at each stage in the camera, starting with photon spectral flux and ending with a final measurement in DN.
+A summary of all variables and sources of randomness is given in @knownvariables and @randomvariables.
+
+  #figure(
+      image("figures/bd_annotated2.svg", width: 120%),
+      caption: [Statistical model of instrument, showing instrument stages and sources of background noise]
+  ) <bd_annotated>
+
+  #figure(
+      table(
+          columns: 3,
+          inset: 0.5em,
+          table.header(
+              "Variable", "Description", "Units",
+          ),
+          table.hline(stroke: 2pt),
+          [$L_("exo")(lambda)$],  [exosphere photon spectral radiance], [phot/cm²/sr/s/nm],
+          [$L_("bkg")(lambda)$], [background photon spectral radiance], [phot/cm²/sr/s/nm],
+          [$A$], [pixel area], [cm²],
+  [$Omega$], [pixel solid angle], [sr],
+  [$epsilon(lambda)$], [optical efficiency], [events/phot],
+  [$e_("mcp")$], [MCP radiation rate], [events/s],
+  [$f_("mcp")$], [MCP gain flat-field], [unitless],
+  [$f_("opt")$], [optical efficiency flat-field], [unitless],
+  [$c_("aps")$], [APS radiation rate], [counts/s],
+  [$c_("dark")$], [dark count rate], [counts/s],
+  [$b$], [ADC bias], [DN],
+  [$t_("fr")$], [frame integration time], [s],
+  [$g_("aps")$], [APS gain], [DN/count],
+  [$N$], [APS binning factor], [unitless],
+  [$M$], [number of frames to stack], [frames],
+      ),
+      caption: "Known or derived quantities",
+  ) <knownvariables>
+
+
+  #figure(
+      table(
+          columns: 3,
+          inset: 0.5em,
+          table.header(
+              "Variable", "Description", "Units",
+          ),
+          table.hline(stroke: 2pt),
+  [$E_"phot" tilde.op "Pois"(t_"fr" e_"phot")$], [Lyman-α events], [events],
+          [$E_"mcp" tilde.op "Pois"(t_"fr" e_"mcp")$], [MCP radiation], [events],
+          [$G_"mcp" tilde.op cal(Z)("mean"=mu_G, "var"=sigma^2_G)$], [MCP gain distribution], [counts/event],
+          [$C_"aps" tilde.op "Pois"(t_"fr" c_"aps")$], [APS radiation], [counts],
+          [$C_"dark" tilde.op "Pois"(t_"fr" c_"dark")$], [Dark current], [counts],
+          [$R tilde.op cal(N)(b, sigma^2)$], [Read noise and bias], [DN],
+          ),
+      caption: "Random Variables",
+  ) <randomvariables>
+
+    == Frame Stacking, Time Binning, and Instrument Model Approximation
+
+    A common technique to increase measurement #gls("SNR") in spaceborne telescopes is to increase exposure time at the expense of temporal resolution.  As frames are read out by the #gls("APS"), they are accumulated digitally on the spacecraft in a process known as _frame stacking_.  This effectively achieves the #gls("SNR") of a single, long exposure measurement while avoiding the problem of charge well saturation in the #gls("CCD") and has the added benefit of reducing bandwidth requirements by only downlinking a single frame-stacked measurement.  The loss of temporal resolution is negligible relative to the rate of evolution of the exosphere (#rt("FIXME: citation?")).
+
+    Likewise, spatial resolution can be sacrificed to boost measurement #gls("SNR") by _pixel binning_ adjacent pixels on the detector together.  Binning may be performed digitally, but additional read noise reduction can be achieved in the #gls("APS") if pixels can be merged before being read out by the #gls("ADC"). @binningtype demonstrates the effect of binning on read noise variance for different detector types, with #gls("CCD") detectors achieving a factor $N^2$ reduction in read noise variance against purely digital binning.
+
+    #figure(
+      grid(columns: 2,
+          subfigure(image("figures/nfi_1.png", height: 12em), "fs", "NFI, single frame"),
+          subfigure(image("figures/wfi_1.png", height: 12em), "fs", "WFI, single frame"),
+          subfigure(image("figures/nfi_14400.png", height: 12em), "fs", "NFI, stacked"),
+          subfigure(image("figures/wfi_28800.png", height: 12em), "fs", "WFI, stacked"),
+      ),
+      caption: [Comparison of uncalibrated single frame vs uncalibrated framestacked measurement],
+    ) <framestacking>
+
+    @framestacking shows examples of simulated measurements which utilize both frame stacking and pixel binning and compares them to a single, unbinned frame.  More features of the underlying radiance distribution become visible when many frames are stacked.
+    @integrationtime gives an overview of the stacking and binning parameters selected in order to meet mission #gls("SNR") requirements and maintain an acceptable loss of spatial and temporal resolution given prior knowledge of the exosphere @gonzalostorm.
+
+    #figure(
+        table(
+            columns: 3,
+            inset: 4pt,
+            align: horizon,
+            table.header(
+                [Parameter], [NFI], [WFI],
+            ),
+            table.hline(stroke: 2pt),
+            [Total Integration Time (minutes)], [30], [60],
+            [Stacked Frames (frames)], [14400], [28800],
+            table.hline(stroke: 2pt),
+            [Binning Factor (unitless)], [2x2], [4x4],
+            [Downlinked Resolution (pixels)], [1024x1024], [512x512],
+        ),
+        caption: "Camera Integration Time and Frame Stacking"
+    ) <integrationtime>
+
+      Naïvely stacking and binning thousands of noisy frames generated using the model described in the last section can be computationally, especially when generating stacked images from many vantages.  Instead, the #gls("CLT") can be applied to generate a noisy stacked image $Z$ efficiently, assuming all individual frames are identically distributed.  #gls("CLT") states
+
+    #math.equation(numbering:none,
+        $Z tilde.op cal(N)(M N^2mu_Y, M N^2sigma_Y^2)$
+    )
+
+      where $M$ is the number of stacked frames, $N$ is the number of binned pixels, and $u_Y$ and $sigma^2_Y$ are the mean and variance of individual frames.  See @instrument_clt for a derivation of these values and numerical validation of the #gls("CLT") approximation.
+
   == Post-Processing
-    - science pixel binning
-    - masking
-    - temporal binning
+
+    As will be shown in @inverse_problem, many retrieval algorithms amount to applying the emission and instrument models to a candidate density and comparing the resulting candidate measurements to real measurements obtained on orbit to update the density in an interative fashion.  However, this can be computationally expensive, especially when a retrieval algorithm requires hundreds or thousands of iterations to converge to a solution.   An alternative to applying the emission and instrument models every iteration is to reverse the effects of these models on the real measurements in a process known as _subtraction_ or _calibration_.  Subtraction need only occur once after images are downlinked, greatly accelerating the iterative retrieval process as in @subtraction_efficiency.
+
+    #figure(
+        image("figures/subtraction_efficiency_placeholder.jpg", height:25em),
+        caption: [Subtraction eliminates the need for most of emission and instrument model from the retrieval loop.],
+    ) <subtraction_efficiency>
+
+    // Subtraction greatly accelerates retrieval and involves reversing the effects of all steps described in the past two sections excluding the integral given in @integral2.
+    While the details of subtraction are out of scope of this manuscript, an overview of the steps is below.  Refer to the expression for $mu_Y$ given in @clt_mean and $I_"exo"$ given in @integral2.
+
+    #figure(
+        align(left, box(
+            stroke: 1pt,
+            inset: 1em,
+            [
+                #gt([Instrument model subtraction])
+                1. Divide out effects of stacking by $M$ frames and binning by $N$ pixels
+                2. Subtract off read noise bias
+                3. Divide out #gls("APS") gain and camera integration time
+                4. Subtract external signal sources like dark current, #gls("APS") noise
+                5. Divide out #gls("MCP") gain and #gls("MCP") flat-field
+                6. Subtract MCP noise contribution
+                7. Divide out pixel etendue, optical flat-field, and efficiency
+                8. De-distort and de-blur total radiance
+                9. Subtract background radiance, including estimated #gls("IPH")
+                #gt([Emission model subtraction])
+                10. Divide out g-factor and scattering phase function
+            ])),
+        caption: [Subtraction process overview]
+    )
+
+    Notably, subtraction excludes the integral given in @integral2, as this is the job of the retrieval algorithm.
+    The resulting estimate is known as a _column density_ and is independent of any instrument parameters or solar conditions
+
+    #math.equation(
+        $y_(t,j) approx integral_(l_(t,j)) a_t (vc(r)) rho_t (vc(r)) dif l gt("(atom/cm²)")$
+    )
+
+    where #gls("LOS") $l$ is annotated with index $t,j$ to emphasize time and pixel dependence.
+
+    As mentioned previously, some #gls("LOS") contain Lyman-α signals which are unknown or violate the emission model assumptions and must be marked so they are ignored during retrieval.  These include the moon, stars, optically thick exosphere, and Earth shadow, shown in @moon_stars.
+
+    - #rt([FIXME: refer to Earth shadow mask in albedo intro section])
+
+    #figure(
+        grid(
+            columns: 3, gutter: 10pt,
+            subfigure(image("figures/moon_mask_placeholder.jpg"), "moonstars", "Moon in WFI FOV"),
+            subfigure(image("figures/star_mask_placeholder.jpg"), "moonstars", "Stars in WFI FOV"),
+            subfigure(image("figures/thick_mask_placeholder.jpg"), "moonstars", "Optically thick exosphere and shadow"),
+        ),
+        caption: [#rt([FIXME: placeholder]) IPH sources that must be masked. (#rt([combine these into a single figure that illustrates and labels all 3?]))]
+    ) <moon_stars>
 
     #figure(
         image("figures/scratch_fov.jpg"),
         caption: [#rt([FIXME: placeholder.])  (a) Polar-binned camera FOV projected onto Earth tangent plane. (b) Polar-binned FOV relative to outer exosphere boundaries.]
     ) <earth_fov_science>
 
-    #figure(
-        table(
-            table.header([Camera], [FOV\ (degrees)], [Resolution\ (pixels)], [Angular Res.\ (degrees)], [Spatial Res.\ (Re, projected)]),
-            align: horizon,
-            [Polar WFI], [18°], [50x100], [xxx radial\ yyy azimuthal], [xxx radial],
-            [Polar NFI], [3.6°], [50x100], [xxx radial\ yyy azimuthal], [xxx radial],
-            columns: (auto, auto, auto, auto, auto),
-        ),
-        caption: [Circular camera geometry specifications.\ Spatial resolution is projected onto Earth tangent plane as in @earth_fov(a)]
-    ) <camera_specs2>
+    A final step of post-processing is to bin the 512² pixel WFI and 1024² pixel NFI images to a lower resolution.  The dense #gls("LOS") spatial sampling and fast temporal cadence of these cameras creates significant memory and computational requirements for retrieval algorithm, which can be avoided by downsampling images in a way that preserves as much detail as possible.  This is similar to the stacking and binning described in @instrument_model, but occurs after downlink.  A good binning scheme is a log-polar grid, due to the roughly spherical, radial exponential distribution of the exosphere.  Within the Carruthers mission, this is referred to as _science pixel binning_ and shown in @earth_fov_science. Similarly, temporal averaging can reduce the volume of data ingested by the retrieval algorithms without much loss of information on exosphere dynamic evolution, especially during quiet conditions.
 
-    - #rt([motivation for])
+    This chapter has focused on treating a single detector pixel $j$ and associated #gls("LOS") at a single time index $t$ for the sake of notational simplicity, but tomographic retrieval algorithms rely on many measurements from different angles to fully constrain a reconstruction.
+    This manuscript uses the convention $bold(y) = {y_(t,j) | forall t, forall j}$ to denote a stack of subtracted 3D measurements, which will be used extensively in the next section.
+
 
 = Inverse Problem Formulation <inverse_problem>
 
@@ -441,8 +634,7 @@
 
   == Discretization
 
-    #rt("WIP")
-    #rt("convert line integral to discrete sum")
+    #rt("FIXME: convert line integral to discrete sum")
 
   In general, direct analytic solutions to tomographic estimation problems are infeasible, necessitating a numerical approach where the solution space is divided into a finite grid of $N$ non-overlapping regions called #glspl("voxel") where density is assumed to be constant.  There are a large variety of grid types to choose from, including regular grids where voxels are uniformly spaced in some domain (e.g. spherical, cylindrical, cartesian) and non-regular grids which may utilize hierarchical structures (e.g. octree) or tetrahedral meshes as shown in @grid_examples.  Some of these discretizations schemes have been designed to adaptively update voxel boundaries during retrieval to better fit the object being retrieved @adaptivemesh1.
 
@@ -477,8 +669,6 @@
     The grid resolution necessary to avoid aliasing and sample errors is data-dependent and is covered in @discretization.
 
   == Inverse Problem
-
-    #rt("WIP")
 
   Under the conditions described in @measurement_constraints (single scattering in optically-thin exosphere) and ignoring noise, tomographic inversion can be formulated as the solution to the linear inverse problem
 
@@ -994,7 +1184,6 @@
     ) <visual_validation>
 
   #rt([
-  // FIXME: WIP
   - FIXME: more detail about validation? - I ran many more tests comparing column densities computed analytically to raytracer output which I could describe here, (figure) testing different LOS cases
 
   ])
@@ -1300,18 +1489,38 @@
 
 = Static Retrieval Validation <static_validation>
   #rt([
-  - WIP: this outline is in very rough shape right now
+  - Intro paragraph
   - Reconstruction requirements
       - Contractual spatial resolution requirements and reporting interval (these are not precisely defined in some ways)
       - Precise mathematical interpretation of requirements
-  - Static Algorithms on Dynamic Data
-      - Static algs naturally induce an averaging effect on dynamic data.
-      - #link("static_assumption", [(figure) Error introduced by static assumption on quiet-time data for various observation window durations])
-  - Validation technique
-      - Selection of order of spherical harmonic spline model
-          - Direct fits to ground truth - determine which L works for retrieval - agnostic of viewing geometry
-          - full retrievals (i.e. retrieval montecarlo simulation with known ground truth)
-      - Describe technique for verifying that each discretization is sufficient
+      - Exosphere not completely understood
+          - must rely on models from physics simulations and prior retrievals from limited data
+          - #link(label("datasets"))[(table) ground truth datasets]
+  - Retrieval Performance
+      - #link(label("codeoverview"))[(figure) retrieval block diagram]
+      - Simulation block is used for validation prior to launch
+      - Montecarlo simulation of reconstruction under noise
+      - Performance Under Calibration Bias
+          - Bias in g-factor, IPH, radiation, all affect accuracy of measurements
+          - Retrieval algorithm should be able to cope with expected biases on orbit
+  - Implementation Approach Justification
+      - Temporal binning and #strike[Image Stacking] (reserve "image stacking" for on-orbit ops)
+          - (not sure about the need for this section)
+      - Temporal Baseline of Images
+          - Static Algorithms on Dynamic Data
+              - Static algs naturally induce an averaging effect on dynamic data.
+              - #link("static_assumption", [(figure) Error introduced by static assumption on quiet-time data for various observation window durations])
+              - Lara: which paper to cite?  Gonzalo storm time?
+      - Science Pixel Binning
+          - as mentioned previously, SPB reduces computational burden
+          - at expense of some spatial resolution.
+          - especially important is radial resolution - direction of largest gradients
+          - figure: 1D error plot(s) of binned vs unbinned radiance profile
+          - "to limit binned radiance error to 1%, we choose XXX radial bins "
+      - Spherical Harmonic Spline Model Parameter Selection
+          - figures of direct fits for different L and control points
+              - note: this is just a guideline for determining minimum number of params to represent H distribution
+              - error incurred during retrieval depends on well-posedness of the problem, which depends on model dimensionality
       - Avoiding aliasing and other sampling errors is a serious problem
           - Potential issues with density grid, LOS grid, science pixel binning
           - Refer to @discretization_considerations
@@ -1319,14 +1528,6 @@
               - nyquist argument - 2x highest frequency of continuous model (gonz thesis pg 52)
               - #link(label("stormbins"))[(table) storm time discretization]
               - #link(label("quietbins"))[(table) quiet time discretization]
-      - exosphere not completely understood and don't have access to ground truth data
-      - must rely on models from physics simulations and prior retrievals from limited data
-          - #link(label("datasets"))[(table) ground truth datasets]
-      - Definition of cartesian coordinate system (GSE) and spherical coordinate system, sph coordinate convention (e/a instead of phi/theta)
-  - Performance Under Calibration Bias
-      - Bias in g-factor, IPH, radiation, all effect accuracy of measurements
-      - Retrieval algorithm should be able to cope with expected biases on orbit
-  - #link(label("codeoverview"))[(figure) retrieval block diagram]
   ])
 
   #figure(
@@ -1375,6 +1576,16 @@
       caption: "Storm Time"
   ) #label("stormbins")
 
+  #figure(
+      table(
+          table.header([Camera], [FOV\ (degrees)], [Resolution\ (pixels)], [Angular Res.\ (degrees)], [Spatial Res.\ (Re, projected)]),
+          align: horizon,
+          [Polar WFI], [18°], [50x100], [xxx radial\ yyy azimuthal], [xxx radial],
+          [Polar NFI], [3.6°], [50x100], [xxx radial\ yyy azimuthal], [xxx radial],
+          columns: (auto, auto, auto, auto, auto),
+      ),
+      caption: [Circular camera geometry specifications.\ Spatial resolution is projected onto Earth tangent plane as in @earth_fov(a)]
+  ) <camera_specs_sci>
 
 
   #figure(
@@ -1392,9 +1603,12 @@
       caption: "Quiet Time"
   ) <quietbins>
 
+  Carruthers has contractual requirements to prove that it is capable of meeting mission requirements set during its proposal.  With physics of the inverse problem forward model, a retrieval algorithm implementation and knowledge of a hypothetical exosphere distribution, it is possible to justify that these requirements will be met.
+  This chapter will cover the retrieval algorithm performance requirements set by the Carruthers mission, analyze retrieval results of a few algorithms from @static_retrieval on synthetic datasets, and provide rationale for tunable settings used in the algorithms including model parameters and discretizations.
+
   == Reconstruction Performance Requirements
 
-  == Static Algorithms on Dynamic Data <static_dynamic>
+    === Static Algorithms on Dynamic Densities <static_dynamic>
 
   == Avoiding Discretization Errors <discretization>
 
@@ -1412,252 +1626,98 @@
 
 = Appendix - Instrument Simulation and Background Subtraction <appendix_sim>
 
-  This section describes a statistical model for the instrument noise and background signals present in the NFI and WFI cameras during measurement of exospheric Lyman-α.  Modelling these processes is important for converting raw sensor measurements in digital numbers (DN) as telemetered by the spacecraft to corresponding radiances that can be used for tomographic reconstruction, summarized in @calibration.   A statistical model is also important for generating synthetic noisy measurements to validate the performance of retrieval algorithms.  As a result, the Carruthers cameras have undergone extensive laboratory characterization to determine instrument model parameters and periodic on-orbit calibration is planned to account for parameter drift due to exposure to the space environment.
+  // #rt([FIXME: delete this paragraph]) This section describes a statistical model for the instrument noise and background signals present in the NFI and WFI cameras during measurement of exospheric Lyman-α.  Modelling these processes is important for converting raw sensor measurements in digital numbers (DN) as telemetered by the spacecraft to corresponding radiances that can be used for tomographic reconstruction, summarized in @calibration.   A statistical model is also important for generating synthetic noisy measurements to validate the performance of retrieval algorithms.  As a result, the Carruthers cameras have undergone extensive laboratory characterization to determine instrument model parameters and periodic on-orbit calibration is planned to account for parameter drift due to exposure to the space environment.
 
-  == Instrument Model
+= Instrument Model and Central Limit Theorem <instrument_clt>
 
-  The Carruthers spacecraft contains two #gls("UV") cameras designed for detecting exospheric Lyman-α emission, an indicator of the amount of atomic hydrogen present along a #gls("LOS").  These cameras utilize a design which has heritage with other #gls("UV") instruments such as ICON @icon and GUVI @guvi and contain the following stages @rider:
-
-  // TODO: WIP
-
-  - *optical filter wheel* - provides multispectral measurement capability for out-of-band signal measurement used in thick exosphere retrievals
-  - *KBr photocathode* - potassium bromide photocathode for converting #gls("UV") photons to electrons (known as _photoelectrons_)
-  - *#gls("MCP")* - amplifies individual photoelectrons to a detectable shower of electrons
-  - *phosphor and #gls("CCD")* - phosphor produces light pulses from electrons which are detected by a #gls("CCD") and converted to an electrical charge
-  - *ADC* - #gls("ADC") for reading out #gls("CCD") charge.  (together with the #gls("CCD") this is sometimes referred to as an #gls("APS"))
-
-
-
-  The rest of this section will consist of a derivation of a single pixel noisy measurement in DN given a photon spectral radiance and other quantities in @knownvariables and @randomvariables.
-
-  Let $L_("exo")(lambda) + L_("bkg")(lambda)$ represent exospheric photon spectral radiance and background.
-  Using the etendue of a single pixel $Omega dot.op A$, it is possible to convert photon spectral radiance to a photon spectral flux
-  #math.equation(numbering: none,
-      $p_("phot")(lambda) = (L_("exo")(lambda) + L_("bkg")(lambda)) dot.op Omega dot.op A gt("(phot/s/nm)")$
-  )
-  After entering the instrument, the photons pass through an #rt([optical filter and photocathode where they are converted to a stream of photoelectrons (also known as _events_) with rate $e_"phot"$.  This conversion happens with efficiency $f_"opt" epsilon(lambda)$ (events/phot)]) where unitless scaling factor $f_"opt"$ (known as a _flat-field_) accounts for spatial variation in the optics, filters and photocathode.
-
-  #math.equation(numbering: none,
-      $e_"phot" = f_"opt" integral_lambda p_("phot")(lambda) epsilon(lambda) dif lambda gt("(events/s)")$
-  )
-
-  Alternatively, if $L_"exo"$ and $L_"bkg"$ are monochromatic with intensity $I_"exo"$ and $I_"bkg"$ and wavelength $lambda_0$
-
-  #math.equation(numbering:none,
-      $e_"phot" &= f_"opt" integral_lambda p_("phot")(lambda) epsilon(lambda) dif lambda \
-          &= f_"opt" (integral_lambda L_("exo")(lambda) epsilon(lambda) dif lambda + integral L_("bkg")(lambda)  epsilon(lambda) dif lambda) dot.op Omega dot.op A \
-          &= f_"opt" epsilon(lambda_0) (I_"exo" + I_"bkg") dot.op Omega dot.op A gt("(events/s)")$
-
-  )
-
-  Assuming Lyman-α photons are emitted in a Poisson process, the actual number of photoelectrons created in a single camera frame of duration $t_"fr"$ is given by random variable
-
-  #math.equation(numbering:none,
-      $E_"phot" tilde.op "Pois"(t_"fr" e_"phot") gt("(events)")$
-  )
-
-  In general, single photoelectrons are difficult to detect, so the Carruthers cameras employ an #gls("MCP") for turning a single particle into a detectable shower of particles.  #glspl("MCP") consist of an array of small glass tubes (channels) which are electrically charged so that a photoelectron striking the wall of one of these tubes will cause a cascade of particles via secondary emission @microchannelplate.  The small size of these channels ensures that the subsequent shower of particles exits the #gls("MCP") in the same location as the photoelectron.  Due to the nature of secondary emission, the number of particles created by the #gls("MCP") from a photoelectron is given by the discrete random variable $G_"mcp"$, whose distribution has been measured in the laboratory.  The number of electrons leaving the MCP #rt([(known as _counts_)]) due to Lyman-α photoelectrons is given by
-
-  #math.equation(numbering: none,
-      $f_"mcp" sum_(l=1)^(E_"phot") G_"mcp,l" gt("(counts)")$
-  )
-
-  where $f_"mcp"$ is a flat-field representing spatial gain variation on the #gls("MCP").
-
-  Energetic particles from space which directly penetrate the spacecraft body and impinge on the MCP are modeled by $E_"mcp" tilde.op "Pois"(t_"fr" e_"mcp")$ and the number of counts is given by
-
-  #math.equation(numbering: none,
-      $f_"mcp" sum_(l=1)^(E_"mcp") G_"mcp,l" gt("(counts)")$
-  )
-
-  Additional sources of electron counts are energetic particles impinging on the #gls("APS") ($C_"aps"$), as well as thermally generated electrons from the instrument electronics known as _dark current_ ($C_"dark"$).  The charge from these electrons accumulates in the #gls("CCD") until it is amplified and read out by the #gls("ADC") as #gls("DN") given by
-
-  #math.equation(numbering: none,
-      $Y &= (f_"mcp" sum_(l=1)^(E_"phot" + E_"mcp") G_"mcp,l" + C_"aps" + C_"dark") g_"aps" + R gt("(DN)")$
-  )
-
-
-  where $R$ is normally distributed read noise with bias introduced during readout and $g_"aps"$ is configurable gain in the #gls("APS") electronics.
-
-
-  @bd_annotated shows the Lyman-α signal at each stage in the camera, starting with photon spectral flux and ending with a final measurement in DN.
-A summary of all variables and sources of randomness is given in @knownvariables and @randomvariables.
 
   #figure(
-      image("figures/bd_annotated2.svg"),
-      caption: [Statistical model of instrument, showing instrument stages and sources of background noise]
-  ) <bd_annotated>
-
-  #figure(
-      table(
-          columns: 3,
-          inset: 0.5em,
-          table.header(
-              "Variable", "Description", "Units",
-          ),
+      table(columns: 4, align: horizon,
+          table.header("Binning\nType", "Derivation\n(2x2 binning example)", "", "Read Noise\n(NxN binning)"),
           table.hline(stroke: 2pt),
-          [$L_("exo")(lambda)$],  [exosphere photon spectral radiance], [phot/cm²/sr/s/nm],
-          [$L_("bkg")(lambda)$], [background photon spectral radiance], [phot/cm²/sr/s/nm],
-          [$A$], [pixel area], [cm²],
-  [$Omega$], [pixel solid angle], [sr],
-  [$epsilon(lambda)$], [optical efficiency], [events/phot],
-  [$e_("mcp")$], [MCP radiation rate], [events/s],
-  [$f_("mcp")$], [MCP gain flat-field], [unitless],
-  [$f_("opt")$], [optical efficiency flat-field], [unitless],
-  [$c_("aps")$], [APS radiation rate], [counts/s],
-  [$c_("dark")$], [dark count rate], [counts/s],
-  [$b$], [ADC bias], [DN],
-  [$t_("fr")$], [frame integration time], [s],
-  [$g_("aps")$], [APS gain], [DN/count],
-  [$N$], [APS binning factor], [unitless],
-  [$M$], [number of frames to stack], [frames],
-      ),
-      caption: "Known or derived quantities",
-  ) <knownvariables>
 
+          "Digital",
+          math.equation(numbering:none, $
+              x_1, &..., x_4 tilde.op cal(N)([mu_1, ..., mu_4], sigma^2) \
+              y &= x_1 + ... + x_4 \
+                  &tilde.op cal(N)(mu_1 + ... + mu_4, 4sigma^2)
+          $),
+          image("figures/bin_digital.png", height: 10em),
+          $R tilde.op cal(N)(..., N^2 sigma^2)$,
+
+          "CMOS",
+          math.equation(numbering:none, $
+              x_a &tilde.op cal(N)(mu_1 + mu_3, sigma^2) \
+              x_b &tilde.op cal(N)(mu_2 + mu_4, sigma^2) \
+              y &= x_a + x_b \
+                  &tilde.op cal(N)(mu_1 + ... + mu_4, 2sigma^2)
+          $),
+          image("figures/bin_cmos.png", height: 7.5em),
+          $R tilde.op cal(N)(..., N sigma^2)$,
+
+          "CCD",
+          math.equation(numbering:none, $
+              x &tilde.op cal(N)(mu_1 + ... +  mu_4, sigma^2) \
+              y &= x
+              tilde.op cal(N)(mu_1 + ... + mu_4, sigma^2)
+          $),
+          image("figures/bin_ccd.png", height: 7.5em),
+          $R tilde.op cal(N)(..., sigma^2)$,
+      ),
+      caption: "Binned read noise for different detector binning types"
+  ) <binningtype>
+
+  Let subscripts $m$, $n$, and $l$ denote i.i.d. copies of the random variables defined in the previous section.
+
+  - $m$ - frame
+  - $n$ - APS pixel
+  - $l$ - photon
+
+  Then we can write a frame-stacked and binned measurement of $M$ individual frames and $N^2$ pixels as
+
+  #math.equation(
+      $Z &= sum_(m=1)^M sum_(n=1)^(N^2) Y_(m,n) \
+          &= sum_(m=1)^M sum_(n=1)^(N^2) (f_("mcp") sum_(l=1)^(E_("phot",m,n) + \ E_("mcp",m,n)) G_("mcp",m,n,l) + C_("aps",m,n) + C_("dark",m,n) ) g_"aps" + R_(m,n) gt("(DN)")$
+  ) <stackingequationdirect>
+
+  Generating noisy measurements directly using the equation given above is computationally expensive due to the triply-nested summation, large number of stacked frames and large number of photoelectrons.  A more practical approach is to make use of the #gls("CLT") to approximate this summation of i.i.d. random variables with a Normal distribution.
+
+  The central limit theorem states that as $M$ and $N$ go to infinity, random variable $Z$ is well-approximated by
+
+  #math.equation(
+      $Z tilde.op cal(N)(M N^2mu_Y, M N^2sigma_Y^2)$
+  )
+
+  where
+
+  #math.equation(
+      $mu_Y &= ex(Y) \
+          &= (f_"mcp" ex(sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)) + ex(C_"aps") + ex(C_"dark") ) g_"aps" + ex(R) \
+          &= (f_"mcp" ex(sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)) + t_"fr" c_"aps" + t_"fr" c_"dark" ) g_"aps" + b \
+          & gt("See" #ref(label("appendix_rvsum")) "for derivation of expectation of sum") \
+          &= (f_"mcp" mu_G t_"fr" (e_"phot" + e_"mcp") + t_"fr" c_"aps" + t_"fr" c_"dark" ) g_"aps" + b \
+          &= t_"fr" (f_"mcp" mu_G (e_"phot" + e_"mcp") + c_"aps" + c_"dark" ) g_"aps" + b \
+          sigma_Y^2 &= var(Y) \
+          &= var( f_"mcp" sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l) + C_"aps" + C_"dark" ) g_"aps"^2 + var(R) \
+          &= ( f_"mcp"^2 var(sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)) + var(C_"aps") + var(C_"dark") ) g_"aps"^2 + var(R) \
+          &= ( f_"mcp"^2 var(sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)) + t_"fr" c_"aps" + t_"fr" c_"dark" ) g_"aps"^2 + sigma^2 \
+          & gt("See" #ref(label("appendix_rvsum")) "for derivation of variance of sum") \
+          &= ( f_"mcp"^2 ex(G_"mcp"^2) t_"fr" (e_"phot" + e_"mcp") + t_"fr" c_"aps" + t_"fr" c_"dark" ) g_"aps"^2 + sigma^2 \
+          &= t_"fr" ( f_"mcp"^2 ex(G_"mcp"^2) (e_"phot" + e_"mcp") + c_"aps" + c_"dark" ) g_"aps"^2 + sigma^2
+      $
+  ) <clt_mean>
+
+  To validate the accuracy of the approximation, we compare a Monte Carlo simulation of @stackingequationdirect to a Normal distribution with parameters given above by the #gls("CLT"), shown in @clt. (#rt("FIXME: give specific parameters used in simulation below?  at least mention if photon rate is worst case"))
 
   #figure(
-      table(
-          columns: 3,
-          inset: 0.5em,
-          table.header(
-              "Variable", "Description", "Units",
-          ),
-          table.hline(stroke: 2pt),
-  [$E_"phot" tilde.op "Pois"(t_"fr" e_"phot")$], [Lyman-α events], [events],
-          [$E_"mcp" tilde.op "Pois"(t_"fr" e_"mcp")$], [MCP radiation], [events],
-          [$G_"mcp" tilde.op cal(Z)("mean"=mu_G, "var"=sigma^2_G)$], [MCP gain distribution], [counts/event],
-          [$C_"aps" tilde.op "Pois"(t_"fr" c_"aps")$], [APS radiation], [counts],
-          [$C_"dark" tilde.op "Pois"(t_"fr" c_"dark")$], [Dark current], [counts],
-          [$R tilde.op cal(N)(b, sigma^2)$], [Read noise and bias], [DN],
-          ),
-      caption: "Random Variables",
-  ) <randomvariables>
-
-    == Frame Stacking, Binning, and Simulation Approximation
-
-    A common technique to increase measurement #gls("SNR") in spaceborne telescopes is to increase exposure time at the expense of temporal resolution.  As frames are read out by the #gls("APS"), they are accumulated digitally on the spacecraft in a process known as _frame stacking_.  This effectively achieves the #gls("SNR") of a single, long exposure measurement while avoiding the problem of charge well saturation in the #gls("CCD") and has the added benefit of reducing bandwidth requirements by only downlinking a single frame-stacked measurement.  The loss of temporal resolution is negligible relative to the rate of evolution of the exosphere (#rt("FIXME: citation?")).
-
-    Likewise, spatial resolution can be sacrificed to boost measurement #gls("SNR") by _pixel binning_ adjacent pixels on the detector together.  Binning may be performed digitally, but additional read noise reduction can be achieved in the #gls("APS") if pixels can be merged before being read out by the #gls("ADC"). @binningtype demonstrates the effect of binning on read noise variance for different detector types, with #gls("CCD") detectors achieving a factor $N^2$ reduction in read noise variance against purely digital binning.
-
-    #figure(
-      grid(columns: 2,
-          subfigure(image("figures/nfi_1.png", height: 12em), "fs", "NFI, single frame"),
-          subfigure(image("figures/wfi_1.png", height: 12em), "fs", "WFI, single frame"),
-          subfigure(image("figures/nfi_14400.png", height: 12em), "fs", "NFI, stacked"),
-          subfigure(image("figures/wfi_28800.png", height: 12em), "fs", "WFI, stacked"),
-      ),
-      caption: [Comparison of uncalibrated single frame vs uncalibrated framestacked measurement],
-    ) <framestacking>
-
-    @framestacking gives shows examples of simulated measurements which utilize both frame stacking and pixel binning and compares them to a single, unbinned frame.  More features of the underlying radiance distribution become visible when many frames are stacked.
-    @integrationtime gives an overview of the stacking and binning parameters selected in order to meet mission #gls("SNR") requirements and maintain an acceptable loss of spatial and temporal resolution given prior knowledge of the exosphere @gonzalostorm. #rt("(clarify this is not a contribution of the thesis?)")
-
-    #figure(
-        table(
-            columns: 3,
-            inset: 4pt,
-            align: horizon,
-            table.header(
-                [Parameter], [NFI], [WFI],
-            ),
-            table.hline(stroke: 2pt),
-            [Total Integration Time (minutes)], [30], [60],
-            [Stacked Frames (frames)], [14400], [28800],
-            table.hline(stroke: 2pt),
-            [Binning Factor (unitless)], [2x2], [4x4],
-            [Downlinked Resolution (pixels)], [1024x1024], [512x512],
-        ),
-        caption: "Camera Integration Time and Frame Stacking"
-    ) <integrationtime>
-
-    #figure(
-        table(columns: 4, align: horizon,
-            table.header("Binning\nType", "Derivation\n(2x2 binning example)", "", "Read Noise\n(NxN binning)"),
-            table.hline(stroke: 2pt),
-
-            "Digital",
-            math.equation(numbering:none, $
-                x_1, &..., x_4 tilde.op cal(N)([mu_1, ..., mu_4], sigma^2) \
-                y &= x_1 + ... + x_4 \
-                    &tilde.op cal(N)(mu_1 + ... + mu_4, 4sigma^2)
-            $),
-            image("figures/bin_digital.png", height: 10em),
-            $R tilde.op cal(N)(..., N^2 sigma^2)$,
-
-            "CMOS",
-            math.equation(numbering:none, $
-                x_a &tilde.op cal(N)(mu_1 + mu_3, sigma^2) \
-                x_b &tilde.op cal(N)(mu_2 + mu_4, sigma^2) \
-                y &= x_a + x_b \
-                    &tilde.op cal(N)(mu_1 + ... + mu_4, 2sigma^2)
-            $),
-            image("figures/bin_cmos.png", height: 7.5em),
-            $R tilde.op cal(N)(..., N sigma^2)$,
-
-            "CCD",
-            math.equation(numbering:none, $
-                x &tilde.op cal(N)(mu_1 + ... +  mu_4, sigma^2) \
-                y &= x
-                    tilde.op cal(N)(mu_1 + ... + mu_4, sigma^2)
-            $),
-            image("figures/bin_ccd.png", height: 7.5em),
-            $R tilde.op cal(N)(..., sigma^2)$,
-        ),
-        caption: "Binned read noise for different detector binning types"
-    ) <binningtype>
-
-    Let subscripts $m$, $n$, and $l$ denote i.i.d. copies of the random variables defined in the previous section.
-
-    - $m$ - frame
-    - $n$ - APS pixel
-    - $l$ - photon
-
-    Then we can write a frame-stacked and binned measurement of $M$ individual frames and $N^2$ pixels as
-
-    #math.equation(
-    $Z &= sum_(m=1)^M sum_(n=1)^(N^2) Y_(m,n) \
-        &= sum_(m=1)^M sum_(n=1)^(N^2) (f_("mcp") sum_(l=1)^(E_("phot",m,n) + \ E_("mcp",m,n)) G_("mcp",m,n,l) + C_("aps",m,n) + C_("dark",m,n) ) g_"aps" + R_(m,n) gt("(DN)")$
-    ) <stackingequationdirect>
-
-    Generating noisy measurements directly using the equation given above is computationally expensive due to the triply-nested summation, large number of stacked frames and large number of photoelectrons.  A more practical approach is to make use of the #gls("CLT") to approximate this summation of i.i.d. random variables with a Normal distribution.
-
-    The central limit theorem states that as $M$ and $N$ go to infinity, random variable $Z$ is well-approximated by
-
-    #math.equation(numbering:none,
-        $Z tilde.op cal(N)(M N^2mu_Y, M N^2sigma_Y^2)$
-    )
-
-    where
-
-    #math.equation(numbering:none,
-        $mu_Y &= ex(Y) \
-        &= (f_"mcp" ex(sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)) + ex(C_"aps") + ex(C_"dark") ) g_"aps" + ex(R) \
-        &= (f_"mcp" ex(sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)) + t_"fr" c_"aps" + t_"fr" c_"dark" ) g_"aps" + b \
-        & gt("See" #ref(label("appendix_rvsum")) "for derivation of expectation of sum") \
-        &= (f_"mcp" mu_G t_"fr" (e_"phot" + e_"mcp") + t_"fr" c_"aps" + t_"fr" c_"dark" ) g_"aps" + b \
-        &= t_"fr" (f_"mcp" mu_G (e_"phot" + e_"mcp") + c_"aps" + c_"dark" ) g_"aps" + b \
-        sigma_Y^2 &= var(Y) \
-        &= var( f_"mcp" sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l) + C_"aps" + C_"dark" ) g_"aps"^2 + var(R) \
-        &= ( f_"mcp"^2 var(sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)) + var(C_"aps") + var(C_"dark") ) g_"aps"^2 + var(R) \
-        &= ( f_"mcp"^2 var(sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)) + t_"fr" c_"aps" + t_"fr" c_"dark" ) g_"aps"^2 + sigma^2 \
-        & gt("See" #ref(label("appendix_rvsum")) "for derivation of variance of sum") \
-        &= ( f_"mcp"^2 ex(G_"mcp"^2) t_"fr" (e_"phot" + e_"mcp") + t_"fr" c_"aps" + t_"fr" c_"dark" ) g_"aps"^2 + sigma^2 \
-        &= t_"fr" ( f_"mcp"^2 ex(G_"mcp"^2) (e_"phot" + e_"mcp") + c_"aps" + c_"dark" ) g_"aps"^2 + sigma^2
-        $
-    )
-
-    To validate the accuracy of the approximation, we compare a Monte Carlo simulation of @stackingequationdirect to a Normal distribution with parameters given above by the #gls("CLT"), shown in @clt. (#rt("FIXME: give specific parameters used in simulation below?  at least mention if photon rate is worst case"))
-
-    #figure(
       grid(columns: 2, column-gutter: 1pt,
           subfigure(image("figures/montecarlo_1_NFI.png"), "mcclt", [NFI, 2x2 binning, 1 frame]),
           subfigure(image("figures/montecarlo_1_WFI.png"), "mcclt", [WFI, 4x4 binning, 1 frame]),
           subfigure(image("figures/montecarlo_14400_NFI.png"), "mcclt", [NFI, 2x2 binning, 14400 frames]),
           subfigure(image("figures/montecarlo_28800_WFI.png"), "mcclt", [WFI, 4x4 binning, 28800 frames]),
       ),
-        caption: [Monte Carlo simulation of actual distribution of $Z$ vs CLT approximation]
-    ) <clt>
+      caption: [Monte Carlo simulation of actual distribution of $Z$ vs CLT approximation]
+  ) <clt>
 
   //   == Berry-Esseen Bound
 

@@ -103,4 +103,9 @@
         short: "IPH",
         long: [interplanetary hydrogen]
     ),
+    (
+        key: "CLT",
+        short: "CLT",
+        long: [central limit theorem]
+    ),
 )
