@@ -237,14 +237,28 @@
 
   == Emission Model
 
-    In order to recover a hydrogen density distribution from radiance measurements, it is necessary to mathematically model the process by which Lyman-α photons propagate through the exosphere and enter the camera.
+    In order to recover a hydrogen density distribution from measurements, it is necessary to mathematically model the process by which Lyman-α photons propagate through the exosphere and enter the camera.
     This is known as an emission model and is a central component of tomographic retrieval algorithms.
 
     Numerically modelling the physics of radiative transfer is a computationally complex task, as photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interdependencies between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the _optically thin_ regime #rt([FIXME: citation])), it is possible to assume photons scatter only once without significant loss of accuracy, simplifying computational requirements and implementation complexity of the emission model.
 
     Anderson and Hord Jr. @opticaldepththin, define the optically thin regime as starting when $tau <= 0.1$, where optical depth $tau$ is a measure of #rt([FIXME: optical depth description]).
 
-    With these assumptions, the radiance measured by the spacecraft is proportional to a volume integral of the total mass of hydrogen present in the atmosphere within the #gls("FOV") of a particular pixel, given by photon radiance
+    With these assumptions, the measurement by the spacecraft is proportional to a line integral of the total mass of hydrogen present in the atmosphere along the #gls("LOS") of a particular pixel, given by photon radiance
+
+    // #math.equation(
+    //     $y' = g phi.alt(beta_(i,j)) integral_(l=0)^(infinity) bold(a)(vc(x) + vc(n)l) bold(rho)(vc(x) + vc(n)l) dif l$
+    // ) <integral2>
+    #math.equation(
+        $I_"exo,t" = g^*_t phi.alt(beta) integral_l bold(a)_t (vc(r))  bold(rho)_t (vc(r)) dif s #gt([(phot/s/cm²/sr)])$
+    ) <integral2>
+
+    #rt([FIXME: notation inconsistent with other sections])
+
+
+    where $l$ is the pixel #gls("LOS"), illustrated in @emission_model_physics.
+    Through Beer's law and a logarithmic transform, this integral equation is also valid for many modalities featuring absorptive rather than emissive media. #rt([FIXME: citation])
+
 
     // knlown as a #gls("LOS"), an example of the Fredholm integral of the first kind.
 
@@ -253,11 +267,8 @@
     //     $y prop integral_V bold(rho)(v) dif v$
     // )
 
-    #math.equation(
-        $I_"exo,t" = g^*_t phi.alt(beta) integral_V bold(a)_t (vc(r)) bold(rho)_t (vc(r)) dif v #gt([(phot/s/cm²/sr)])$
-    ) <integral1>
 
-    where $g^*_t$ is angular g-factor, $t$ is time, $phi.alt_t$ is scattering phase function, $bold(a)_t$ is albedo, $vc(r)$ is position vector, $bold(rho)$ is hydrogen density and $V$ is the exosphere volume in the #gls("FOV").  $phi.alt$, known as the _scattering phase function_, represents the directional distribution of reemission of resonantly-scattered photons relative to the direction of the sun, shown in @scatteringphase.
+    where $g^*_t$ is angular g-factor, $t$ is time, $phi.alt_t$ is scattering phase function, $bold(a)_t$ is albedo, $vc(r)$ is position vector, $bold(rho)$ is hydrogen density and $V$ is the exosphere volume in the #gls("FOV").  $phi.alt$, known as the _scattering phase function_, represents the directional distribution of resonantly-scattered photons relative to the direction of the sun, shown in @scatteringphase.
 
     #figure(
         image("figures/physics_scattering.svg", height: 15em),
@@ -280,22 +291,6 @@
 
     - #rt([FIXME: derivation of line integral from first principles?  Make use of etendue, pixel area, paraxial approximation to convert volume integral to line integral])
 
-    While the volume integral in @integral1 is accurate for any pixel geometry, the expression can be simplified to a line integral when the pixel #gls("FOV") is small.  Using conservation of etendue and the paraxial approximation (pixel #gls("FOV") lies close to the optical axis), @integral1 can be written
-
-    #math.equation(
-        $I_"exo,t" = g^*_t phi.alt(beta) integral_l bold(a)_t (vc(r))  bold(rho)_t (vc(r)) dif s #gt([(phot/s/cm²/sr)])$
-    ) <integral2>
-
-    // #math.equation(
-    //     $y' = g phi.alt(beta_(i,j)) integral_(l=0)^(infinity) bold(a)(vc(x) + vc(n)l) bold(rho)(vc(x) + vc(n)l) dif l$
-    // ) <integral2>
-
-    #rt([FIXME: notation inconsistent with other sections])
-
-
-    where $l$ is the pixel #gls("LOS"), illustrated in @emission_model_physics.
-    Through Beer's law and a logarithmic transform, this integral equation is also valid for many modalities featuring absorptive rather than emissive media. #rt([FIXME: citation])
-
 
     #figure(
         image("figures/physics.svg", height:20em),
@@ -310,8 +305,8 @@
             align: horizon,
             table.header([Quantity], [Symbol], [Units]),
             "Density", $bold(rho)$, "atom/cm³",
-            "Non-spectral radiance", $y$, "phot/s/atom/cm²/sr",
-            "Isotropic g-factor", $g$, "phot/s/atom/sr",
+            "Non-spectral radiance", $I_"exo"$, "phot/s/atom/cm²/sr",
+            "Isotropic g-factor", $g^*$, "phot/s/atom/sr",
             "Albedo", $bold(a)$, "unitless",
             [Scattering phase function], $phi.alt$, "unitless"
             // "Emissivity", "", "",
@@ -334,6 +329,17 @@
     // The quantity in @integral1 is known as _column density_, but on orbit the spacecraft is actually measuring _photon flux_ shown in @integral2, the total photon rate entering the instrument.
 
   == Instrument Model <instrument_model>
+
+    #rt([
+        // FIXME:
+
+    // While the volume integral in @integral1 is accurate for any pixel geometry, the expression can be simplified to a line integral when the pixel #gls("FOV") is small.  Using conservation of etendue and the paraxial approximation (pixel #gls("FOV") lies close to the optical axis), @integral1 can be written
+
+    // #math.equation(
+    //     $I_"exo,t" = g^*_t phi.alt(beta) integral_V bold(a)_t (vc(r)) bold(rho)_t (vc(r)) dif v #gt([(phot/s/cm²/sr)])$
+    // ) <integral1>
+
+    ])
 
     #rt([FIXME: question for Lara: past section uses standard convention $I_"exo"$, but this is incompatible with convention of capitalized letters being random variables.  Would $i_"exo"$ be OK?])
 
@@ -364,6 +370,7 @@
       $p_("phot")(lambda) = lr(\[D(L_("exo")(lambda) + L_("bkg")(lambda)) * h)\]_j dot.op A dot.op Omega gt("(phot/s/nm)")$
   )
     where $A dot.op Omega$ is pixel etendue, $D$ is a non-linear spatial distortion, and $h$ is a convolutional kernel representing optical blur.  Subscript $j$ denotes that only a single pixel is considered of the spatially-distorted and blurred signal.
+    Note that the above expression implicitly assumes that radiance is constant over the entire pixel, an approximation that holds true so long as hydrogen density does not vary much in the #gls("FOV") in the direction perpendicular to the #gls("LOS").
   After entering the instrument, the photons pass through an optical filter and photocathode where they are converted to a stream of photoelectrons (also known as _events_) with rate $e_"phot"$.  This conversion happens with efficiency $f_"opt" epsilon(lambda)$ (events/phot) where unitless scaling factor $f_"opt"$ (known as a _flat-field_) accounts for spatial variation in the optics, filters and photocathode.
 
   #math.equation(numbering: none,
@@ -508,7 +515,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
       where $M$ is the number of stacked frames, $N$ is the number of binned pixels, and $u_Y$ and $sigma^2_Y$ are the mean and variance of individual frames.  See @instrument_clt for a derivation of these values and numerical validation of the #gls("CLT") approximation.
 
-  == Post-Processing
+  == Post-Processing <post_processing>
 
     As will be shown in @inverse_problem, many retrieval algorithms amount to applying the emission and instrument models to a candidate density and comparing the resulting candidate measurements to real measurements obtained on orbit to update the density in an interative fashion.  However, this can be computationally expensive, especially when a retrieval algorithm requires hundreds or thousands of iterations to converge to a solution.   An alternative to applying the emission and instrument models every iteration is to reverse the effects of these models on the real measurements in a process known as _subtraction_ or _calibration_.  Subtraction need only occur once after images are downlinked, greatly accelerating the iterative retrieval process as in @subtraction_efficiency.
 
@@ -545,12 +552,12 @@ A summary of all variables and sources of randomness is given in @knownvariables
     The resulting estimate is known as a _column density_ and is independent of any instrument parameters or solar conditions
 
     #math.equation(
-        $y_(t,j) approx integral_(l_(t,j)) a_t (vc(r)) rho_t (vc(r)) dif l gt("(atom/cm²)")$
+        $y_(t,j) approx integral_(l_(t,j)) bold(a)_t (vc(r)) bold(rho)_t (vc(r)) dif l gt("(atom/cm²)")$
     )
 
     where #gls("LOS") $l$ is annotated with index $t,j$ to emphasize time and pixel dependence.
 
-    As mentioned previously, some #gls("LOS") contain Lyman-α signals which are unknown or violate the emission model assumptions and must be marked so they are ignored during retrieval.  These include the moon, stars, optically thick exosphere, and Earth shadow, shown in @moon_stars.
+    As mentioned previously, some #gls("LOS") contain Lyman-α signals which are unknown or violate the emission model assumptions and must be marked so they are ignored during retrieval.  These include the moon, stars, optically thick exosphere, and Earth shadow, shown in @moon_stars. (#rt([FIXME: cite old Zoennchen]))
 
     - #rt([FIXME: refer to Earth shadow mask in albedo intro section])
 
@@ -569,7 +576,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
         caption: [#rt([FIXME: placeholder.])  (a) Polar-binned camera FOV projected onto Earth tangent plane. (b) Polar-binned FOV relative to outer exosphere boundaries.]
     ) <earth_fov_science>
 
-    A final step of post-processing is to bin the 512² pixel WFI and 1024² pixel NFI images to a lower resolution.  The dense #gls("LOS") spatial sampling and fast temporal cadence of these cameras creates significant memory and computational requirements for retrieval algorithm, which can be avoided by downsampling images in a way that preserves as much detail as possible.  This is similar to the stacking and binning described in @instrument_model, but occurs after downlink.  A good binning scheme is a log-polar grid, due to the roughly spherical, radial exponential distribution of the exosphere.  Within the Carruthers mission, this is referred to as _science pixel binning_ and shown in @earth_fov_science. Similarly, temporal averaging can reduce the volume of data ingested by the retrieval algorithms without much loss of information on exosphere dynamic evolution, especially during quiet conditions.
+    A final step of post-processing is to bin the 512² pixel WFI and 1024² pixel NFI images to a lower resolution.  The dense #gls("LOS") spatial sampling and fast temporal cadence of these cameras creates significant memory and computational requirements for retrieval algorithm, which can be avoided by downsampling images in a way that preserves as much detail as possible.  This is similar to the stacking and binning described in @instrument_model, but occurs after downlink.  A good binning scheme is a log-polar grid, due to the roughly spherically-symmetric, radially exponential distribution of the exosphere.  Within the Carruthers mission, this is referred to as _science pixel binning_ and shown in @earth_fov_science. Similarly, temporal averaging can reduce the volume of data ingested by the retrieval algorithms without much loss of information on exosphere dynamic evolution, especially during quiet conditions.  These data reduction techniques help improve the memory resources required during retrieval, which is analyzed in @benchmarking.
 
     This chapter has focused on treating a single detector pixel $j$ and associated #gls("LOS") at a single time index $t$ for the sake of notational simplicity, but tomographic retrieval algorithms rely on many measurements from different angles to fully constrain a reconstruction.
     This manuscript uses the convention $bold(y) = {y_(t,j) | forall t, forall j}$ to denote a stack of subtracted 3D measurements, which will be used extensively in the next section.
@@ -613,37 +620,21 @@ A summary of all variables and sources of randomness is given in @knownvariables
   ])
 
 
-  #figure(
-      pad(x: -50%,
-          table(
-              table.header([Symbol], [Meaning], [Description], [Shape]),
-              align: horizon,
-              columns: (5em, 10em, 14em, 12em),
-              $f$, [Forward operator], [Mapping from 3D H-density to column density], [$f: bb(R)^3 → bb(R)^3$ (static) \ $f: bb(R)^4→bb(R)^3$ (dynamic)],
-              $m$, [Model], [Mapping from model \ parameters to 3D H-density], [$m: bb(R)^* → bb(R)^3$ (static) \ $m: bb(R)^* → bb(R)^4$ (dynamic)],
-              $bold(c)$, [Model \ params./coeffs.], "Free model variables,\n usually low-dimensional.", [$bold(c) ∈ bb(R)^*$ \ \* model dependent],
-              $bold(x)$, [H density], [Spatial distribution of \ exospheric Hydrogen], [$bold(x) ∈ bb(R)^3$ (static) \ $bold(x) ∈ bb(R)^4$ (dynamic)],
-              $bold(y)$, [Measurements.], "Column densities measured\n by instrument", [$bold(y) ∈ bb(R)^3$],
-          ),
-      ),
-      caption: [Symbols],
-      // FIXME: move to glossary section?
-  )
 
-  An inverse problem is the procedure of determining the causative factors of a set of measurements derived from some observation process.  In exospheric tomography, the factor driving the intensity of column density measurements is the distribution of hydrogen in the regions being observed.  Direct analytic solutions to tomographic or other inverse problems is not always possible, so numerical approximations and discretization become necessary.  In this chapter, I lay out key concepts of linear inverse problems, detail a discretization scheme for approaching tomographic inversion numerically, and introduce notation which will be used later in the manuscript to describe tomographic retrieval algorithms.
+  An inverse problem is the procedure of determining the causative factors of a set of measurements derived from some observation process.  In exospheric tomography, the factor driving the intensity of column density measurements is the distribution of hydrogen in the regions being observed.  Direct analytic solutions to tomographic or other inverse problems are not always possible, so numerical approximations and discretization become necessary.  In this chapter, I lay out key concepts of linear inverse problems, detail a discretization scheme for approaching tomographic inversion numerically, and introduce notation which will be used later in the manuscript to describe tomographic retrieval algorithms.
 
   == Discretization
 
     #rt("FIXME: convert line integral to discrete sum")
 
-  In general, direct analytic solutions to tomographic estimation problems are infeasible, necessitating a numerical approach where the solution space is divided into a finite grid of $N$ non-overlapping regions called #glspl("voxel") where density is assumed to be constant.  There are a large variety of grid types to choose from, including regular grids where voxels are uniformly spaced in some domain (e.g. spherical, cylindrical, cartesian) and non-regular grids which may utilize hierarchical structures (e.g. octree) or tetrahedral meshes as shown in @grid_examples.  Some of these discretizations schemes have been designed to adaptively update voxel boundaries during retrieval to better fit the object being retrieved @adaptivemesh1.
+  In general, direct analytic solutions to tomographic estimation problems are infeasible, necessitating a numerical approach where the solution space is divided into a finite grid of $N$ non-overlapping regions called #glspl("voxel") where density is assumed to be constant.  There are a large variety of grid types to choose from, including regular grids (e.g. spherical, cylindrical, cartesian), non-regular grids which may utilize hierarchical structures (e.g. octree) and tetrahedral meshes as shown in @grid_examples.  Some of these discretizations schemes have been designed to adaptively update voxel boundaries during retrieval to better fit the object being retrieved @adaptivemesh1.
 
     #figure(
         box(width:100pt, height:100pt, stroke:1pt),
         caption: [Discretizations of a spherical domain\ #rt([FIXME: WIP])]
     ) <grid_examples>
 
-  Choosing a discretization grid which is well-suited to the data is critical, as an improper grid can create aliasing and other artifacts which causes the numerical result to deviate from the functions they approximate.  Since the exosphere is well-understood to smoothly vary with density gradients increasing at lower altitudes, a regular spherical grid with logarithmically spaced radial bins is appropriate.  The nature of regular grids allows for a simple multidimensional array as the underlying data structure, and the property of shared boundaries between voxels simplifies tomography calculations, as demonstrated in @alg_outline.
+  Choosing a discretization grid which is well-suited to the data is critical, as an improper grid can create aliasing and other artifacts which causes the numerical result to deviate from the functions they approximate.  Since the exosphere is well-understood to smoothly vary with larger density gradients at lower altitudes, a regular spherical grid with logarithmically spaced radial bins is appropriate.  The nature of regular grids allows for a simple multidimensional array as the underlying data structure, and the property of shared boundaries between voxels simplifies tomography calculations, as demonstrated in @alg_outline.
 
     The regular spherical grid used in this manuscript has its 0° elevation pole aligned to ecliptic north (+Z Cartesian GSE axis) and ±180° azimuth branch point pointed away from the sun (-X Cartesian GSE axis), as shown in @grid_details.
 
@@ -666,7 +657,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
         caption: [Spherical coordinate conventions]
     ) <sph_convention>
 
-    The grid resolution necessary to avoid aliasing and sample errors is data-dependent and is covered in @discretization.
+    The grid resolution necessary to avoid aliasing and sample errors is data-dependent and is covered in @grid_discretization.
 
   == Inverse Problem
 
@@ -674,6 +665,10 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   #math.equation(
       $bold(y) = L bold(x)$
+  )
+
+  #math.equation(
+      $y_"tij" = sum_(r, e, a) L_("ij","trea") x_"trea"$
   )
 
     Direct inversion of the tomographic operator requires that the matrix $L$ be non-singular in order for an inverse $L^(-1)$ to exist.  However, tomography problems generally have fewer measurement constraints (#gls("LOS")) than free variables (#glspl("voxel")), making them _underdetermined systems_ with infinitely many solutions.
@@ -700,6 +695,23 @@ A summary of all variables and sources of randomness is given in @knownvariables
     - #rt([FIXME: define regularization])
 
     The issues of solution existence, uniqueness and sensitivity in inverse problems were formally described by Hadamard in the early 20th century and used to define _ill-posed_ and _ill-conditioned_ inverse problems @hadamard @illposed.
+
+  #figure(
+      pad(x: -50%,
+          table(
+              table.header([Symbol], [Meaning], [Description], [Shape]),
+              align: horizon,
+              columns: (5em, 10em, 14em, 12em),
+              $f$, [Forward operator], [Mapping from 3D H-density to column density], [$f: bb(R)^3 → bb(R)^3$ (static) \ $f: bb(R)^4→bb(R)^3$ (dynamic)],
+              $m$, [Model], [Mapping from model \ parameters to 3D H-density], [$m: bb(R)^* → bb(R)^3$ (static) \ $m: bb(R)^* → bb(R)^4$ (dynamic)],
+              $bold(c)$, [Model \ params./coeffs.], "Free model variables,\n usually low-dimensional.", [$bold(c) ∈ bb(R)^*$ \ \* model dependent],
+              $bold(x)$, [H density], [Spatial distribution of \ exospheric Hydrogen], [$bold(x) ∈ bb(R)^3$ (static) \ $bold(x) ∈ bb(R)^4$ (dynamic)],
+              $bold(y)$, [Measurements.], "Column densities measured\n by instrument", [$bold(y) ∈ bb(R)^3$],
+          ),
+      ),
+      caption: [Symbols],
+      // FIXME: move to glossary section?
+  )
 
 
 
@@ -814,7 +826,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   It is desirable for the arrays allocated for ray-boundary intersection point coordinates and distances to be equal size for all rays to facilitate array programming and parallelization.  A ray may intersect a sphere or a cone 2 times and a plane 1 time.  Therefore, we assume an upper bound where each ray has exactly $2(N_r + 1)$, $2(N_e + 1)$, and $N_a + 1$ intersections with each type of boundary.
 
-  For the cases where a boundary has no intersection points with a ray, coordinates are still computed and stored for these points, but the associated value in the distance array $t$ is set to #emph("inf"), as illustrated in @alg_intersection.
+  For the cases where a boundary has no intersection points with a ray, coordinates are still computed and stored for these points, but the associated value in the distance array $l$ is set to #emph("inf"), as illustrated in @alg_intersection.
 
   #figure(
       image("figures/tomosphero/alg_intersection.svg", height: 10em),
@@ -844,17 +856,17 @@ A summary of all variables and sources of randomness is given in @knownvariables
   ) <alg_crossdir2>
 
 === Step 3 - Sorting Intersection Points
-    In this step we collect the region indices for all intersection points into a single list and sort the points by their distance $t$ from the ray start location, as illustrated in @alg_sort.  Next we compute the difference between adjacent points $Delta t$ which represents the intersection length of the ray with a particular voxel.  Note that this results in $Delta t$ equal to NaN or #sym.infinity for intersection points with $t=infinity$.
+    In this step we collect the region indices for all intersection points into a single list and sort the points by their distance $l$ from the ray start location, as illustrated in @alg_sort.  Next we compute the difference between adjacent points $Delta l$ which represents the intersection length of the ray with a particular voxel.  Note that this results in $Delta l$ equal to NaN or #sym.infinity for intersection points with $l=infinity$.
   #figure(
       image("figures/tomosphero/alg_sort.svg"),
-      caption: [Intersection points along a LOS for all boundary types collected into a list and sorted by distance $t$ from ray start position, marked with x]
+      caption: [Intersection points along a LOS for all boundary types collected into a list and sorted by distance $l$ from ray start position, marked with x]
   ) <alg_sort>
 
     Next, we convert our list of region indices into a list of voxel indices by computing the voxel index of the ray starting location.  For each boundary crossed by the ray, the index of the next voxel changes in only a single dimension.
 
     This is illustrated in @alg_table (a), where the sorted region indices are inserted into an empty table starting with the ray starting point, then in @alg_table (b) missing indices are filled in from the previous row to form complete 3D voxel indices.
 
-    We also account here for invalid region indices generated in step 2 where the ray passes outside the area defined by the grid or when boundaries have no ray intersection.  We achieve this by setting $Delta t=0$ for any rows where the region index is invalid (less than 0, or greater than or equal to the corresponding $N_r$, $N_e$, $N_a$), or where $Delta t$ is #sym.infinity or NaN.  Setting $Delta t=0$ negates any contribution of this row to the raytracing step.  This is shown in @alg_table (c).
+    We also account here for invalid region indices generated in step 2 where the ray passes outside the area defined by the grid or when boundaries have no ray intersection.  We achieve this by setting $Delta l=0$ for any rows where the region index is invalid (less than 0, or greater than or equal to the corresponding $N_r$, $N_e$, $N_a$), or where $Delta l$ is #sym.infinity or NaN.  Setting $Delta l=0$ negates any contribution of this row to the raytracing step.  This is shown in @alg_table (c).
 
   #figure(
   grid(
@@ -871,7 +883,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
                   // vert([Number of rays]),
                   // table.cell(rowspan:2)[Num. Rays &\ Grid Shape],
-                  table.header("r", "e", "a", $Delta t$),
+                  table.header("r", "e", "a", $Delta l$),
                   table.hline(),
                   table.vline(x: 3),
                   [1], [0], [0], [.3],
@@ -903,7 +915,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
                   // vert([Number of rays]),
                   // table.cell(rowspan:2)[Num. Rays &\ Grid Shape],
-                  table.header("r", "e", "a", $Delta t$),
+                  table.header("r", "e", "a", $Delta l$),
                   table.hline(),
                   table.vline(x: 3),
                   [1], [0], [0], [.3],
@@ -935,7 +947,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
                   // vert([Number of rays]),
                   // table.cell(rowspan:2)[Num. Rays &\ Grid Shape],
-                  table.header("r", "e", "a", $Delta t$),
+                  table.header("r", "e", "a", $Delta l$),
                   table.hline(),
                   table.vline(x: 3),
                   ga("1"), [0], [0], ga("0"),
@@ -961,12 +973,12 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
 === Step 4 - Line Integration
 
-    The final step of the raytracer is to perform a weighted sum of the object values at the voxel indices given in the table in the previous section with the $Delta t$ column as weights.
+    The final step of the raytracer is to perform a weighted sum of the object values at the voxel indices given in the table in the previous section with the $Delta l$ column as weights.
 
   // FIXME - use x instead of rho
 
     #math.equation(
-        $sum_(i=0)^(2(N_r + 1) + \ 2(N_e + 1) + \ (N_a + 1) - 1) bold(rho)[r_i, e_i, a_i] * Delta t_i = innerproduct(rho, Delta t)$
+        $sum_(i=0)^(2(N_r + 1) + \ 2(N_e + 1) + \ (N_a + 1) - 1) bold(rho)[r_i, e_i, a_i] * Delta l_i = innerproduct(rho, Delta l)$
     )
 
     where $bold(rho)$ is the object to be integrated and $r_i$, $e_i$, and $a_i$ are indices from the $i$th row of the table.
@@ -1530,36 +1542,9 @@ A summary of all variables and sources of randomness is given in @knownvariables
               - #link(label("quietbins"))[(table) quiet time discretization]
   ])
 
-  #figure(
-      image("figures/scratch_static_assumption.png", height: 20em),
-      caption: [A static algorithm returns a retrieval which ideally should be close to the average density over a given temporal window by the mean value theorem]
-  ) <static_assumption>
-
-  #figure(
-      image("figures/retrieval_overview.png", width: 90%),
-      caption: "Diagram of simulator and retrieval loop used during validation"
-
-  ) <codeoverview>
 
   #rt("needs citations for each row")
 
-  #figure(
-      table(
-          columns: 5,
-          inset: 4pt,
-          align: horizon,
-          table.header(
-              "Dataset", [Dynamic/\ Static], "Derived from", "Storm Condition", "Source",
-          ),
-          table.hline(stroke: 2pt),
-          [Zoennchen], [Static], [TWINS], [Quiet], [Zoennchen 2024],
-          [Cucho-Padin], [Static], [TWINS], [Quiet], [Zoennchen 2024],
-          [Pratik], [Dynamic], [NRLMSIS], [Quiet], [Pratik Joshi],
-          [Connor], [Dynamic], [Physics-based], [Storm/Quiet], [],
-          [Cucho-Padin\ Dynamic], [Dynamic], [TWINS], [], []
-      ),
-      caption: "Storm Time"
-  ) <datasets>
 
   #figure(
       table(
@@ -1606,11 +1591,151 @@ A summary of all variables and sources of randomness is given in @knownvariables
   Carruthers has contractual requirements to prove that it is capable of meeting mission requirements set during its proposal.  With physics of the inverse problem forward model, a retrieval algorithm implementation and knowledge of a hypothetical exosphere distribution, it is possible to justify that these requirements will be met.
   This chapter will cover the retrieval algorithm performance requirements set by the Carruthers mission, analyze retrieval results of a few algorithms from @static_retrieval on synthetic datasets, and provide rationale for tunable settings used in the algorithms including model parameters and discretizations.
 
-  == Reconstruction Performance Requirements
+  == Ground Truth Datasets and Reconstruction Requirements
 
-    === Static Algorithms on Dynamic Densities <static_dynamic>
+    The Carruthers proposal stage set forth minimum requirements for the performance of the the thin exosphere retrieval algorithms that were selected to ensure reconstructions meet mission science objectives regarding the shape of the hydrogen distribution during quiet conditions (objective 1) and response of the exosphere to impulsive events, like geomagnetic storms (objective 2).
 
-  == Avoiding Discretization Errors <discretization>
+    As the purpose of Carruthers is to make discoveries about an atmospheric regime which is not well-known, algorithm performance validation relies on testing against datasets which are derived from physics simulations or prior retrievals made from limited data.  @datasets provides an overview of available datasets and their origins.
+
+  #rt([FIXME: Lara will give more descriptions about datasets])
+
+  #rt([FIXME: dataset spatial/temporal ranges])
+
+  #rt([FIXME: move citation next to name col])
+
+  #figure(
+      table(
+          columns: 5,
+          inset: 4pt,
+          align: horizon,
+          table.header(
+              "Dataset", [Dynamic/\ Static], "Derived from", [Storm\ Condition], [Coverage],
+          ),
+          table.hline(stroke: 2pt),
+          [Zoennchen], [Static], [Data\ (TWINS)], [Quiet], [],
+          [Cucho-Padin], [Static], [Data\ (TWINS)], [Quiet], [],
+          [Pratik], [Dynamic], [Physics\ (MSIS)], [Quiet], [],
+          [Connor\ MSIS], [Dynamic], [Physics], [Quiet], [],
+          [Connor\ TIMEGCM], [Dynamic], [Physics], [Storm], [],
+          // [Cucho-Padin\ Dynamic], [Dynamic], [TWINS], [], []
+      ),
+      caption: "Storm Time"
+  ) <datasets>
+
+    To meet objective 1, Carruthers defines an "accuracy" requirement on densities retrieved from the datasets, constraining absolute error of every voxel in the retrieval to within ±50% of the ground truth.  Similarly, a "precision" requirement which is insensitive to bias in the retrieval ensures that enhancements and depletions in dynamic datasets are reflected in the retrievals, to within 20%.  These requirements also specify a minimum spatial reporting resolution of the retrievals, and either a 6 hour temporal resolution for quiet conditions or 1 hour for storm conditions.
+    Requirements are specified for a single spatiotemporal voxel $t,p$ are limited to voxels where densities exceed 25 atoms/cm³ to avoid problems of ill-posedness during inversion.
+    #rt([The proposal does not specifically define a constraint on the confidence of the above requirements, but this will be considered in the next section.])
+
+    Precise definitions of requirements defined in the proposal are given in @requirements that ensure the reconstructed density distribution $bold(hat(x))$ is representative of ground truth distribution $bold(x)$ and that exospheric response to storms is detectable.
+
+  #figure(
+      table(
+          columns: 2, align: horizon,
+          table.header(
+              "Requirement", "Criterion",
+          ),
+          table.hline(stroke: 2pt),
+          // [Accuracy],
+          // [#math.equation(
+          //     $cases(
+          //         (|hat(x)_"t,p" - x_"t,p"|) / x_"t,p" ≤ 50% &"if" x_"t,p" ≥ 25 "atom/cm³",
+          //         "true" &"else"
+          //     )
+          //     $)],
+          [Accuracy],
+          [#math.equation(
+              $(|hat(x)_"t,p" - x_"t,p"|) / x_"t,p" ≤ 50%$
+          )],
+
+          [Change],
+          [#math.equation(
+              $abs((hat(x)_"t+1,p" - hat(x)_"t,p")/hat(x)_"t,p" - (x_"t+1,p" - x_"t,p")/x_"t,p") ≤ 20%$
+          )],
+
+          [Temporal Resolution], [Storm: $Delta t = 1$ hr\ Quiet: $Delta t = 6$ hr],
+          [Radial Resolution], [$Delta r ≤ 0.5$ Re],
+          [Elevational Resolution], [$Delta e ≤ 180°$],
+          [Aximuthal Resolution], [$Delta a ≤ 120°$]
+
+      ),
+      caption: [Requirements for every reconstructed voxel $hat(x)_"t,p"$ assuming the original voxel density $x_"t,p"$ is greater than 25 atom/cm³. #rt([FIXME: include confidence level])]
+  ) <requirements>
+
+
+  == Retrieval Validation and Performance <retrieval_validation>
+  #figure(
+      image("figures/retrieval_overview.png", width: 90%),
+      caption: "Diagram of simulator and retrieval loop used during validation"
+
+  ) <codeoverview>
+
+  == Temporal Baseline of Stacked Images <static_dynamic>
+
+    The algorithms described in @static_retrieval implicitly assume that densities being retrieved do not vary temporally within the observation window.  While this holds approximately true for quiet conditions when exospheric dynamics are slowly evolving, an averaging effect from this assumption contribute non-neglible error to the retrieval.  To upper-bound the error from this effect, it is possible to compute the worst case of the error between mean of the density within the window to an instantaneous density within the window.  An explicit expression is given below for voxel $r e a$,
+
+    #math.equation(
+        $e_(r e a)(t) = max_(s in [t, t + Delta t])
+            abs(("mean"_(tau in [t, t + Delta t]) x_(tau r e a) - x_(s r e a)) / x_(s r e a)) \
+            e(r) = max_(r, e, a) e_(r e a)(t)
+        $
+    ) <static_equation>
+
+    // where
+
+    // #math.equation(
+    //     $"mean"_(tau in [t, t + Delta t]) = sum_(tau=t)^(t + Delta t) x_(tau r e a)$
+    // )
+
+        Where $e(t)$ considers the worst-case error across all voxels.  @static_assumption shows @static_equation above evaluated at all times in the Pratik dataset #rt([(FIXME: more official name?)]) for various $Delta t$.   Based on this data, Carruthers has chosen an observation window size of $Delta t = 14 "days"$ to constrain averaging effects to no more than 10% error.
+
+  #figure(
+      image("figures/scratch_static_assumption.png", width: 20em),
+      caption: [A static algorithm returns a retrieval which ideally should be close to the average density over a given temporal window by the mean value theorem. #rt([FIXME: rerun this for Pratik dataset (and other datasets?)])]
+  ) <static_assumption>
+
+  == Science Pixel Binning Discretization Error <spb_discretization>
+    @post_processing introduced the notion of _science pixel binning_, a log-polar binning scheme which reduces the number of data constraints that need to be ingested by the retrieval algorithm while attempting to minimize loss of information in the measurement data.
+
+    Choosing a science pixel binning scheme that has sufficient radial and azimuthal bins is important to retrieval performance, and is dependent on the 3D discretization grid, the density being observed, and viewing geometry.  A choice of resolution which is too low introduces binning error into the retrieval algorithm which can dominate noise-induced error and lead to poor retrieval performance even under high #gls("SNR").
+
+    For a science pixel measurement to match its centroid measurement, as described in @retrieval_validation, column density should vary linearly within the science pixel.  However, this assumption can be violated due to the exponential nature of the hydrogen density distribution.
+    @spb_bad_discretization illustrates a case where binned radial resolution is too low to capture large hydrogen density gradients at low altitudes, leading to overestimated column densities during retrieval.
+
+    #figure(
+        image("figures/scratch_spb_discretization.jpg", height: 15em),
+        caption: [#rt([FIXME: placeholder]).  Large measurement quantization error incurred in regions with high gradients when science pixel binning is too coarse.  X axis is tangent point altitude.]
+    ) <spb_bad_discretization>
+
+    A few potential solutions to this problem are summarized below:
+
+    \
+    1. Correct column density overestimation analytically.
+    2. Increase bin resolution to decrease overestimation effect.
+    3. Redefine science pixel binning to avoid problematic #gls("LOS") directions entirely.
+    4. Mask out LOS which exhibit non-linear change over the science binned pixel.
+    \
+
+    Solution 1 requires assuming a specific functional form to the column density distribution across a pixel, which is undesirable.  Solution 2 is also not practical as science pixel bin resolution is presumably already selected to use all available computational resources.  Solution 3 is feasible, but requires changes to how science pixel viewing geometries are generated.  Post-processing uses solution 4, as it eliminates the overestimation issue (at the expense of some lost measurements) and is the most straightforward to implement.
+
+    #figure(
+        grid(
+            columns: 2, column-gutter: 1em,
+            subfigure(box(width:100pt, height:100pt, stroke:1pt), "spbbad", "Before mask"),
+            subfigure(box(width:100pt, height:100pt, stroke:1pt), "spbbad", "After mask"),
+
+        ),
+        caption: [#rt([FIXME: placeholder]).  Error in column densities with problematic LOS eliminated with mask.]
+    ) <spb_bad_discretization_fix>
+
+    Based on experimentation like in @spb_bad_discretization_fix, Carruthers has selected a lower limit of 5 Re for science pixel #gls("LOS") tangent points to ensure column densities are sufficiently linear within a pixel and limit error incurred due to binning to no more than #rt([(FIXME: rerun experiment)])%.
+
+
+  == Grid Discretization Error <grid_discretization>
+
+    #figure(
+        image("figures/scratch_grid_discretization.jpg", height: 12em),
+        caption: [#rt([FIXME: placeholder]).  Undersampled grid becomes apparent in discontinuities visible in measurements when LOS are sufficiently dense. X axis is tangent point altitude.]
+    )
 
 = Dynamic Retrieval of Exosphere
 
