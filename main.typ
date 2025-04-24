@@ -97,6 +97,7 @@
 
   - Contributions of This Thesis
       - Spherical raytracer that can be adapted to other missions studying planetary atmospheres
+      - Statistical noise model for UV instruments used by Carruthers
       - Reconstruction algorithms built for the Carruthers mission
   - Thesis Organization
   ])
@@ -193,7 +194,7 @@
 
   == Carruthers Orbit and Camera Geometry
 
-    The #gls("GSE") coordinate system (shown in @gse_coordinates) is a natural fit when describing spacecraft position and exospheric hydrogen distribution, since properties of the exosphere such as the hypothesized nightside tail are aligned to an Earth-Sun frame.  The rest of this manuscript uses #gls("GSE") in units of Earth radii (1 Re = 6371 km) either in cartesian or spherical coordinates.
+    The #gls("GSE") coordinate system (shown in @gse_coordinates) is a natural fit when describing spacecraft position and exospheric hydrogen distribution, since properties of the exosphere such as the hypothesized nightside (#rt("FIXME: first time this is mentioned in thesis")) tail are aligned to an Earth-Sun frame.  The rest of this manuscript uses #gls("GSE") in units of Earth radii (1 Re = 6371 km) either in cartesian or spherical coordinates.
 
     #figure(
         image("figures/gse_coordinates_placeholder.jpg", height: 10em),
@@ -234,7 +235,7 @@
     ) <camera_specs>
 
 
-  == Emission Model
+  == Emission Model <emission_model>
 
     In order to recover a hydrogen density distribution from measurements, it is necessary to mathematically model the process by which Lyman-α photons propagate through the exosphere and enter the camera.
     This is known as an emission model and is a central component of tomographic retrieval algorithms.
@@ -1255,7 +1256,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
     - Chapter introduction section
         - This thesis makes a distinction between two types of retrieval algorithms: static, where hydrogen density is assumed to have no temporal component, and dynamic, where the density distribution is allowed to vary between vantages.
         - Static algorithms were introduced historically, but more recent algorithms have been developed that can handle a changing hydrogen distribution.
-        - Static algorithms are important because they are conceptually and computationally simpler, can serve as a basis for more sophisticated dynamic algorithms, and still perform well for dynamic densities under certain conditions (see @static_dynamic for error analysis)
+        - Static algorithms are important because they are conceptually and computationally simpler, can serve as a basis for more sophisticated dynamic algorithms, and still perform well for dynamic densities under quiet, non-storm conditions (see @static_dynamic for analysis)
         - This chapter introduces historical static retrieval approaches in order of increasing complexity, ending with a new static model contributed by this thesis
 
     - 1D Retrievals
@@ -1296,8 +1297,8 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   This thesis makes a distinction between two types of retrieval algorithms: static, where hydrogen density is assumed to have no temporal component, and dynamic, where the density distribution is allowed to vary between vantages.
   Static algorithms were introduced historically, but more recent algorithms have been developed that can handle a changing hydrogen distribution.
-  Static algorithms are important because they are conceptually and computationally simpler, can serve as a basis for more sophisticated dynamic algorithms, and still perform well for dynamic densities under certain conditions (see @static_dynamic for error analysis)
-  This chapter introduces historical static retrieval approaches in order of increasing complexity, ending with a new static method in @spline_model contributed by this thesis
+  Static algorithms are important because they are conceptually and computationally simpler, can serve as a basis for more sophisticated dynamic algorithms, and still perform well for dynamic densities under quiet, non-storm conditions (see @static_dynamic for analysis).
+  This chapter introduces historical static retrieval approaches used in previous retrievals of exosphere density in order of increasing complexity.  However, many of these methods are either too restrictive in their assumptions about exospheric hydrogen distribution (e.g. assuming a specific functional form or even spherical symmetry) or require extensive hyperparameter tuning.  The chapter ends with a new static method in @spline_model contributed by this thesis, which attempts to address some of the issues of these other methods.
   Mathematical notation differs from the original publications to conform with notation used in this manuscript (see @inverse_problem).
 
   // This chapter presents several historical and recent methods of static retrieval of hydrogen density.  The retrieval methods are organized roughly in increasing complexity, ending with a novel method in @spline_model.
@@ -1328,11 +1329,11 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
     where $bold(c) = {n_1, n_2, alpha_1, alpha_2}$ and $bold(y)_bold(c)$ is column densities derived by analytically integrating $m(bold(c))$.
 
-    These 1D solutions can be expanded to more sophisticated models shown in the next few sections when more measurement data is available from orbits designed to provide better view geometry diversity.
+    While computationally simple, these 1D solutions are not capable of capturing spherical asymmetries such as the geotail which are hypothesized to exist in the exosphere and are a major science target of Carruthers.  The next few sections build upon these ideas to create more sophisticated models that are useful when more measurement data is available from orbits designed to provide better view geometry diversity.
 
   == Spherical Harmonic Representation <sph_power>
 
-      Zoennchen et al. @zoennchen_new present a retrieval method (derived from earlier work @zoennchen2011, @zoennchen2013, @zoennchen_old) featuring a partially separable parametric model based on a spherical harmonic representation (SHR).
+    Zoennchen et al. @zoennchen_new present a retrieval method (derived from earlier work @zoennchen2011, @zoennchen2013, @zoennchen_old) featuring a partially separable parametric model based on a spherical harmonic representation (SHR).  Partially separable means the model can be expressed as a product of lower-dimensional functions which can decrease computational requirements.
       Spherical harmonics are a family of complex, two-dimensional, continuous, orthonormal functions defined over a spherical domain.  These functions are commonly used in planetary atmospheric sciences @hodges, atomic physics (electron orbitals), computer graphics and more.  They serve as an analog to the Fourier basis in a spherical domain and approximate smoothly-varying spherical functions by linear combination of the basis.
 
       Spherical harmonics are typically denoted $Y_(l m)(e, a)$ where $l$ and $m$ are known as the function _degree_ and _order_.  In planetary physics, the convention is to denote coefficients of this linear combination as $A_(l m)$ (when $m ≥ 0$) and $B_(l m)$ (when $m < 0$).  @sph_harm gives a graphical overview of the real/imaginary parts of the first few degrees of spherical harmonic functions.
@@ -1359,11 +1360,11 @@ A summary of all variables and sources of randomness is given in @knownvariables
       $
       ) <scipy_sph>
 
-      where $bold(c) = {{a_(0 0), ...}, {b_(0 0), ...}, {p_(0 0), ...}, {q_(0 0), ...}, c, k}$ are model parameters.  Note that $∀l : B_(l 0)(r) = 0$ by definition.
+      where $bold(c) = {{a_(0 0), ...}, {b_(0 0), ...}, {p_(0 0), ...}, {q_(0 0), ...}, c, k}$ are model parameters.  Note that $∀l : B_(l 0)(r) := 0$.
 
-      The formulation of $"SHR"(r, e, a)$ in @scipy_sph differs slightly from @zoennchen_new so that $Y_(l m)$ corresponds directly to Scipy's `sph_harm_y` function.
+      The formulation of $"SHR"(r, e, a)$ in @scipy_sph differs slightly from the original in @zoennchen_new so that $Y_(l m)$ corresponds directly to Scipy's `sph_harm_y` function.
 
-        Rewriting the model using this manuscript's notation and taking $m(bold(c)) = n_H (r, e, a)$ gives
+        Rewriting the model using this manuscript's notation and taking $m(bold(c)) := n_H (r, e, a)$ gives
 
       #math.equation(
           $
@@ -1462,14 +1463,14 @@ A summary of all variables and sources of randomness is given in @knownvariables
         )
       $)
 
-    where $S_(l m)(r)$ is a cubic spline function composed of $K$ third order B-splines ${B_(1 2), ...}$ that defines spherical harmonic coefficients for any radial shell from a small number of control points.  This formulation of basis function $X_(l m)$ is equivalent to @sph_power but avoids notational awkwardness when $m ≥ 0$ versus $m < 0$.
+    where $S_(l m)(r)$ is a cubic spline function composed of $K$ third order B-splines ${B_(1 2), ...}$ that define spherical harmonic coefficients for any radial shell from a small number of control points.  This formulation of basis function $X_(l m)$ is equivalent to @sph_power but avoids notational awkwardness when $m ≥ 0$ versus $m < 0$.
 
     The number and location of the $K$ control points used in the spline functions and the maximum spherical harmonic degree $L$ are fixed and selected before optimization.
     $bold(c) = {c_(0 0 0), ...}$ are the model parameters and the minimization problem is
 
     #math.equation(
         $
-            hat(bold(c)) = arg min_(bold(c)) 1 / (|y|) ||y - f(m(bold(c)))||_1 + lambda  1 / (|m(bold(c))|) ||"clip"_(-infinity, 0)(m(bold(c)))||_1 \
+            hat(bold(c)) = arg min_(bold(c)) ||y - f(m(bold(c)))||_1 + lambda ||"clip"_(-infinity, 0)(m(bold(c)))||_1 \
             bold(hat(x)) = m(bold(hat(c)))
         $
     )
@@ -1478,11 +1479,13 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
     Note that a choice of $L=0$ enforces spherical symmetry, which can be useful for single snapshot retrievals like those presented in @1d_retrieval.
 
-    === Implementation Notes
+    Because of the generalizability of spline density profiles and interpetability of spherical harmonics by the atmosphere science community, this is the primary method that will be used by the Carruthers mission for retrieving exospheric density during exospheric quiet conditions.
 
-      - Basis functions ${X_(l m), ...}$ may be computed once during initialization and used for all grid radial shells
-      - Dimensions $l$ and $m$ should be flattened and merged for ${X_(0 0), ...}$ and ${c_(0 0 0), ...}$ to avoid an awkward pyramidal array structure
-      - affine map for log-spaced control points
+    // === Implementation Notes
+
+    //   - Basis functions ${X_(l m), ...}$ may be computed once during initialization and used for all grid radial shells
+    //   - Dimensions $l$ and $m$ should be flattened and merged for ${X_(0 0), ...}$ and ${c_(0 0 0), ...}$ to avoid an awkward pyramidal array structure
+    //   - affine map for log-spaced control points
 
       #rt([FIXME: include summary table? TBD])
 
@@ -1507,13 +1510,6 @@ A summary of all variables and sources of randomness is given in @knownvariables
       - Exosphere not completely understood
           - must rely on models from physics simulations and prior retrievals from limited data
           - #link(label("datasets"))[(table) ground truth datasets]
-  - Retrieval Performance
-      - #link(label("codeoverview"))[(figure) retrieval block diagram]
-      - Simulation block is used for validation prior to launch
-      - Montecarlo simulation of reconstruction under noise
-      - Performance Under Calibration Bias
-          - Bias in g-factor, IPH, radiation, all affect accuracy of measurements
-          - Retrieval algorithm should be able to cope with expected biases on orbit
   - Implementation Approach Justification
       - Temporal binning and #strike[Image Stacking] (reserve "image stacking" for on-orbit ops)
           - (not sure about the need for this section)
@@ -1539,26 +1535,19 @@ A summary of all variables and sources of randomness is given in @knownvariables
               - nyquist argument - 2x highest frequency of continuous model (gonz thesis pg 52)
               - #link(label("stormbins"))[(table) storm time discretization]
               - #link(label("quietbins"))[(table) quiet time discretization]
+  - Retrieval Performance
+      - #link(label("codeoverview"))[(figure) retrieval block diagram]
+      - Simulation block is used for validation prior to launch
+      - Montecarlo simulation of reconstruction under noise
+      - Performance Under Calibration Bias
+          - Bias in g-factor, IPH, radiation, all affect accuracy of measurements
+          - Retrieval algorithm should be able to cope with expected biases on orbit
   ])
 
 
   #rt("needs citations for each row")
 
 
-  #figure(
-      table(
-          columns: 4,
-          table.header(
-              "Dimension", "Range", "# of Bins", "Spacing",
-          ),
-          table.hline(stroke: 2pt),
-          [time], [NA], [NA], [linear, 1 hr],
-          [radius], [3-25 Re], [200], [logarithmic],
-          [elevation], [0-180 deg.], [60], [linear, 3 deg.],
-          [azimuth], [0-360 deg.], [80], [linear, 4.5 deg.],
-      ),
-      caption: "Storm Time"
-  ) #label("stormbins")
 
   #figure(
       table(
@@ -1587,12 +1576,27 @@ A summary of all variables and sources of randomness is given in @knownvariables
       caption: "Quiet Time"
   ) <quietbins>
 
-  Carruthers has contractual requirements to prove that it is capable of meeting mission requirements set during its proposal.  With physics of the inverse problem forward model, a retrieval algorithm implementation and knowledge of a hypothetical exosphere distribution, it is possible to justify that these requirements will be met.
-  This chapter will cover the retrieval algorithm performance requirements set by the Carruthers mission, analyze retrieval results of a few algorithms from @static_retrieval on synthetic datasets, and provide rationale for tunable settings used in the algorithms including model parameters and discretizations.
+  #figure(
+      table(
+          columns: 4,
+          table.header(
+              "Dimension", "Range", "# of Bins", "Spacing",
+          ),
+          table.hline(stroke: 2pt),
+          [time], [NA], [NA], [linear, 1 hr],
+          [radius], [3-25 Re], [200], [logarithmic],
+          [elevation], [0-180 deg.], [60], [linear, 3 deg.],
+          [azimuth], [0-360 deg.], [80], [linear, 4.5 deg.],
+      ),
+      caption: "Storm Time"
+  ) #label("stormbins")
 
-  == Ground Truth Datasets and Reconstruction Requirements
+  The Carruthers mission is required to prove that it is capable of meeting mission requirements set during its proposal.  With physics of the forward model, a retrieval algorithm implementation and knowledge of a hypothetical exosphere distribution, it is possible to justify that these requirements will be met through simulation.
+  This chapter describes the retrieval algorithm performance requirements on the Carruthers mission, introduces synthetic ground truth datasets created by the exospheric research community, analyzes retrieval results of a few algorithms from @static_retrieval on a few of these datasets, and provides rationale for tunable settings used in the algorithms including model parameters and discretizations.
 
-    The Carruthers proposal stage set forth minimum requirements for the performance of the the thin exosphere retrieval algorithms that were selected to ensure reconstructions meet mission science objectives regarding the shape of the hydrogen distribution during quiet conditions (objective 1) and response of the exosphere to impulsive events, like geomagnetic storms (objective 2).
+  == Reconstruction Requirements and Ground Truth Datasets <recon_requirements>
+
+    The Carruthers proposal stage set forth minimum requirements for the performance of the the thin exospheric density retrieval algorithms to ensure that reconstructions meet mission science objectives regarding the shape of the hydrogen distribution during geomagnetically quiet conditions (objective 1) and its transient response of the exosphere to impulsive geomagnetic storm events (objective 2).
 
     As the purpose of Carruthers is to make discoveries about an atmospheric regime which is not well-known, algorithm performance validation relies on testing against datasets which are derived from physics simulations or prior retrievals made from limited data.  @datasets provides an overview of available datasets and their origins.
 
@@ -1600,7 +1604,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   #rt([FIXME: dataset spatial/temporal ranges])
 
-  #rt([FIXME: move citation next to name col])
+  #rt([FIXME: put citation next to dataset name])
 
   #figure(
       table(
@@ -1621,8 +1625,8 @@ A summary of all variables and sources of randomness is given in @knownvariables
       caption: "Storm Time"
   ) <datasets>
 
-    To meet objective 1, Carruthers defines an "accuracy" requirement on densities retrieved from the datasets, constraining absolute error of every voxel in the retrieval to within ±50% of the ground truth.  Similarly, a "precision" requirement which is insensitive to bias in the retrieval ensures that enhancements and depletions in dynamic datasets are reflected in the retrievals, to within 20%.  These requirements also specify a minimum spatial reporting resolution of the retrievals, and either a 6 hour temporal resolution for quiet conditions or 1 hour for storm conditions.
-    Requirements are specified for a single spatiotemporal voxel $t,p$ are limited to voxels where densities exceed 25 atoms/cm³ to avoid problems of ill-posedness during inversion.
+    To meet science objective 1, Carruthers defines an "accuracy" requirement on densities retrieved from the datasets, constraining absolute error of every voxel in the retrieval to within ±50% of the ground truth.  Similarly, a "precision" requirement which is insensitive to bias in the retrieval ensures that temporal enhancements and depletions are measurable to within 20% of their actual value in the dynamic datasets.  These requirements also specify a minimum spatial reporting resolution of the retrievals, and either a 6 hour temporal resolution for quiet conditions or 1 hour for storm conditions.
+    Requirements are specified for a single arbitrary spatiotemporal voxel $t,p$ and are limited to regions where densities exceed 25 atoms/cm³ to avoid problems of ill-posedness during inversion.
     #rt([The proposal does not specifically define a constraint on the confidence of the above requirements, but this will be considered in the next section.])
 
     Precise definitions of requirements defined in the proposal are given in @requirements that ensure the reconstructed density distribution $bold(hat(x))$ is representative of ground truth distribution $bold(x)$ and that exospheric response to storms is detectable.
@@ -1657,25 +1661,62 @@ A summary of all variables and sources of randomness is given in @knownvariables
           [Aximuthal Resolution], [$Delta a ≤ 120°$]
 
       ),
-      caption: [Requirements for every reconstructed voxel $hat(x)_"t,p"$ assuming the original voxel density $x_"t,p"$ is greater than 25 atom/cm³. #rt([FIXME: include confidence level])]
+      caption: [Requirements for every reconstructed voxel $hat(x)_"t,p"$ where ground truth density $x_"t,p" ≥ 25$ atom/cm³. #rt([FIXME: include confidence level])]
   ) <requirements>
 
+    Using the forward model from @measurement_constraints and ground truth datasets, it is possible to simulate measurements that will be taken by Carruthers on-orbit.  With accurate simulated measurements, performance of retrieval algorithms can be analyzed in a Monte Carlo fashion against the mission requirements given in @requirements. The block diagram in @codeoverview shows an overview of an end-to-end validation of an arbitrary iterative retrieval algorithm against a ground truth dataset.
 
-  == Retrieval Validation and Performance <retrieval_validation>
+    #figure(
+        image("figures/retrieval_overview.png", width: 90%),
+        caption: "Diagram of simulator and retrieval loop used during validation"
+
+    ) <codeoverview>
+
+  == Retrieval Performance <retrieval_validation>
+
+    The Spherical Harmonic Spline method introduced in @spline_model will be used by the Carruthers mission for static retrieval of exosphere during geomagnetically quiet conditions.  @quiet_recon gives accuracy error for a single static density retrieval which assumes the hydrogen density is stationary during a 2 week observation window with evolving vantage.  This test was repeated on the Zoennchen and Pratik datasets for #rt("50 trials (FIXME)") to establish that accuracy requirements are met at the necessary confidence level.
+
   #figure(
-      image("figures/retrieval_overview.png", width: 90%),
-      caption: "Diagram of simulator and retrieval loop used during validation"
+      grid(
+          columns: 2, column-gutter: 1em,
+          subfigure(box(width:100pt, height:100pt, stroke:1pt), "quietrecon", "Zoennchen recon. error"),
+          subfigure(box(width:100pt, height:100pt, stroke:1pt), "quietrecon", "Pratik recon. error"),
+          subfigure(box(width:100pt, height:100pt, stroke:1pt), "quietrecon", "Zoennchen error variance (50 trials (FIXME))"),
+          subfigure(box(width:100pt, height:100pt, stroke:1pt), "quietrecon", "Pratik error variance (50 trials (FIXME))"),
 
-  ) <codeoverview>
+      ),
+      caption: [#rt([FIXME: placeholder]).  Static retrieval error during geomagnetically quiet conditions shown over 3 cardinal Cartesian planes.  Monte-Carlo trials show reconstructions meet accuracy requirement with sufficiently high confidence.]
+  ) <quiet_recon>
 
-  == Temporal Baseline of Stacked Images <static_dynamic>
+  #figure(
+      table(
+          columns: 2,
+          inset: 4pt,
+          align: horizon,
+          table.header(
+              "Dataset", [Dynamic/\ Static], "Derived from", [Storm\ Condition], [Coverage],
+          ),
+          table.hline(stroke: 2pt),
+          [Observation window], [14 days],
+          [Number of observations], [14],
+          [Observation period], []
+      ),
+      caption: "Reconstruction parameters"
+  ) <quiet_recon_params>
+
+
+  == Implementation Approach Justification
+
+    The purpose of this section is to justify configurable experimental parameters (i.e. excluding algorithm hyperparameters) used to evaluate retrieval performance.  This includes observation window, observation orbit location, science binning resolution, and density spherical grid resolution.  Aliasing effects due to misconfigured experimental settings can
+
+    === Temporal Baseline of Stacked Images <static_dynamic>
 
     The algorithms described in @static_retrieval implicitly assume that densities being retrieved do not vary temporally within the observation window.  While this holds approximately true for quiet conditions when exospheric dynamics are slowly evolving, an averaging effect from this assumption contribute non-neglible error to the retrieval.  To upper-bound the error from this effect, it is possible to compute the worst case of the error between mean of the density within the window to an instantaneous density within the window.  An explicit expression is given below for voxel $r e a$,
 
     #math.equation(
         $e_(r e a)(t) = max_(s in [t, t + Delta t])
             abs(("mean"_(tau in [t, t + Delta t]) x_(tau r e a) - x_(s r e a)) / x_(s r e a)) \
-            e(r) = max_(r, e, a) e_(r e a)(t)
+            e(t) = max_(r, e, a) e_(r e a)(t)
         $
     ) <static_equation>
 
@@ -1692,7 +1733,9 @@ A summary of all variables and sources of randomness is given in @knownvariables
       caption: [A static algorithm returns a retrieval which ideally should be close to the average density over a given temporal window by the mean value theorem. #rt([FIXME: rerun this for Pratik dataset (and other datasets?)])]
   ) <static_assumption>
 
-  == Science Pixel Binning Discretization Error <spb_discretization>
+    === Observation Period
+
+    === Science Pixel Binning Discretization <spb_discretization>
     @post_processing introduced the notion of _science pixel binning_, a log-polar binning scheme which reduces the number of data constraints that need to be ingested by the retrieval algorithm while attempting to minimize loss of information in the measurement data.
 
     Choosing a science pixel binning scheme that has sufficient radial and azimuthal bins is important to retrieval performance, and is dependent on the 3D discretization grid, the density being observed, and viewing geometry.  A choice of resolution which is too low introduces binning error into the retrieval algorithm which can dominate noise-induced error and lead to poor retrieval performance even under high #gls("SNR").
@@ -1729,12 +1772,14 @@ A summary of all variables and sources of randomness is given in @knownvariables
     Based on experimentation like in @spb_bad_discretization_fix, Carruthers has selected a lower limit of 5 Re for science pixel #gls("LOS") tangent points to ensure column densities are sufficiently linear within a pixel and limit error incurred due to binning to no more than #rt([(FIXME: rerun experiment)])%.
 
 
-  == Grid Discretization Error <grid_discretization>
+    === Grid Discretization <grid_discretization>
 
     #figure(
         image("figures/scratch_grid_discretization.jpg", height: 12em),
         caption: [#rt([FIXME: placeholder]).  Undersampled grid becomes apparent in discontinuities visible in measurements when LOS are sufficiently dense. X axis is tangent point altitude.]
     )
+
+
 
 = Dynamic Retrieval of Exosphere
 
