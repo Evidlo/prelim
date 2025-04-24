@@ -55,14 +55,14 @@
 
   #rt([
   - Earth's Exosphere and Hydrogen
-      - Definition, why do we care about exosphere (baliukin pg 2)
+      - Definition, why do we care about exosphere (Baliukin pg 2)
           - H exosphere indicates presence of water (important for planetary/exoplanetary exploration)
           - Unknown exosphere Lyman-α contributions pollute astronomical UV studies
       - #link(label("radial_profile"))[(figure) Example H density profiles (radius vs density)]
-      - Source of hydrogen (baliukin pg 1)
-          - Produced in lower atmosphere, dissociation of h2o & methane, upwards diffusion. escaping and nonescaping atoms
+      - Source of hydrogen (Baliukin pg 1)
+          - Produced in lower atmosphere, dissociation of h2o & methane, upwards diffusion. escaping and non-escaping atoms
           - Ballistic, satellite, escaping
-      - Responds to radiation pressure from sun (baliukin pg 2 → thomas & bohlin)
+      - Responds to radiation pressure from sun (Baliukin pg 2 → Thomas & Bohlin)
           - Photon absorption provides antisolar momentum, reemission is anisotropic → net antisolar momentum
       - Time varying response to storm
   - Carruthers Mission Overview
@@ -76,8 +76,8 @@
       - OGO-5 - 1968, 24 Re apogee
           - Early studies of Hydrogen geocorona, detectors saturated
           - Detected H out to 7 Re
-          - Later proved existence of Lyman-α background due to interstellar hydrogen flowing through solar system (baliukin pg 2)
-          - Showed existence of geotail (thomas and bohlin)
+          - Later proved existence of Lyman-α background due to interstellar hydrogen flowing through solar system (Baliukin pg 2)
+          - Showed existence of geotail (Thomas and Bohlin)
       - Apollo 16 camera - 1872, 63 Re apogee
       - Galileo
           - Took 1/2 day from perigee (1990-12-08) to get to Moon (62Re)
@@ -87,8 +87,8 @@
           - Discovered exosphere extends out to 38 Re
       - SWAN/SOHO (1996)
           - Discovered geocorona extends to 100Re, beyond moon @baliukin
-      - PROCYON/LAICA - lyman alpha imaging camera (2015)
-      - Dynamics explorer 1 (rairden, 1986) - spherically symmetric fit
+      - PROCYON/LAICA - Lyman-alpha imaging camera (2015)
+      - Dynamics explorer 1 (Rairden, 1986) - spherically symmetric fit
           - Based on numerical solution to RT
       - IMAGE (2000)
           - Geocoronal imager (GEO) instrument
@@ -141,25 +141,25 @@
       - Chapter summary: Carruthers orbit, camera specs, emission model, post-processing
   - [x] Carruthers Orbit and Camera Details
       - Definition of #gls("GSE") coordinate system
-      - Carruthers will be inserted in a halo orbit around langrange point L1 1.5e6 km from the Earth
+      - Carruthers will be inserted in a halo orbit around Lagrange point L1 1.5e6 km from the Earth
           - From distant vantage, should be able to observe full extent of geocorona (soho/swan)
           - Orbit duration information and lateral deviation (important for tomographic meas. diversity)
       - #link(label("viewgeom1"))[(figure) viewing geometry, orbit around L1]
       - #link(label("viewgeom2"))[(figure) static 3D picture of multiple view geometries captured for 1month baseline]
       - [x] Camera details
           - NFI: 3.6°, 30 min for fast inner exosphere evolution
-          - WFI: 18°, 60 mins for global estimation of slowly-changing outer exosphere
+          - WFI: 18°, 60 minutes for global estimation of slowly-changing outer exosphere
           - #link(label("viewgeom3"))[(figure) camera details, FOV, int. time, etc.]
           - #link(label("camera_specs"))[(table) camera geometry specifications]
           - #link(label("carruthers_orbit"))[(figure) LOS evolution over 15 days]
   - Emission Model
       - [x] Definition of emission model - necessary for retrieval
-      - [x] Definition of optically thin and importance of this assumption on emission model computational complexity (zoennchen 2015)
+      - [x] Definition of optically thin and importance of this assumption on emission model computational complexity (Zoennchen 2015)
       - [x] A correction term applied by Gonzalo, but left out of this manuscript
-          - Note that raytracer is capable of implementing these correction terms.  See appendix XXX for an overview of implementing correction terms usingraytracer
+          - Note that raytracer is capable of implementing these correction terms.  See appendix XXX for an overview of implementing correction terms using raytracer
       - #link(label("emission_model_physics"))[(figure) Physics of emission model]
       - g-factor - FIXME: varies with radial distance but assumed constant, see @static_validation for bias
-      - Definition of albedo (gonzalo thesis appendix c)
+      - Definition of albedo (Gonzalo thesis appendix c)
       - Background sources
           - IPH, moon, stars
           - Diagram showing hydrogen density in solar system?
@@ -181,7 +181,7 @@
   - Post-Processing
   ])
 
-  #rt([lara has better version?]) #image("figures/viewgeom1.svg", height:10em) <viewgeom1>
+  #rt([FIXME: Lara has better version?]) #image("figures/viewgeom1.svg", height:10em) <viewgeom1>
   #rt([delete]) #image("figures/viewgeom2.gif", height:10em) <viewgeom2>
   #rt([delete]) #image("figures/viewgeom3.png", height:10em) <viewgeom3>
   // #image("figures/emissionmod.png", height:10em) <emissionmod>
@@ -315,9 +315,9 @@
         )
     ) <emission_units>
 
-    Zoennchen et al. #rt([(FIXME: cite gonzalo)]) have found that extending the basic optically thin assumptions to additionally model extinction along the LOS #rt([(FIXME: and the other term)]) reduced discrepancy between tomographic retrievals and physics-based simulations.  The scope of this manuscript does not include these correction terms, but @appendix_extra_physics describes the procedure for implementing these terms with the raytracer in @raytracer.
+    Zoennchen et al. #rt([(FIXME: cite Gonzalo)]) have found that extending the basic optically thin assumptions to additionally model extinction along the LOS #rt([(FIXME: and the other term)]) reduced discrepancy between tomographic retrievals and physics-based simulations.  The scope of this manuscript does not include these correction terms, but @appendix_extra_physics describes the procedure for implementing these terms with the raytracer in @raytracer.
 
-    A tenuous distribution of hydrogen throughout the solar sytem, known as #gls("IPH"), also contributes to the radiance detected by the spacecraft.  Estimation of #gls("IPH") is an involved process, and Carruthers will dedicate a portion of on-orbit operations to making observations of an annulus around the Earth where exospheric hydrogen is not present.  @iph shows a typical #gls("IPH") distribution expected to be observed during the mission.  #gls("IPH") radiance contribution from behind the exosphere envelope is interpolated from the measured annulus.  The impact of biases introduced by #gls("IPH") estimation are considered in @static_validation.
+    A tenuous distribution of hydrogen throughout the solar system, known as #gls("IPH"), also contributes to the radiance detected by the spacecraft.  Estimation of #gls("IPH") is an involved process, and Carruthers will dedicate a portion of on-orbit operations to making observations of an annulus around the Earth where exospheric hydrogen is not present.  @iph shows a typical #gls("IPH") distribution expected to be observed during the mission.  #gls("IPH") radiance contribution from behind the exosphere envelope is interpolated from the measured annulus.  The impact of biases introduced by #gls("IPH") estimation are considered in @static_validation.
     Other unwanted sources of Lyman-α signal which violate emission model assumptions include the moon and stars and optically thick exosphere, as shown in @moon_stars, but these sources will be masked out and ignored during retrieval instead of estimated.  Together, these radiance sources are referred to as $I_"bkg"$.
 
 
@@ -507,7 +507,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
         caption: "Camera Integration Time and Frame Stacking"
     ) <integrationtime>
 
-      Naïvely stacking and binning thousands of noisy frames generated using the model described in the last section can be computationally, especially when generating stacked images from many vantages.  Instead, the #gls("CLT") can be applied to generate a noisy stacked image $Z$ efficiently, assuming all individual frames are identically distributed.  #gls("CLT") states
+      Naively stacking and binning thousands of noisy frames generated using the model described in the last section can be computationally, especially when generating stacked images from many vantages.  Instead, the #gls("CLT") can be applied to generate a noisy stacked image $Z$ efficiently, assuming all individual frames are identically distributed.  #gls("CLT") states
 
     #math.equation(numbering:none,
         $Z tilde.op cal(N)(M N^2mu_Y, M N^2sigma_Y^2)$
@@ -517,7 +517,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   == Post-Processing <post_processing>
 
-    As will be shown in @inverse_problem, many retrieval algorithms amount to applying the emission and instrument models to a candidate density and comparing the resulting candidate measurements to real measurements obtained on orbit to update the density in an interative fashion.  However, this can be computationally expensive, especially when a retrieval algorithm requires hundreds or thousands of iterations to converge to a solution.   An alternative to applying the emission and instrument models every iteration is to reverse the effects of these models on the real measurements in a process known as _subtraction_ or _calibration_.  Subtraction need only occur once after images are downlinked, greatly accelerating the iterative retrieval process as in @subtraction_efficiency.
+    As will be shown in @inverse_problem, many retrieval algorithms amount to applying the emission and instrument models to a candidate density and comparing the resulting candidate measurements to real measurements obtained on orbit to update the density in an iterative fashion.  However, this can be computationally expensive, especially when a retrieval algorithm requires hundreds or thousands of iterations to converge to a solution.   An alternative to applying the emission and instrument models every iteration is to reverse the effects of these models on the real measurements in a process known as _subtraction_ or _calibration_.  Subtraction need only occur once after images are downlinked, greatly accelerating the iterative retrieval process as in @subtraction_efficiency.
 
     #figure(
         image("figures/subtraction_efficiency_placeholder.jpg", height:25em),
@@ -616,7 +616,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
           // - Generalized inverse (moore-penrose pseudoinverse), direct least squares minimization, SVD, RRPE
           // - Selecting hyperparameter values - trial and error, GCV, many others (gonz thesis pg 49)
           - Solve with iterative method
-      - Math notation (model, operator, coeffs, measurements, density), etc.
+      - Math notation (model, operator, coefficients, measurements, density), etc.
   ])
 
 
@@ -738,7 +738,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
 === Object Discretization
 
-  #rt([FIXME: make this mesh with prevoius section about discretization, or delete])
+  #rt([FIXME: make this mesh with previous section about discretization, or delete])
 
   Another consideration in tomographic reconstruction is the choice of grid type for discretization of the reconstructed object.  Most publications consider a regular rectilinear grid, which is a reasonable choice when the underlying structure of the object is completely unknown or the scale of features is uniform throughout the object.  However, in cases where some prior information is known about the location of high-detail regions within the object, or when symmetries in the view geometry exist @thibaudeau, a good choice of coordinate system can sample the object more efficiently for decreased computational requirements and lower quantization errors.
   The primary focus of TomoSphero is in the domain of atmospheric tomography, where regular spherical grids are well-suited for modeling solar and planetary atmospheres which exhibit spherical symmetries @solartomography1 @solartomography2.
@@ -848,7 +848,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
   ) <alg_crossdir0>
   #figure(
       image("figures/tomosphero/alg_crossdir.svg", height: 10em),
-      caption: [Intersection points along a LOS annotated with crossing direction (↑:postive, ↓:negative)]
+      caption: [Intersection points along a LOS annotated with crossing direction (↑:positive, ↓:negative)]
   ) <alg_crossdir>
   #figure(
       image("figures/tomosphero/alg_crossdir2.svg", height: 10em),
@@ -1008,7 +1008,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
     ) <api_grid>
 
 === View Geometries
-    A _view geometry_ is a logical collection of lines of sight.  This library provides a few built-in view geometries for common tomography paradigms shown in @api_conegeom and @api_parallelgeom.  In these examples, `pos` and `shape` control the detector position and shape.  Detector orientation is inferred automatically, but this behavior may be overriden.
+    A _view geometry_ is a logical collection of lines of sight.  This library provides a few built-in view geometries for common tomography paradigms shown in @api_conegeom and @api_parallelgeom.  In these examples, `pos` and `shape` control the detector position and shape.  Detector orientation is inferred automatically, but this behavior may be overridden.
 
     #figure(
         grid(columns: 2, align: horizon,
@@ -1515,7 +1515,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
           - (not sure about the need for this section)
       - Temporal Baseline of Images
           - Static Algorithms on Dynamic Data
-              - Static algs naturally induce an averaging effect on dynamic data.
+              - Static algorithms naturally induce an averaging effect on dynamic data.
               - #link("static_assumption", [(figure) Error introduced by static assumption on quiet-time data for various observation window durations])
               - Lara: which paper to cite?  Gonzalo storm time?
       - Science Pixel Binning
@@ -1526,13 +1526,13 @@ A summary of all variables and sources of randomness is given in @knownvariables
           - "to limit binned radiance error to 1%, we choose XXX radial bins "
       - Spherical Harmonic Spline Model Parameter Selection
           - figures of direct fits for different L and control points
-              - note: this is just a guideline for determining minimum number of params to represent H distribution
+              - note: this is just a guideline for determining minimum number of parameters to represent H distribution
               - error incurred during retrieval depends on well-posedness of the problem, which depends on model dimensionality
       - Avoiding aliasing and other sampling errors is a serious problem
           - Potential issues with density grid, LOS grid, science pixel binning
           - Refer to @discretization_considerations
           - Motivate choice of discretization grid
-              - nyquist argument - 2x highest frequency of continuous model (gonz thesis pg 52)
+              - nyquist argument - 2x highest frequency of continuous model (Gonzalo thesis pg 52)
               - #link(label("stormbins"))[(table) storm time discretization]
               - #link(label("quietbins"))[(table) quiet time discretization]
   - Retrieval Performance
@@ -1553,7 +1553,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
       table(
           table.header([Camera], [FOV\ (degrees)], [Resolution\ (pixels)], [Angular Res.\ (degrees)], [Spatial Res.\ (Re, projected)]),
           align: horizon,
-          [Polar WFI], [18°], [50x100], [xxx radial\ yyy azimuthal], [xxx radial],
+          [Polar WFI], [18°], [50x100], [FIXME xxx radial\ yyy azimuthal], [xxx radial],
           [Polar NFI], [3.6°], [50x100], [xxx radial\ yyy azimuthal], [xxx radial],
           columns: (auto, auto, auto, auto, auto),
       ),
@@ -1658,7 +1658,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
           [Temporal Resolution], [Storm: $Delta t = 1$ hr\ Quiet: $Delta t = 6$ hr],
           [Radial Resolution], [$Delta r ≤ 0.5$ Re],
           [Elevational Resolution], [$Delta e ≤ 180°$],
-          [Aximuthal Resolution], [$Delta a ≤ 120°$]
+          [Azimuthal Resolution], [$Delta a ≤ 120°$]
 
       ),
       caption: [Requirements for every reconstructed voxel $hat(x)_"t,p"$ where ground truth density $x_"t,p" ≥ 25$ atom/cm³. #rt([FIXME: include confidence level])]
@@ -1885,7 +1885,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
           subfigure(image("figures/montecarlo_14400_NFI.png"), "mcclt", [NFI, 2x2 binning, 14400 frames]),
           subfigure(image("figures/montecarlo_28800_WFI.png"), "mcclt", [WFI, 4x4 binning, 28800 frames]),
       ),
-      caption: [Monte Carlo simulation of actual distribution of $Z$ vs CLT approximation]
+      caption: [Monte Carlo simulation of actual distribution of $Z$ vs #gls("CLT") approximation]
   ) <clt>
 
   //   == Berry-Esseen Bound
@@ -1980,7 +1980,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
       &= nu e + mu^2 e^2 - mu^2 e^2 = nu e \
   $)
 
-  #rt([FIXME: remove this if not using berry-esseen bound])
+  #rt([FIXME: remove this if not using Berry-Esseen bound])
 
   #math.equation(numbering:none,
       $ex(( sum_(l=1)^(E) G_l )^3)
