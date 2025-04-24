@@ -43,7 +43,8 @@
             bottom: 5%,
             // FIXME - for Lara's notes
             right: 5.0119in
-        )
+        ),
+        numbering: "1"
     )
 
     // Configure equation numbering and spacing.
