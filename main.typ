@@ -144,7 +144,7 @@
       - Carruthers will be inserted in a halo orbit around Lagrange point L1 1.5e6 km from the Earth
           - From distant vantage, should be able to observe full extent of geocorona (soho/swan)
           - Orbit duration information and lateral deviation (important for tomographic meas. diversity)
-      - #link(label("viewgeom1"))[(figure) viewing geometry, orbit around L1]
+      - #link(label("viewgeom1"))[(figure) view geometry, orbit around L1]
       - #link(label("viewgeom2"))[(figure) static 3D picture of multiple view geometries captured for 1month baseline]
       - [x] Camera details
           - NFI: 3.6°, 30 min for fast inner exosphere evolution
@@ -240,7 +240,7 @@
     In order to recover a hydrogen density distribution from measurements, it is necessary to mathematically model the process by which Lyman-α photons propagate through the exosphere and enter the camera.
     This is known as an emission model and is a central component of tomographic retrieval algorithms.
 
-    Numerically modelling the physics of radiative transfer is a computationally complex task, as photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interdependencies between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the _optically thin_ regime #rt([FIXME: citation])), it is possible to assume photons scatter only once without significant loss of accuracy, simplifying computational requirements and implementation complexity of the emission model.
+    Numerically modelling the physics of radiative transfer is a computationally complex task, as photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interdependencies between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the #gls("optically thin") regime #rt([FIXME: citation])), it is possible to assume photons scatter only once without significant loss of accuracy, simplifying computational requirements and implementation complexity of the emission model.
 
     Anderson and Hord Jr. @opticaldepththin, define the optically thin regime as starting when $tau <= 0.1$, where optical depth $tau$ is a measure of #rt([FIXME: optical depth description]).
 
@@ -268,7 +268,7 @@
     // )
 
 
-    where $g^*_t$ is angular g-factor, $t$ is time, $phi.alt_t$ is scattering phase function, $bold(a)_t$ is albedo, $vc(r)$ is position vector, $bold(rho)$ is hydrogen density and $V$ is the exosphere volume in the #gls("FOV").  $phi.alt$, known as the _scattering phase function_, represents the directional distribution of resonantly-scattered photons relative to the direction of the sun, shown in @scatteringphase.
+    where $g^*_t$ is angular g-factor, $t$ is time, $phi.alt_t$ is scattering phase function, $bold(a)_t$ is albedo, $vc(r)$ is position vector, $bold(rho)$ is hydrogen density and $V$ is the exosphere volume in the #gls("FOV").  $phi.alt$, known as the #gls("scattering phase function"), represents the directional distribution of resonantly-scattered photons relative to the direction of the sun, shown in @scatteringphase.
 
     #figure(
         image("figures/physics_scattering.svg", height: 15em),
@@ -287,7 +287,7 @@
         caption: [Angular vs. Isotropic g-factor],
     ) <gfactor_difference>
 
-    Finally, $bold(a)_t (vc(r))$ is a unitless multiplicative correction factor (assumed known) to account for high-density regions of the inner optically-thick exosphere which act as a secondary source of Lyman-α photons illuminating the outer exosphere from below.
+    Finally, $bold(a)_t (vc(r))$ is a unitless multiplicative correction factor (assumed known) to account for high-density regions of the inner optically thick exosphere which act as a secondary source of Lyman-α photons illuminating the outer exosphere from below.
 
     - #rt([FIXME: derivation of line integral from first principles?  Make use of etendue, pixel area, paraxial approximation to convert volume integral to line integral])
 
@@ -621,40 +621,43 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
 
 
-  An inverse problem is the procedure of determining the causative factors of a set of measurements derived from some observation process.  In exospheric tomography, the factor driving the intensity of column density measurements is the distribution of hydrogen in the regions being observed.  Direct analytic solutions to tomographic or other inverse problems are not always possible, so numerical approximations and discretization become necessary.  In this chapter, I lay out key concepts of linear inverse problems, detail a discretization scheme for approaching tomographic inversion numerically, and introduce notation which will be used later in the manuscript to describe tomographic retrieval algorithms.
+  An inverse problem is the procedure of determining the causative factors of a set of measurements derived from an observation process.  In exospheric tomography, the factor driving the intensity of column density measurements is the distribution of hydrogen in the regions being observed.  Direct analytic solutions to tomographic or other inverse problems are not always possible, so numerical approximations and discretization become necessary.  In this chapter, I lay out key concepts of linear inverse problems, detail a discretization scheme for approaching tomographic inversion numerically, and introduce notation which will be used later in the manuscript to describe tomographic retrieval algorithms.
 
   == Discretization
 
     #rt("FIXME: convert line integral to discrete sum")
 
-  In general, direct analytic solutions to tomographic estimation problems are infeasible, necessitating a numerical approach where the solution space is divided into a finite grid of $N$ non-overlapping regions called #glspl("voxel") where density is assumed to be constant.  There are a large variety of grid types to choose from, including regular grids (e.g. spherical, cylindrical, cartesian), non-regular grids which may utilize hierarchical structures (e.g. octree) and tetrahedral meshes as shown in @grid_examples.  Some of these discretizations schemes have been designed to adaptively update voxel boundaries during retrieval to better fit the object being retrieved @adaptivemesh1.
+    In general, direct analytic solutions to tomographic estimation problems are infeasible, necessitating a numerical approach where the solution space is divided into a finite grid of $N$ non-overlapping regions called #glspl("voxel") where density is assumed to be constant.  There are a large variety of grid types to choose from, including regular grids (e.g. spherical, cylindrical, cartesian), non-regular grids which may utilize hierarchical structures (e.g. octree) and tetrahedral meshes. // as shown in @grid_examples.
+    Some of these discretizations schemes have been designed to adaptively update voxel boundaries during retrieval to better fit the object being retrieved @adaptivemesh1.
 
-    #figure(
-        box(width:100pt, height:100pt, stroke:1pt),
-        caption: [Discretizations of a spherical domain\ #rt([FIXME: WIP])]
-    ) <grid_examples>
+    // #figure(
+    //     box(width:100pt, height:100pt, stroke:1pt),
+    //     caption: [Discretizations of a spherical domain\ #rt([FIXME: WIP])]
+    // ) <grid_examples>
 
-  Choosing a discretization grid which is well-suited to the data is critical, as an improper grid can create aliasing and other artifacts which causes the numerical result to deviate from the functions they approximate.  Since the exosphere is well-understood to smoothly vary with larger density gradients at lower altitudes, a regular spherical grid with logarithmically spaced radial bins is appropriate.  The nature of regular grids allows for a simple multidimensional array as the underlying data structure, and the property of shared boundaries between voxels simplifies tomography calculations, as demonstrated in @alg_outline.
+  Choosing a discretization grid which is well-suited to the data is critical, as an improper grid can create aliasing and other artifacts that cause the numerical result to deviate from the functions they approximate.  Since the exosphere is well-understood to smoothly vary with larger density gradients at lower altitudes, a regular spherical grid with logarithmically spaced radial bins is appropriate.  The nature of regular grids allows for a simple multidimensional array as the underlying data structure, and the property of shared boundaries between voxels simplifies tomography calculations, as demonstrated in @alg_outline.
 
     The regular spherical grid used in this manuscript has its 0° elevation pole aligned to ecliptic north (+Z Cartesian GSE axis) and ±180° azimuth branch point pointed away from the sun (-X Cartesian GSE axis), as shown in @grid_details.
 
-    #figure(
-        box(width:100pt, height:100pt, stroke:1pt),
-        caption: [Spherical grid definition and a spherical voxel\ #rt([FIXME: WIP])]
-    ) <grid_details>
+    This manuscript uses convention $r$, $e$, $a$ when referring to radial, elevational, and azimuthal dimensions to avoid ambiguity with astrophysical versus mathematical conventions for spherical coordinates as in @sph_convention that denote the elevational and azimuthal dimensions differently.
 
-    This manuscript uses convention $r$, $e$, $a$ when referring to radial, elevational, and azimuthal dimensions to avoid ambiguity with astrophysical versus mathematical conventions for spherical coordinates as in @sph_convention.
+
+    #figure(
+        image("figures/sph_convention.svg", height: 10em),
+        caption: [Spherical grid definition and a spherical voxel]
+    ) <grid_details>
 
     #figure(
         table(
-            columns: (100pt, auto, auto, auto),
+            columns: (100pt, auto, auto, auto, auto),
             align: center + horizon,
-            table.header([Dimension], [This\ Manuscript], [Physics\ Convention], [Mathematical\ Convention]),
-            [Radial], $r$, $r$, $r$,
-            [Elevational], $e$, $theta$, $phi$,
-            [Azimuthal], $a$, $phi$, $theta$
+            table.header([Dimension], [Physics\ Convention], [Math\ Convention], [Manuscript\ Convention], [Manuscript\ Range]),
+            table.hline(stroke: 2pt),
+            [Radial], $r$, $r$, $r$, $[3 "Re", 25 "Re"]$,
+            [Elevational], $theta$, $phi$, $e$, [$[0°, 180°]$],
+            [Azimuthal], $phi$, $theta$, $a$, [$[-180°, 180°]$]
         ),
-        caption: [Spherical coordinate conventions]
+        caption: [Spherical coordinate conventions.]
     ) <sph_convention>
 
     The grid resolution necessary to avoid aliasing and sample errors is data-dependent and is covered in @grid_discretization.
@@ -664,32 +667,35 @@ A summary of all variables and sources of randomness is given in @knownvariables
   Under the conditions described in @measurement_constraints (single scattering in optically-thin exosphere) and ignoring noise, tomographic inversion can be formulated as the solution to the linear inverse problem
 
   #math.equation(
-      $bold(y) = L bold(x)$
+      $bold(y) = F bold(x)$
   )
+
 
   #math.equation(
-      $y_"tij" = sum_(r, e, a) L_("ij","trea") x_"trea"$
+      $y_"tij" = sum_(r, e, a) F_("ij","trea") x_"trea"$
   )
 
-    Direct inversion of the tomographic operator requires that the matrix $L$ be non-singular in order for an inverse $L^(-1)$ to exist.  However, tomography problems generally have fewer measurement constraints (#gls("LOS")) than free variables (#glspl("voxel")), making them _underdetermined systems_ with infinitely many solutions.
+    with measurements $bold(y)$, forward operator $F$, solution $bold(x)$, time t, pixel ij, and spatial voxel rea.
 
-    While inversion of $L$ is impossible, the problem is sometimes reformulated as a minimization of some objective function, such as the common least squares
+    Direct inversion of the tomographic operator requires that the matrix $F$ be non-singular in order for an inverse $F^(-1)$ to exist.  However, tomography problems generally have fewer measurement constraints (#gls("LOS", display:"lines of sight")) than free variables (#glspl("voxel")), making them _underdetermined systems_ with infinitely many solutions.
+
+    While inversion of $F$ is impossible, the problem is sometimes reformulated as a minimization of some objective function, such as the common least squares
 
     #math.equation(
-        $hat(bold(x)) = min_bold(x) ||bold(y) - L bold(x)||_2^2$
+        $hat(bold(x)) = min_bold(x) ||bold(y) - F bold(x)||_2^2$
     )
 
-    a _generalized inverse_ such as the Moore-Penrose pseudoinverse, can be constructed from $L$ which selects the solution with the smallest norm or which best fits the measurements.  Another approach is to assume that $x$ has some low degree-of-freedom representation on a subspace (linear) or manifold (non-linear) on the space of solutions.  Such a mapping $m$ is referred to as a #gls("model") in this manuscript and is represented as
+    A _generalized inverse_ such as the Moore-Penrose pseudoinverse, can be constructed from $F$ which selects the solution with the smallest norm or which best fits the measurements.  Another approach is to assume that $bold(x)$ has some low degree-of-freedom representation on a subspace (linear) or manifold (non-linear) on the space of solutions.  Such a mapping $M$ is referred to as a #gls("model") in this manuscript and is represented as
 
     #math.equation(
-        $bold(x) = m(bold(c))$
+        $bold(x) = M(bold(c))$
     )
 
     where $bold(c)$ are the low degree-of-freedom coefficients.  If the model is sufficiently low-dimensional and linear, then uniqueness is guaranteed if a solution exists.
 
     #rt([FIXME: awkward.  terminology: "instability"])
 
-    However, this solution may be unstable in the presence of noise in the measurements $y$.
+    However, this solution may be unstable in the presence of noise in the measurements $bold(y)$.
     This is especially true of computational imaging inverse problems, where smoothing effects of integration dampen the high frequency information about $bold(x)$ available in the measurements.
 
     - #rt([FIXME: define regularization])
@@ -702,8 +708,8 @@ A summary of all variables and sources of randomness is given in @knownvariables
               table.header([Symbol], [Meaning], [Description], [Shape]),
               align: horizon,
               columns: (5em, 10em, 14em, 12em),
-              $f$, [Forward operator], [Mapping from 3D H-density to column density], [$f: bb(R)^3 → bb(R)^3$ (static) \ $f: bb(R)^4→bb(R)^3$ (dynamic)],
-              $m$, [Model], [Mapping from model \ parameters to 3D H-density], [$m: bb(R)^* → bb(R)^3$ (static) \ $m: bb(R)^* → bb(R)^4$ (dynamic)],
+              $F$, [Forward operator], [Mapping from 3D H-density to column density], [$F: bb(R)^3 → bb(R)^3$ (static) \ $F: bb(R)^4→bb(R)^3$ (dynamic)],
+              $M$, [Model], [Mapping from model \ parameters to 3D H-density], [$M: bb(R)^* → bb(R)^3$ (static) \ $M: bb(R)^* → bb(R)^4$ (dynamic)],
               $bold(c)$, [Model \ params./coeffs.], "Free model variables,\n usually low-dimensional.", [$bold(c) ∈ bb(R)^*$ \ \* model dependent],
               $bold(x)$, [H density], [Spatial distribution of \ exospheric Hydrogen], [$bold(x) ∈ bb(R)^3$ (static) \ $bold(x) ∈ bb(R)^4$ (dynamic)],
               $bold(y)$, [Measurements.], "Column densities measured\n by instrument", [$bold(y) ∈ bb(R)^3$],
@@ -1175,7 +1181,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
         caption: [Pseudocode for reconstructing an object which lies in some transform domain defined by `f`],
     ) <api_reconstruction_latent>
 
-    Finally, we remark that the differentiability of the operator allows it to be exploited in machine learning models, such as _physics-informed neural networks_ (PINNs), where the operator forms layers of the network itself @pinn.
+  Finally, we remark that the differentiability of the operator allows it to be exploited in machine learning models, such as #glspl("PINN"), where the operator forms layers of the network itself @pinn.
 === Assumptions and Limitations
 
     Unlike most medical imaging paradigms, the detector is located at the vertex of `ConeRectGeom`.  We also assume the detector lies outside of the grid, rays extend to infinity, and that the object is zero outside of the grid.
@@ -1306,7 +1312,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   == 1D Retrievals <1d_retrieval>
 
-    Early retrievals often relied on simple spherically symmetric 1D models of the exosphere.  In cases where geocoronal studies were taken opportunistically (e.g. Galileo Earth flyby), measurements are often only available from a single vantage which has limited viewing geometry diversity.
+    Early retrievals often relied on simple spherically symmetric 1D models of the exosphere.  In cases where geocoronal studies were taken opportunistically (e.g. Galileo Earth flyby), measurements are often only available from a single vantage which has limited view geometry diversity.
     The assumption of spherically symmetry naturally produces a well-conditioned inverse problem from a single measurement taken at any vantage and avoids an underdetermined system (ill-posedness) by keeping model dimensionality low.
 
     A fundamental contribution to the field is the Chamberlain model, which is a spherically symmetric model derived from knowledge of motion of H atoms in the upper atmosphere (@earth_exosphere).  Under Liouville's theorem, the model makes some simple assumptions about the trajectories followed by exospheric H atoms and derives a density distribution from the resulting PDE.
@@ -1318,16 +1324,16 @@ A summary of all variables and sources of randomness is given in @knownvariables
         $n_H (r) = n_1 "exp"(-r/alpha_1) + n_2 "exp"(-r/alpha_2)$
     )
 
-    where $n_1, n_2, alpha_1, alpha_2$ are unknown model coefficients.  The two exponentials express a belief that the H density distribution consists of two populations of H density atoms.  Additionally, this simple exponential formulation permits an analytic line integration that Østgaard et al. utilize to perform model fits directly in the measurement domain with no tomographic operator.  The exact method of fitting is not described, but most likely a linear regression similar to
+    where $n_1, n_2, alpha_1, alpha_2$ are unknown model coefficients.  The two exponentials express a belief that the H density distribution consists of two populations of H density atoms.  Additionally, this simple exponential formulation permits an analytic line integration that Østgaard et al. utilize to perform model fitting directly in the measurement domain with no tomographic operator.  The exact method of fitting is not described, but most likely a linear regression similar to
 
     #math.equation(
         $
             bold(hat(c)) = arg min_bold(c) ||bold(y) - bold(y)_bold(c)||_2^2 \
-            bold(hat(c)) = m(bold(hat(c)))
+            bold(hat(c)) = M(bold(hat(c)))
         $
     )
 
-    where $bold(c) = {n_1, n_2, alpha_1, alpha_2}$ and $bold(y)_bold(c)$ is column densities derived by analytically integrating $m(bold(c))$.
+    where $bold(c) = {n_1, n_2, alpha_1, alpha_2}$ and $bold(y)_bold(c)$ is column densities derived by analytically integrating $M(bold(c))$.
 
     While computationally simple, these 1D solutions are not capable of capturing spherical asymmetries such as the geotail which are hypothesized to exist in the exosphere and are a major science target of Carruthers.  The next few sections build upon these ideas to create more sophisticated models that are useful when more measurement data is available from orbits designed to provide better view geometry diversity.
 
@@ -1364,12 +1370,12 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
       The formulation of $"SHR"(r, e, a)$ in @scipy_sph differs slightly from the original in @zoennchen_new so that $Y_(l m)$ corresponds directly to Scipy's `sph_harm_y` function.
 
-        Rewriting the model using this manuscript's notation and taking $m(bold(c)) := n_H (r, e, a)$ gives
+        Rewriting the model using this manuscript's notation and taking $M(bold(c)) := n_H (r, e, a)$ gives
 
       #math.equation(
           $
-              hat(bold(c)) = arg min_bold(c) ||bold(y) - f(m(bold(c)))||_2^2 + lambda ||D_e m(bold(c))||_2^2 + lambda ||D_a m(bold(c))||_2^2 \
-              hat(bold(x))_"HDOF" = m(hat(bold(c)))
+              hat(bold(c)) = arg min_bold(c) ||bold(y) - F(M(bold(c)))||_2^2 + lambda ||D_e M(bold(c))||_2^2 + lambda ||D_a M(bold(c))||_2^2 \
+              hat(bold(x))_"HDOF" = M(hat(bold(c)))
           $
       )
 
@@ -1377,7 +1383,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
     == High Degree-of-Freedom
 
-      An alternative approach presented in Zoennchen et al. @zoennchen_new  @gonzalolaica and based on @solartomography1 is the #gls("HDOF") method which uses a non-parametric model where each voxel in the underyling density discretization is a separately optimizable parameter.  This method utilizes #gls("MAP") estimation which is optimal in a probabilistic sense but requires assumptions about the density distribution and noise statistics.  Specifically this method assumes that hydrogen density is a Gaussian Markov Random Field (GMRF) distributed according to a known prior distribution $cal(N)(bold(x)_"pr", Σ_"pr")$ with mean and covariance $bold(x)_"pr"$ and $Σ_"pr"$ provided externally (e.g. derived from other datasets #rt("FIXME: which dataset?")) and measurements follow a noise distribution $Σ_"e"$.
+      An alternative approach presented in Zoennchen et al. @zoennchen_new  @gonzalolaica and based on @solartomography1 is the #gls("HDOF") method which uses a non-parametric model where each voxel in the underyling density discretization is a separately optimizable parameter.  This method utilizes #gls("MAP") estimation which is optimal in a probabilistic sense but requires assumptions about the density distribution and noise statistics.  Specifically this method assumes that hydrogen density is a #gls("GMRF") distributed according to a known prior distribution $cal(N)(bold(x)_"pr", Σ_"pr")$ with mean and covariance $bold(x)_"pr"$ and $Σ_"pr"$ provided externally (e.g. derived from other datasets #rt("FIXME: which dataset?")) and measurements follow a noise distribution $Σ_"e"$.
 
       Under these assumptions, the #gls("MAP") solution has closed form
 
@@ -1418,8 +1424,8 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
       #math.equation(
           $
-              hat(bold(c)) = arg min_(bold(c)) ||bold(y) - f(m(bold(c)))||_(Σ_e^(-1))^2 + ||m(bold(c)) - bold(x)_"pr"||_(Σ_"pr"^(-1))^2 \
-              hat(bold(x))_"MAP" = m(bold(hat(c)))
+              hat(bold(c)) = arg min_(bold(c)) ||bold(y) - F(M(bold(c)))||_(Σ_e^(-1))^2 + ||M(bold(c)) - bold(x)_"pr"||_(Σ_"pr"^(-1))^2 \
+              hat(bold(x))_"MAP" = M(bold(hat(c)))
           $
       )
 
@@ -1433,11 +1439,11 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
     #math.equation(
         $
-            hat(bold(c)) = arg min_bold(c) ||bold(y) - f(m(bold(c)))||_2^2
-            + lambda_r ||D_r m(bold(c))||_2^2
-            + lambda_e ||D_e m(bold(c))||_2^2
-            + lambda_a ||D_a m(bold(c))||_2^2 \
-            hat(bold(x))_"RRPE" = m(hat(bold(c)))
+            hat(bold(c)) = arg min_bold(c) ||bold(y) - F(M(bold(c)))||_2^2
+            + lambda_r ||D_r M(bold(c))||_2^2
+            + lambda_e ||D_e M(bold(c))||_2^2
+            + lambda_a ||D_a M(bold(c))||_2^2 \
+            hat(bold(x))_"RRPE" = M(hat(bold(c)))
         $
     )
 
@@ -1451,7 +1457,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
     #math.equation(
         $
-            m(bold(c)) &= sum_(l=0)^L sum_(m=-l)^l S_(l m)(r) X_(l m)(e, a) \
+            M(bold(c)) &= sum_(l=0)^L sum_(m=-l)^l S_(l m)(r) X_(l m)(e, a) \
             S_(l m)(r) &= sum_(k=1)^K c_(l m k) B_(k 2)(r)
         $
     )
@@ -1470,8 +1476,8 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
     #math.equation(
         $
-            hat(bold(c)) = arg min_(bold(c)) ||y - f(m(bold(c)))||_1 + lambda ||"clip"_(-infinity, 0)(m(bold(c)))||_1 \
-            bold(hat(x)) = m(bold(hat(c)))
+            hat(bold(c)) = arg min_(bold(c)) ||y - F(M(bold(c)))||_1 + lambda ||"clip"_(-infinity, 0)(M(bold(c)))||_1 \
+            bold(hat(x)) = M(bold(hat(c)))
         $
     )
 
@@ -1738,7 +1744,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
     === Science Pixel Binning Discretization <spb_discretization>
     @post_processing introduced the notion of _science pixel binning_, a log-polar binning scheme which reduces the number of data constraints that need to be ingested by the retrieval algorithm while attempting to minimize loss of information in the measurement data.
 
-    Choosing a science pixel binning scheme that has sufficient radial and azimuthal bins is important to retrieval performance, and is dependent on the 3D discretization grid, the density being observed, and viewing geometry.  A choice of resolution which is too low introduces binning error into the retrieval algorithm which can dominate noise-induced error and lead to poor retrieval performance even under high #gls("SNR").
+    Choosing a science pixel binning scheme that has sufficient radial and azimuthal bins is important to retrieval performance, and is dependent on the 3D discretization grid, the density being observed, and view geometry.  A choice of resolution which is too low introduces binning error into the retrieval algorithm which can dominate noise-induced error and lead to poor retrieval performance even under high #gls("SNR").
 
     For a science pixel measurement to match its centroid measurement, as described in @retrieval_validation, column density should vary linearly within the science pixel.  However, this assumption can be violated due to the exponential nature of the hydrogen density distribution.
     @spb_bad_discretization illustrates a case where binned radial resolution is too low to capture large hydrogen density gradients at low altitudes, leading to overestimated column densities during retrieval.
@@ -1757,7 +1763,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
     4. Mask out LOS which exhibit non-linear change over the science binned pixel.
     \
 
-    Solution 1 requires assuming a specific functional form to the column density distribution across a pixel, which is undesirable.  Solution 2 is also not practical as science pixel bin resolution is presumably already selected to use all available computational resources.  Solution 3 is feasible, but requires changes to how science pixel viewing geometries are generated.  Post-processing uses solution 4, as it eliminates the overestimation issue (at the expense of some lost measurements) and is the most straightforward to implement.
+    Solution 1 requires assuming a specific functional form to the column density distribution across a pixel, which is undesirable.  Solution 2 is also not practical as science pixel bin resolution is presumably already selected to use all available computational resources.  Solution 3 is feasible, but requires changes to how science pixel view geometries are generated.  Post-processing uses solution 4, as it eliminates the overestimation issue (at the expense of some lost measurements) and is the most straightforward to implement.
 
     #figure(
         grid(

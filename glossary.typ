@@ -64,16 +64,6 @@
         long: "robust, regularized, positive estimation"
     ),
     (
-        key: "voxel",
-        short: "voxel",
-        description: [volume pixel. single bin of a discretized volume]
-    ),
-    (
-        key: "model",
-        short: "model",
-        description: [mapping from low-dimensional set of parameters to full density]
-    ),
-    (
         key: "GSE",
         short: "GSE",
         long: [geocentric solar ecliptic]
@@ -107,5 +97,38 @@
         key: "CLT",
         short: "CLT",
         long: [central limit theorem]
+    ),
+    (
+        key: "GMRF",
+        short: "GMRF",
+        long: [Gaussian Markov Random Field]
+    ),
+    (
+        key: "PINN",
+        short: "PINN",
+        long: [Physics-Informed Neural Network]
+    ),
+
+
+
+    (
+        key: "voxel",
+        short: "voxel",
+        description: [volume pixel. single bin of a discretized volume]
+    ),
+    (
+        key: "model",
+        short: "model",
+        description: [mapping from low-dimensional set of parameters to full density]
+    ),
+    (
+        key: "scattering phase function",
+        short: "scattering phase function",
+        description: [direction scattering distribution of photons]
+    ),
+    (
+        key: "optically thin",
+        short: "optically thin",
+        description: [can be modeled with single-scattering]
     ),
 )
