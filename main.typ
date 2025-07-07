@@ -1934,6 +1934,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   - important note: uncertainty quantification does not attempt to quantify error due to model mismatch ()
       - https://tristanvanleeuwen.github.io/IP_and_Im_Lectures/statistical_perspective.html
+  - foo
   ])
 
   Analysts rely on knowledge of uncertainty to make accurate decisions when reasoning about predictions from models.  For example, a doctor looking at a a mass detected in a patient will want to the the level of certainty in the prediction before deciding to operate or conduct additional tests.
