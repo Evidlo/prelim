@@ -1339,7 +1339,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
         $
     )
 
-    where $bold(c) = {n_1, n_2, alpha_1, alpha_2}$ are the 4 free model parameters and $bold(y)_bold(c)$ is column densities derived by analytically integrating $M(bold(c))$.
+    where $bold(c) = {n_1, n_2, alpha_1, alpha_2}$ are the 4 free model inputs and $bold(y)_bold(c)$ is column densities derived by analytically integrating $M(bold(c))$.
 
     While computationally simple, these 1D solutions are not capable of capturing spherical asymmetries such as the geotail which are hypothesized to exist in the exosphere and are a major science target of Carruthers.  The next few sections build upon these ideas to create more sophisticated models that are useful when more measurement data is available from orbits designed to provide better view geometry diversity.
 
@@ -1372,7 +1372,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
       $
       ) <scipy_sph>
 
-    where $bold(c) = {{a_(0 0), ...}, {b_(0 0), ...}, {p_(0 0), ...}, {q_(0 0), ...}, c, k}$ are model parameters.  Zoennchen et al. truncate to $l ≤ 3$ for a total of $4 × 16 + 2 = 66$ free parameters. Note that $∀l : B_(l 0)(r) := 0$ by definition.
+    where $bold(c) = {{a_(0 0), ...}, {b_(0 0), ...}, {p_(0 0), ...}, {q_(0 0), ...}, c, k}$ are model inputs.  Zoennchen et al. truncate to $l ≤ 3$ for a total of $4 × 16 + 2 = 66$ free inputs. Note that $∀l : B_(l 0)(r) := 0$ by definition.
 
       The formulation of $"SHR"(r, e, a)$ in @scipy_sph differs slightly from the original in @zoennchen_new so that $Y_(l m)$ corresponds directly to Scipy's `sph_harm_y` function.
 
@@ -1492,7 +1492,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
     The number and location of the $K$ control points used in the spline functions and the maximum spherical harmonic degree $L$ are selected at model initialization time.
 
 
-    $bold(c) = {c_(0 0 0), ...}$ are the model parameters and the minimization problem is
+    $bold(c) = {c_(0 0 0), ...}$ are the model inputs and the minimization problem is
 
     #math.equation(
         $
@@ -1577,7 +1577,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
 
   The Carruthers mission is required to prove that it is capable of meeting mission requirements set during its proposal.  With physics of the forward model, a retrieval algorithm implementation and knowledge of a hypothetical exosphere distribution, it is possible to justify that these requirements will be met through simulation.
-  This chapter describes the retrieval algorithm performance requirements on the Carruthers mission, introduces synthetic ground truth datasets created by the exospheric research community, analyzes retrieval results of a few algorithms from @static_retrieval on a few of these datasets, and provides rationale for tunable settings used in the algorithms including model parameters and discretizations.
+  This chapter describes the retrieval algorithm performance requirements on the Carruthers mission, introduces synthetic ground truth datasets created by the exospheric research community, analyzes retrieval results of a few algorithms from @static_retrieval on a few of these datasets, and provides rationale for tunable settings used in the algorithms including model inputs and discretizations.
 
   == Reconstruction Requirements <recon_requirements>
 
