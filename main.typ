@@ -1,8 +1,11 @@
 #import "template.typ": *
+#import "./diagbox.typ": *
 #import "@preview/glossarium:0.5.1": make-glossary, register-glossary, print-glossary, gls, glspl
 #import "glossary.typ": glossary
 #show: make-glossary
 #register-glossary(glossary)
+
+#show link: set text(style: "italic")
 
 // custom functions for math/text
 #import "functions.typ": *
@@ -203,6 +206,7 @@
     ) <gse_coordinates>
 
     Carruthers will be inserted into a halo orbit around the L1 Lagrange point (about 1.5 million km from Earth, 235 Re), which is distant enough to observe the entirety of the geocorona from an outside vantage @baliukin over a long period.
+
     Shown in @carruthers_orbit, this orbit deviates above/below the ecliptic plane by ±7° (xxx Re #rt([FIXME])) and ±28° (xxx Re #rt([FIXME])) in the dawn/dusk direction, providing important angular measurement diversity for tomographic analysis.
     While multiple spacecraft would be ideal for improving spatiotemporal measurement resolution from the relatively slow 6 month orbital period, analysis in @static_validation shows that an observation window of just 2 weeks is sufficient to meet mission retrieval requirements during quiet exospheric conditions.
 
@@ -594,12 +598,12 @@ A summary of all variables and sources of randomness is given in @knownvariables
       - Inverse problem
           - Tomography can be formulated as linear inverse problem y = Lx
           - Usually _underdetermined system_. Direction inversion not possible
-          - Solution often formulated as minimizing some objective function or _cost function_ such as $hat(x) = min_x ||y - L x||_2^2$ (least squares)
+          - Solution often formulated as minimizing some objective function or _cost function_ such as $hat(rho) = min_rho ||bold(y) - L rho||_2^2$ (least squares)
           - Generalized least squares can find a solution to underdetermined and overdetermined systems (pseudoinverse)
           - Alternatively, formulate solution space as low-dimensional subspace or manifold
           - Solution may be unstable under noise due to smoothing effects in common inverse problems
           - Regularization impacts specific method for solution
-              - e.g. Tikhonov - $||bold(y) - L bold(x) ||_2^2 + ||T x||_2^2$
+              - e.g. Tikhonov - $||bold(y) - L bold(rho) ||_2^2 + ||T x||_2^2$
                   - hash explicit closed form solution (Regularized least squares)
           - Hadamard defined these concepts as _ill-conditioned_ and _ill-posed_
           // - Under conditions described in @measurement_constraints (namely, single scattering in optically thin regime), tomographic inversion can be formulated as solution to the linear inverse problem $y = L x$ (ignoring noise)
@@ -660,47 +664,48 @@ A summary of all variables and sources of randomness is given in @knownvariables
         caption: [Spherical coordinate conventions.]
     ) <sph_convention>
 
-    The grid resolution necessary to avoid aliasing and sample errors is data-dependent and is covered in @grid_discretization.
+    The grid resolution necessary to avoid aliasing and sample errors is data-dependent and is covered in @discretization.
 
   == Inverse Problem
 
-  Under the conditions described in @measurement_constraints (single scattering in optically-thin exosphere) and ignoring noise, tomographic inversion can be formulated as the solution to the linear inverse problem
+  Under the conditions described in @measurement_constraints (single scattering in optically-thin exosphere) and ignoring noise, tomographic inversion can be formulated as the solution of the linear inverse problem
 
   #math.equation(
-      $bold(y) = F bold(x)$
+      $bold(y) = F bold(rho)$
   )
 
 
   #math.equation(
-      $y_"tij" = sum_(r, e, a) F_("ij","trea") x_"trea"$
+      $y_"tij" = sum_(r, e, a) F_("ij","trea") rho_"trea"$
   )
 
-    with measurements $bold(y)$, forward operator $F$, solution $bold(x)$, time t, pixel ij, and spatial voxel rea.
+    with measurements $bold(y)$, forward operator $F$, solution $bold(rho)$, time t, pixel ij, and spatial voxel rea.
 
-    Direct inversion of the tomographic operator requires that the matrix $F$ be non-singular in order for an inverse $F^(-1)$ to exist.  However, tomography problems generally have fewer measurement constraints (#gls("LOS", display:"lines of sight")) than free variables (#glspl("voxel")), making them _underdetermined systems_ with infinitely many solutions.
+    Direct inversion of the tomographic operator requires that the matrix $F$ be non-singular in order for an inverse $F^(-1)$ to exist.  However, tomography problems generally have fewer measurement constraints (#gls("LOS", display:"lines of sight")) than free variables (#glspl("voxel")), making them _ill-posed_ (lacking existence, uniqueness or stability of solutions).
 
-    While inversion of $F$ is impossible, the problem is sometimes reformulated as a minimization of some objective function, such as the common least squares
-
-    #math.equation(
-        $hat(bold(x)) = min_bold(x) ||bold(y) - F bold(x)||_2^2$
-    )
-
-    A _generalized inverse_ such as the Moore-Penrose pseudoinverse, can be constructed from $F$ which selects the solution with the smallest norm or which best fits the measurements.  Another approach is to assume that $bold(x)$ has some low degree-of-freedom representation on a subspace (linear) or manifold (non-linear) on the space of solutions.  Such a mapping $M$ is referred to as a #gls("model") in this manuscript and is represented as
+    While inversion of $F$ is impossible, the problem of obtaining estimate $hat(bold(rho))$ is sometimes reformulated as a minimization of some objective function, such as the common least squares
 
     #math.equation(
-        $bold(x) = M(bold(c))$
+        $hat(bold(rho)) = min_bold(rho) ||bold(y) - F bold(rho)||_2^2$
+    ) <cost_function>
+
+    A _generalized inverse_ such as the Moore-Penrose pseudoinverse, can be constructed from $F$ which selects the solution with the smallest norm or which best fits the measurements.  Another approach is to assume that $bold(rho)$ has some low degree-of-freedom representation on a subspace (linear) or manifold (non-linear) within the space of all solutions.  Such a mapping $M$ is referred to as a #gls("model") in this manuscript and is represented as
+
+    #math.equation(
+        $bold(rho) = M(bold(c))$
     )
 
     where $bold(c)$ are the low degree-of-freedom coefficients.  If the model is sufficiently low-dimensional and linear, then uniqueness is guaranteed if a solution exists.
 
-    #rt([FIXME: awkward.  terminology: "instability"])
+    However, this solution may still be _ill-conditioned_, or unstable in the presence of noise.  In these cases, $F$ is usually rank-deficient or has small singular values meaning that small perturbations in the measurements $bold(y)$ are amplified greatly in the inversion process.
+    This is especially true of computational imaging problems like tomography, where smoothing effects of integration dampen the high frequency information about $bold(rho)$ available in the measurements.
 
-    However, this solution may be unstable in the presence of noise in the measurements $bold(y)$.
-    This is especially true of computational imaging inverse problems, where smoothing effects of integration dampen the high frequency information about $bold(x)$ available in the measurements.
+    A common technique is to add additional terms to @cost_function which encode prior knowledge about the distribution of $bold(rho)$ which may not be captured by the model.  This is known as _regularization_ and can be used to combat ill-posedness.
+    An alternative approach is to view inverse problems as a probabilistic inference problem which uses Bayes theorem to model uncertainty in reconstruction $bold(rho)$ given measurements $bold(y)$.
 
-    - #rt([FIXME: define regularization])
+    The issues of solution existence, uniqueness and sensitivity in inverse problems were formally described by Hadamard in the early 20th century and used to define ill-posed and ill-conditioned inverse problems @hadamard @illposed.
 
-    The issues of solution existence, uniqueness and sensitivity in inverse problems were formally described by Hadamard in the early 20th century and used to define _ill-posed_ and _ill-conditioned_ inverse problems @hadamard @illposed.
+    The notation introduced in this section is summarized in @symbols and will be used throughout the manuscript.
 
   #figure(
       pad(x: -50%,
@@ -711,13 +716,13 @@ A summary of all variables and sources of randomness is given in @knownvariables
               $F$, [Forward operator], [Mapping from 3D H-density to column density], [$F: bb(R)^3 → bb(R)^3$ (static) \ $F: bb(R)^4→bb(R)^3$ (dynamic)],
               $M$, [Model], [Mapping from model \ parameters to 3D H-density], [$M: bb(R)^* → bb(R)^3$ (static) \ $M: bb(R)^* → bb(R)^4$ (dynamic)],
               $bold(c)$, [Model \ params./coeffs.], "Free model variables,\n usually low-dimensional.", [$bold(c) ∈ bb(R)^*$ \ \* model dependent],
-              $bold(x)$, [H density], [Spatial distribution of \ exospheric Hydrogen], [$bold(x) ∈ bb(R)^3$ (static) \ $bold(x) ∈ bb(R)^4$ (dynamic)],
+              $bold(rho)$, [H density], [Spatial distribution of \ exospheric Hydrogen], [$bold(rho) ∈ bb(R)^3$ (static) \ $bold(rho) ∈ bb(R)^4$ (dynamic)],
               $bold(y)$, [Measurements.], "Column densities measured\n by instrument", [$bold(y) ∈ bb(R)^3$],
           ),
       ),
       caption: [Symbols],
       // FIXME: move to glossary section?
-  )
+  ) <symbols>
 
 
 
@@ -734,13 +739,13 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   In this section, we describe the design and implementation of a tomographic projector which is designed for use in iterative reconstruction algorithms on spherical grids.  The algorithm is automatically differentiable, GPU-enabled, and easily integrable into machine learning methods through PyTorch.
   Additionally, the implementation provides a suite of visualization functions described in @api_overview which can be used for visual verification of view geometry and discretization or for generating publishable figures.
-  The raytracer has been released as a open-source Python package *TomoSphero*.
+  The raytracer has been released as a open-source Python package *TomoSphero*.@tomosphero.
 
 === GPU Utilization
 
-  Most tomographic operators treat each pixel on the detector as an independent computational task, which has led to the development of tomography libraries that are capable of simultaneously utilizing multiple cores on a CPU or hardware accelerator.  TomoSphero is parallelized and GPU-enabled, and its speed has been benchmarked in @benchmarking.
+  Most tomographic operators treat each pixel on the detector as an independent computational task, which has led to the development of tomography libraries that are capable of simultaneously utilizing multiple cores on a CPU or hardware accelerator.  TomoSphero is parallelized and GPU-enabled, and its speed has been benchmarked as described in @benchmarking.
 
-  In cases where a simultaneous computation for every pixel of every measurement would consume more memory than is available, some algorithms operate _out-of-core_, where they parallelize as many tasks as will fit into available memory, then serially queue the remaining tasks for processing after current tasks are complete.  TomoSphero is not capable of out-of-core operation, so a characterization of its memory usage is also available in @benchmarking.
+  In cases where a simultaneous computation for every pixel of every measurement would consume more memory than is available, some algorithms operate _out-of-core_, where they parallelize as many tasks as will fit into available memory, then serially queue the remaining tasks for processing after current tasks are complete.  TomoSphero is not capable of out-of-core operation, so a characterization of its memory usage is also presented in @benchmarking.
 
 === Object Discretization
 
@@ -1162,7 +1167,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
     #figure(
         rbox(
             ```python
-            def f(c):
+            def model(c):
               # map from low-dimensional latent space to R³.
               # use PyTorch-differentiable functions here
               ...
@@ -1174,17 +1179,17 @@ A summary of all variables and sources of randomness is given in @knownvariables
             # iterative reconstruction loop.
             # minimize L2 loss w.r.t. c_hat
             for i in range(500):
-              loss = t.sum((y - op(f(c_hat)))**2)
+              loss = t.sum((y - op(model(c_hat)))**2)
               ...
             ```
         ),
-        caption: [Pseudocode for reconstructing an object which lies in some transform domain defined by `f`],
+        caption: [Pseudocode for reconstructing an object which lies in some transform domain defined by `model`],
     ) <api_reconstruction_latent>
 
   Finally, we remark that the differentiability of the operator allows it to be exploited in machine learning models, such as #glspl("PINN"), where the operator forms layers of the network itself @pinn.
 === Assumptions and Limitations
 
-    Unlike most medical imaging paradigms, the detector is located at the vertex of `ConeRectGeom`.  We also assume the detector lies outside of the grid, rays extend to infinity, and that the object is zero outside of the grid.
+    Unlike most medical imaging paradigms, the detector is located at the vertex of `ConeRectGeom`.  We also assume that the detector lies outside of the grid, that rays extend to infinity, and that the object is zero outside of the grid.
 
     When combining view geometries into a collection, the geometries must have the same shape so that the corresponding stack of measurements returned during raytracing is a rectangular array.
     In the case of a dynamic object, the grid of the object being raytraced cannot move nor can its shape or extent change.
@@ -1257,13 +1262,13 @@ A summary of all variables and sources of randomness is given in @knownvariables
     ) <memtable>
 
 
-= Static Retrieval of Exosphere <static_retrieval>
+= Static Retrieval of Exospheric Density <static_retrieval>
   #rt([
     - Chapter introduction section
         - This thesis makes a distinction between two types of retrieval algorithms: static, where hydrogen density is assumed to have no temporal component, and dynamic, where the density distribution is allowed to vary between vantages.
         - Static algorithms were introduced historically, but more recent algorithms have been developed that can handle a changing hydrogen distribution.
         - Static algorithms are important because they are conceptually and computationally simpler, can serve as a basis for more sophisticated dynamic algorithms, and still perform well for dynamic densities under quiet, non-storm conditions (see @static_dynamic for analysis)
-        - This chapter introduces historical static retrieval approaches in order of increasing complexity, ending with a new static model contributed by this thesis
+        - This chapter introduces historical static retrieval approaches in order of increasing complexity, ending with a new static model contributed by this thesis.
 
     - 1D Retrievals
         - Early retrievals often relied on simple 1D models of exosphere
@@ -1302,7 +1307,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
 
   This thesis makes a distinction between two types of retrieval algorithms: static, where hydrogen density is assumed to have no temporal component, and dynamic, where the density distribution is allowed to vary between vantages.
-  Static algorithms were introduced historically, but more recent algorithms have been developed that can handle a changing hydrogen distribution.
+  Static algorithms were introduced historically, but more recent algorithms have been developed (see @dynamic_retrieval) that can accommodate a changing hydrogen distribution.
   Static algorithms are important because they are conceptually and computationally simpler, can serve as a basis for more sophisticated dynamic algorithms, and still perform well for dynamic densities under quiet, non-storm conditions (see @static_dynamic for analysis).
   This chapter introduces historical static retrieval approaches used in previous retrievals of exosphere density in order of increasing complexity.  However, many of these methods are either too restrictive in their assumptions about exospheric hydrogen distribution (e.g. assuming a specific functional form or even spherical symmetry) or require extensive hyperparameter tuning.  The chapter ends with a new static method in @spline_model contributed by this thesis, which attempts to address some of the issues of these other methods.
   Mathematical notation differs from the original publications to conform with notation used in this manuscript (see @inverse_problem).
@@ -1312,11 +1317,12 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   == 1D Retrievals <1d_retrieval>
 
+
     Early retrievals often relied on simple spherically symmetric 1D models of the exosphere.  In cases where geocoronal studies were taken opportunistically (e.g. Galileo Earth flyby), measurements are often only available from a single vantage which has limited view geometry diversity.
-    The assumption of spherically symmetry naturally produces a well-conditioned inverse problem from a single measurement taken at any vantage and avoids an underdetermined system (ill-posedness) by keeping model dimensionality low.
+    The assumption of spherical symmetry naturally produces a well-conditioned inverse problem from a single measurement taken at any vantage and avoids an underdetermined system (ill-posedness) by keeping model dimensionality low.
 
     A fundamental contribution to the field is the Chamberlain model, which is a spherically symmetric model derived from knowledge of motion of H atoms in the upper atmosphere (@earth_exosphere).  Under Liouville's theorem, the model makes some simple assumptions about the trajectories followed by exospheric H atoms and derives a density distribution from the resulting PDE.
-    Baliukin et al. @baliukin applied the Chamberlain model to measurements from the SOHO/SWAN mission, extending it to take into account solar radiation pressure, loss of Lyman-α-scattering H atoms over time due to ionization, and prior knowledge of H density at lower altitudes from empirical models (e.g. NRLMSIS). (#rt([FIXME: citation, does Chamberlain also depend on exobase knowledge?])).  The retrieval utilizes an onion-peeling technique where layers of the exosphere are retrieved one-at-a-time starting at the outermost layer and moving inwards.
+    Baliukin et al. @baliukin applied the Chamberlain model to measurements from the SOHO/SWAN mission, extending it to take into account solar radiation pressure, loss of Lyman-α-scattering H atoms over time due to ionization, and prior knowledge of H density at lower altitudes from empirical models (e.g. NRLMSIS). The retrieval utilizes an onion-peeling technique where layers of the exosphere are retrieved one-at-a-time starting at the outermost layer and moving inwards.
 
     Other techniques include parametric 1D models found empirically and fit to data.  Østgaard et al. @ostgaard use a double-exponential model following the form
 
@@ -1324,7 +1330,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
         $n_H (r) = n_1 "exp"(-r/alpha_1) + n_2 "exp"(-r/alpha_2)$
     )
 
-    where $n_1, n_2, alpha_1, alpha_2$ are unknown model coefficients.  The two exponentials express a belief that the H density distribution consists of two populations of H density atoms.  Additionally, this simple exponential formulation permits an analytic line integration that Østgaard et al. utilize to perform model fitting directly in the measurement domain with no tomographic operator.  The exact method of fitting is not described, but most likely a linear regression similar to
+    where $n_1, n_2, alpha_1, alpha_2$ are unknown model coefficients.  The two exponentials express the expectation that the H density distribution consists of two populations of H density atoms having distinct radial decay rates (known as _scale heights_).  Additionally, this simple exponential formulation permits an analytic line integration that Østgaard et al. utilize to perform model fitting directly in the measurement domain with no tomographic operator.  The exact method of fitting is not described, but most likely a linear regression similar to
 
     #math.equation(
         $
@@ -1333,7 +1339,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
         $
     )
 
-    where $bold(c) = {n_1, n_2, alpha_1, alpha_2}$ and $bold(y)_bold(c)$ is column densities derived by analytically integrating $M(bold(c))$.
+    where $bold(c) = {n_1, n_2, alpha_1, alpha_2}$ are the 4 free model parameters and $bold(y)_bold(c)$ is column densities derived by analytically integrating $M(bold(c))$.
 
     While computationally simple, these 1D solutions are not capable of capturing spherical asymmetries such as the geotail which are hypothesized to exist in the exosphere and are a major science target of Carruthers.  The next few sections build upon these ideas to create more sophisticated models that are useful when more measurement data is available from orbits designed to provide better view geometry diversity.
 
@@ -1366,7 +1372,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
       $
       ) <scipy_sph>
 
-      where $bold(c) = {{a_(0 0), ...}, {b_(0 0), ...}, {p_(0 0), ...}, {q_(0 0), ...}, c, k}$ are model parameters.  Note that $∀l : B_(l 0)(r) := 0$.
+    where $bold(c) = {{a_(0 0), ...}, {b_(0 0), ...}, {p_(0 0), ...}, {q_(0 0), ...}, c, k}$ are model parameters.  Zoennchen et al. truncate to $l ≤ 3$ for a total of $4 × 16 + 2 = 66$ free parameters. Note that $∀l : B_(l 0)(r) := 0$ by definition.
 
       The formulation of $"SHR"(r, e, a)$ in @scipy_sph differs slightly from the original in @zoennchen_new so that $Y_(l m)$ corresponds directly to Scipy's `sph_harm_y` function.
 
@@ -1375,20 +1381,20 @@ A summary of all variables and sources of randomness is given in @knownvariables
       #math.equation(
           $
               hat(bold(c)) = arg min_bold(c) ||bold(y) - F(M(bold(c)))||_2^2 + lambda ||D_e M(bold(c))||_2^2 + lambda ||D_a M(bold(c))||_2^2 \
-              hat(bold(x))_"HDOF" = M(hat(bold(c)))
+              hat(bold(rho))_"SHR" = M(hat(bold(c)))
           $
       )
 
       where $D_e$ and $D_a$ are finite difference operators for Tikhonov regularization that enforces elevational and azimuthal smoothness.
 
-    == High Degree-of-Freedom
+    == High Degree-of-Freedom <hdof>
 
-      An alternative approach presented in Zoennchen et al. @zoennchen_new  @gonzalolaica and based on @solartomography1 is the #gls("HDOF") method which uses a non-parametric model where each voxel in the underyling density discretization is a separately optimizable parameter.  This method utilizes #gls("MAP") estimation which is optimal in a probabilistic sense but requires assumptions about the density distribution and noise statistics.  Specifically this method assumes that hydrogen density is a #gls("GMRF") distributed according to a known prior distribution $cal(N)(bold(x)_"pr", Σ_"pr")$ with mean and covariance $bold(x)_"pr"$ and $Σ_"pr"$ provided externally (e.g. derived from other datasets #rt("FIXME: which dataset?")) and measurements follow a noise distribution $Σ_"e"$.
+      An alternative approach presented in Zoennchen et al. @zoennchen_new  @gonzalolaica and based on @solartomography1 is the #gls("HDOF") method which uses a non-parametric model where each voxel in the underyling density discretization is a separately optimizable parameter.  This method utilizes #gls("MAP") estimation which is optimal in a probabilistic sense but requires assumptions about the density distribution and noise statistics.  Specifically this method assumes that hydrogen density is a #gls("GMRF") distributed according to a known prior distribution $cal(N)(bold(rho)_"pr", Σ_"pr")$ with mean and covariance $bold(rho)_"pr"$ and $Σ_"pr"$ provided externally (e.g. a spherically-symmetric Chamberlain model) and measurements follow a noise distribution $Σ_"e"$.
 
       Under these assumptions, the #gls("MAP") solution has closed form
 
       #math.equation(
-          $hat(bold(x))_"MAP" = (L^T Σ_e^(-1) L + Σ_"pr"^(-1))^(-1)(L^T Σ_e^(-1) bold(y) + Σ_"pr"^(-1) x_"pr")$
+          $hat(bold(rho))_"MAP" = (L^T Σ_e^(-1) L + Σ_"pr"^(-1))^(-1)(L^T Σ_e^(-1) bold(y) + Σ_"pr"^(-1) bold(rho)_"pr")$
       ) <gonzalo_map>
 
       where $L$ is a matrix representation of forward operator $f$.
@@ -1397,22 +1403,22 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
       #math.equation(
           $
-              hat(bold(x))_"MAP" = bold(x)_"pr" + underbrace(Σ_"pr" L^T (L Σ_"pr"L^T + Σ_e)^(-1), K)(bold(y) - L bold(x)_"pr")
+              hat(bold(rho))_"MAP" = bold(rho)_"pr" + underbrace(Σ_"pr" L^T (L Σ_"pr"L^T + Σ_e)^(-1), K)(bold(y) - L bold(rho)_"pr")
           $
       ) <gonzalo_map_alt>
 
       // #math.equation(
       //     $
-      //         hat(bold(x))_"MAP" = bold(x)_"pr" + K(bold(y) - L bold(x)_"pr") \
+      //         hat(bold(rho))_"MAP" = bold(rho)_"pr" + K(bold(y) - L bold(rho)_"pr") \
       //         K = (L^T Σ_e^(-1) L + Σ_"pr"^(-1))^(-1) L^T Σ_e^(-1)
       //     $
       // ) <gonzalo_map_alt>
 
-      which illustrates that the #gls("MAP") solution is the density prior which has been shifted by residual measurement error $bold(y) - L bold(x)_"pr"$ projected back on to the density domain.
+      which illustrates that the #gls("MAP") solution is the density prior which has been shifted by residual measurement error $bold(y) - L bold(rho)_"pr"$ projected back on to the density domain.
 
-      The matrix $K$ serves as a weighted pseudoinverse which balances between using prior information from $bold(x)_"pr"$ versus measurement data $bold(y)$ based on uncertainty in the prior ($Σ_"pr"$) and measurement noise ($Σ_e$).
+      The matrix $K$ serves as a weighted pseudoinverse which balances between using prior information from $bold(rho)_"pr"$ versus measurement data $bold(y)$ based on uncertainty in the prior ($Σ_"pr"$) and measurement noise ($Σ_e$).
 
-      Unfortunately, the formulation given in @gonzalo_map_alt is not always computationally tractible, as simply storing the result of $L Σ_"pr" L^T$ for a relatively small forward operator requires excessive memory (e.g. 10·64² LOS, 50³ voxels → 125 GB).  Zoennchen solve this by observing that $Σ_"pr"^(-1)$ is sparse given locality assumptions of a GRMF (distant voxels are independent), and full computation of a dense matrix is unnecessary.  Another approach is to write the solution as a minimization problem @icon_inversion like
+      Unfortunately, the formulation given in @gonzalo_map_alt is not always computationally tractible, as simply storing the result of $L Σ_"pr" L^T$ for a relatively small forward operator requires excessive memory (e.g. 10·64² LOS, 50³ voxels → 125 GB).  Zoennchen et al. solve this by observing that $Σ_"pr"^(-1)$ is sparse given locality assumptions of a GRMF (distant voxels are independent), and full computation of a dense matrix is unnecessary.  Another approach is to write the solution as a minimization problem @icon_inversion like
 
       #math.equation(
           $
@@ -1424,18 +1430,18 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
       #math.equation(
           $
-              hat(bold(c)) = arg min_(bold(c)) ||bold(y) - F(M(bold(c)))||_(Σ_e^(-1))^2 + ||M(bold(c)) - bold(x)_"pr"||_(Σ_"pr"^(-1))^2 \
-              hat(bold(x))_"MAP" = M(bold(hat(c)))
+              hat(bold(c)) = arg min_(bold(c)) ||bold(y) - F(M(bold(c)))||_(Σ_e^(-1))^2 + ||M(bold(c)) - bold(rho)_"pr"||_(Σ_"pr"^(-1))^2 \
+              hat(bold(rho))_"MAP" = M(bold(hat(c)))
           $
       )
 
       where model $m$ is the identity operator for this non-parametric case.
 
-      This minimization problem can be solved using a number of iterative methods, such as conjugate gradient or automatic differentiation (utilizing the differentiable forward operator presented in @raytracer).
+      This minimization problem can be solved using a number of iterative methods, such as conjugate gradient descent or optimizers which utilize automatic differentiation (taking advantage of the differentiable forward operator presented in @raytracer).
 
   == Robust, Regularized, Positive Estimation
 
-    Cucho-Padin et al., present another non-parametric method called #gls("RRPE") @rrpe @gonzalorrpe where voxels are allowed to vary independently. This model uses several 1D Tikhonov regularizers to enforce smoothness in each dimension.  The optimization problem is written
+    Cucho-Padin et al., present a non-parametric method called #gls("RRPE") @rrpe @gonzalorrpe where voxels are allowed to vary independently. This model uses several 1D Tikhonov regularizers to enforce smoothness in each dimension.  The optimization problem is written
 
     #math.equation(
         $
@@ -1443,7 +1449,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
             + lambda_r ||D_r M(bold(c))||_2^2
             + lambda_e ||D_e M(bold(c))||_2^2
             + lambda_a ||D_a M(bold(c))||_2^2 \
-            hat(bold(x))_"RRPE" = M(hat(bold(c)))
+            hat(bold(rho))_"RRPE" = M(hat(bold(c)))
         $
     )
 
@@ -1451,46 +1457,60 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   == Spherical Harmonic Spline Model <spline_model>
 
-    This section describes a partially separable model which uses spherical harmonics as basis functions like in @sph_power.  However, instead of an inverse power law for controlling radial variation of spherical harmonic coefficients, this method samples the coefficients from cubic spline functions.  This formulation is less strict about the shape of radial density profiles but still enforces smoothness of spherical harmonic coefficients.
+    This section describes a new partially separable model which uses spherical harmonics as basis functions like in @sph_power.
 
-    The model can be written as
+    Previous models are either incapable of representing spherical asymmetries, require a density prior (problematic for an understudied atmospheric regime), or lack the interpretability of a spherical harmonic basis.
+    This method replaces the relatively strong assumption of an inverse power law governing radial density variation with a more adaptable cubic spline model.
+      This formulation is less strict about the shape of radial density profiles but still enforces smoothness of spherical harmonic coefficients.
+
+    The model is written as
 
     #math.equation(
         $
-            M(bold(c)) &= sum_(l=0)^L sum_(m=-l)^l S_(l m)(r) X_(l m)(e, a) \
+            M(bold(c)) &= H(S(bold(c))) := sum_(l=0)^L sum_(m=-l)^l H_(l m)(e, a) S_(l m)(r) \
             S_(l m)(r) &= sum_(k=1)^K c_(l m k) B_(k 2)(r)
         $
     )
 
     #math.equation($
-        X_(l m)(e, a) = cases(
+        H_(l m)(e, a) = cases(
         "Re"[Y_(l m)(e, a)] "if" m ≥ 0,
         "Im"[Y_(l m)(e, a)] "if" m < 0,
         )
       $)
 
-    where $S_(l m)(r)$ is a cubic spline function composed of $K$ third order B-splines ${B_(1 2), ...}$ that define spherical harmonic coefficients for any radial shell from a small number of control points.  This formulation of basis function $X_(l m)$ is equivalent to @sph_power but avoids notational awkwardness when $m ≥ 0$ versus $m < 0$.
+    where $S_(l m)(r)$ is a cubic spline function composed of $K$ third order B-splines ${B_(1 2), ...}$ that define spherical harmonic coefficients for any radial shell from a small number of control points, illustrated in @sph_harm_spline.  This basis function formulation for $H_(l m)$ is equivalent to the one presented in @sph_power but avoids notational awkwardness when $m ≥ 0$ versus $m < 0$.
 
-    The number and location of the $K$ control points used in the spline functions and the maximum spherical harmonic degree $L$ are fixed and selected before optimization.
+
+      #figure(
+          pad(x:-50%,
+              image("figures/harm_spline.svg", height: 15em),
+          ),
+          caption: "Smooth variation of coefficients in radial direction enforced by B-splines"
+      ) <sph_harm_spline>
+
+    The number and location of the $K$ control points used in the spline functions and the maximum spherical harmonic degree $L$ are selected at model initialization time.
+
+
     $bold(c) = {c_(0 0 0), ...}$ are the model parameters and the minimization problem is
 
     #math.equation(
         $
-            hat(bold(c)) = arg min_(bold(c)) ||y - F(M(bold(c)))||_1 + lambda ||"clip"_(-infinity, 0)(M(bold(c)))||_1 \
-            bold(hat(x)) = M(bold(hat(c)))
+            hat(bold(c)) = arg min_(bold(c)) ||bold(y) - F(M(bold(c)))||_1 + lambda_1 ||S(bold(c))||_1 + lambda_2 ||"clip"_(-infinity, 0)(M(bold(c)))||_1 \
+            bold(hat(rho)) = M(bold(hat(c)))
         $
-    )
+    ) <sphharmspline_min>
 
-    #rt([FIXME: need to justify choice of $L_1$ instead of $L_2$ here.])
+    @sphharmspline_min uses an $L_1$ fidelity loss for robustness against outliers in measurements $bold(y)$, an $L_1$ regularization (LASSO) on spline-interpolated coefficients for model interpretability, and an $L_1$ penalization term on negative densities to enforce model correctness.
+    Note that a choice of $L=0$ enforces spherical symmetry like the methods presented in @1d_retrieval, which can be useful for single snapshot retrievals.
 
-    Note that a choice of $L=0$ enforces spherical symmetry, which can be useful for single snapshot retrievals like those presented in @1d_retrieval.
 
     Because of the generalizability of spline density profiles and interpetability of spherical harmonics by the atmosphere science community, this is the primary method that will be used by the Carruthers mission for retrieving exospheric density during exospheric quiet conditions.
 
     // === Implementation Notes
 
-    //   - Basis functions ${X_(l m), ...}$ may be computed once during initialization and used for all grid radial shells
-    //   - Dimensions $l$ and $m$ should be flattened and merged for ${X_(0 0), ...}$ and ${c_(0 0 0), ...}$ to avoid an awkward pyramidal array structure
+    //   - Basis functions ${H_(l m), ...}$ may be computed once during initialization and used for all grid radial shells
+    //   - Dimensions $l$ and $m$ should be flattened and merged for ${H_(0 0), ...}$ and ${c_(0 0 0), ...}$ to avoid an awkward pyramidal array structure
     //   - affine map for log-spaced control points
 
       #rt([FIXME: include summary table? TBD])
@@ -1500,10 +1520,10 @@ A summary of all variables and sources of randomness is given in @knownvariables
           table.header([*Method*], [*Parametric*], [*\# Free Parameters*], [*Cost Function*]),
           [Chamberlain], [?], [], [],
           [Østgaard], [Yes], [], [],
-          [SHR], [Yes], [], [],
+          [SHR], [Yes], [66], [],
           [HDOF], [No], [N/A], [],
           [RRPE], [No], [N/A], [],
-          [Spline], [Yes], [], [],
+          [Spline], [Yes], [256], [],
       )
 
 
@@ -1555,87 +1575,22 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
 
 
-  #figure(
-      table(
-          table.header([Camera], [FOV\ (degrees)], [Resolution\ (pixels)], [Angular Res.\ (degrees)], [Spatial Res.\ (Re, projected)]),
-          align: horizon,
-          [Polar WFI], [18°], [50x100], [FIXME xxx radial\ yyy azimuthal], [xxx radial],
-          [Polar NFI], [3.6°], [50x100], [xxx radial\ yyy azimuthal], [xxx radial],
-          columns: (auto, auto, auto, auto, auto),
-      ),
-      caption: [Circular camera geometry specifications.\ Spatial resolution is projected onto Earth tangent plane as in @earth_fov(a)]
-  ) <camera_specs_sci>
-
-
-  #figure(
-      table(
-          columns: 4,
-          table.header(
-              "Dimension", "Range", "# of Bins", "Spacing",
-          ),
-          table.hline(stroke: 2pt),
-          [time], [NA], [NA], [linear, 6 hr],
-          [radius], [3-25 Re], [200], [logarithmic],
-          [elevation], [0-180 deg.], [60], [linear, 3 deg.],
-          [azimuth], [0-360 deg.], [80], [linear, 4.5 deg.],
-      ),
-      caption: "Quiet Time"
-  ) <quietbins>
-
-  #figure(
-      table(
-          columns: 4,
-          table.header(
-              "Dimension", "Range", "# of Bins", "Spacing",
-          ),
-          table.hline(stroke: 2pt),
-          [time], [NA], [NA], [linear, 1 hr],
-          [radius], [3-25 Re], [200], [logarithmic],
-          [elevation], [0-180 deg.], [60], [linear, 3 deg.],
-          [azimuth], [0-360 deg.], [80], [linear, 4.5 deg.],
-      ),
-      caption: "Storm Time"
-  ) #label("stormbins")
 
   The Carruthers mission is required to prove that it is capable of meeting mission requirements set during its proposal.  With physics of the forward model, a retrieval algorithm implementation and knowledge of a hypothetical exosphere distribution, it is possible to justify that these requirements will be met through simulation.
   This chapter describes the retrieval algorithm performance requirements on the Carruthers mission, introduces synthetic ground truth datasets created by the exospheric research community, analyzes retrieval results of a few algorithms from @static_retrieval on a few of these datasets, and provides rationale for tunable settings used in the algorithms including model parameters and discretizations.
 
-  == Reconstruction Requirements and Ground Truth Datasets <recon_requirements>
+  == Reconstruction Requirements <recon_requirements>
 
     The Carruthers proposal stage set forth minimum requirements for the performance of the the thin exospheric density retrieval algorithms to ensure that reconstructions meet mission science objectives regarding the shape of the hydrogen distribution during geomagnetically quiet conditions (objective 1) and its transient response of the exosphere to impulsive geomagnetic storm events (objective 2).
 
-    As the purpose of Carruthers is to make discoveries about an atmospheric regime which is not well-known, algorithm performance validation relies on testing against datasets which are derived from physics simulations or prior retrievals made from limited data.  @datasets provides an overview of available datasets and their origins.
+    As the purpose of Carruthers is to make discoveries about an atmospheric regime which is not well-known, algorithm performance validation relies on testing against datasets which are derived from physics simulations or prior retrievals made from limited data.  @datasets goes into detail of available datasets and their origins.
 
-  #rt([FIXME: Lara will give more descriptions about datasets])
+    To meet science objective 1, Carruthers defines an "accuracy" requirement on densities retrieved from the datasets, constraining absolute error of every voxel in the retrieval to within ±50% of the ground truth.  Similarly, a "precision" requirement which is insensitive to bias in the retrieval ensures that temporal enhancements and depletions are measurable to within 20% of their actual value in the dynamic datasets.  These requirements also specify a minimum spatial reporting resolution of the retrievals, and either a 6 hour temporal resolution for geomagnetic quiet conditions or 1 hour for storm conditions.
+    Requirements are specified for a single arbitrary voxel at time $t$ and position $r e a$ and are limited to exospheric regions above 3 Re in altitude and where densities exceed 25 atoms/cm³ to avoid problems of ill-posedness during inversion.
+    // #rt([FIXME: The proposal does not specifically define a constraint on the confidence of the above requirements, but this will be considered in the next section.])
+    The proposal specifies a confidence level requiring 84% success rate of requirements over an ensemble of trials.
 
-  #rt([FIXME: dataset spatial/temporal ranges])
-
-  #rt([FIXME: put citation next to dataset name])
-
-  #figure(
-      table(
-          columns: 5,
-          inset: 4pt,
-          align: horizon,
-          table.header(
-              "Dataset", [Dynamic/\ Static], "Derived from", [Storm\ Condition], [Coverage],
-          ),
-          table.hline(stroke: 2pt),
-          [Zoennchen], [Static], [Data\ (TWINS)], [Quiet], [],
-          [Cucho-Padin], [Static], [Data\ (TWINS)], [Quiet], [],
-          [Pratik], [Dynamic], [Physics\ (MSIS)], [Quiet], [],
-          [Connor\ MSIS], [Dynamic], [Physics], [Quiet], [],
-          [Connor\ TIMEGCM], [Dynamic], [Physics], [Storm], [],
-          // [Cucho-Padin\ Dynamic], [Dynamic], [TWINS], [], []
-      ),
-      caption: "Storm Time"
-  ) <datasets>
-
-    To meet science objective 1, Carruthers defines an "accuracy" requirement on densities retrieved from the datasets, constraining absolute error of every voxel in the retrieval to within ±50% of the ground truth.  Similarly, a "precision" requirement which is insensitive to bias in the retrieval ensures that temporal enhancements and depletions are measurable to within 20% of their actual value in the dynamic datasets.  These requirements also specify a minimum spatial reporting resolution of the retrievals, and either a 6 hour temporal resolution for quiet conditions or 1 hour for storm conditions.
-    Requirements are specified for a single arbitrary spatiotemporal voxel $t,p$ and are limited to regions where densities exceed 25 atoms/cm³ to avoid problems of ill-posedness during inversion.
-    #rt([The proposal does not specifically define a constraint on the confidence of the above requirements, but this will be considered in the next section.])
-
-    Precise definitions of requirements defined in the proposal are given in @requirements that ensure the reconstructed density distribution $bold(hat(x))$ is representative of ground truth distribution $bold(x)$ and that exospheric response to storms is detectable.
+    Precise definitions of requirements defined in the proposal are given in @requirements that ensure the reconstructed density distribution $bold(hat(rho))$ is representative of ground truth distribution $bold(rho)$ and that exospheric response to storms is detectable.
 
   #figure(
       table(
@@ -1653,76 +1608,183 @@ A summary of all variables and sources of randomness is given in @knownvariables
           //     $)],
           [Accuracy],
           [#math.equation(
-              $(|hat(x)_"t,p" - x_"t,p"|) / x_"t,p" ≤ 50%$
+              $(|hat(rho)_"trea" - rho_"trea"|) / rho_"trea" ≤ 50% "with 84% confidence"$,
           )],
 
           [Change],
           [#math.equation(
-              $abs((hat(x)_"t+1,p" - hat(x)_"t,p")/hat(x)_"t,p" - (x_"t+1,p" - x_"t,p")/x_"t,p") ≤ 20%$
+              $abs((hat(rho)_"(t+1)rea" - hat(rho)_"trea")/hat(rho)_"trea" - (rho_"(t+1)rea" - rho_"trea")/rho_"trea") ≤ 20% "with 84% conf."$
           )],
 
           [Temporal Resolution], [Storm: $Delta t = 1$ hr\ Quiet: $Delta t = 6$ hr],
           [Radial Resolution], [$Delta r ≤ 0.5$ Re],
           [Elevational Resolution], [$Delta e ≤ 180°$],
-          [Azimuthal Resolution], [$Delta a ≤ 120°$]
+          [Azimuthal Resolution], [$Delta a ≤ 120°$],
+          // [Additional constraints], [$r ≥ 3$ Re and $x_"trea" ≥ 25$ atom/cm³]
 
       ),
-      caption: [Requirements for every reconstructed voxel $hat(x)_"t,p"$ where ground truth density $x_"t,p" ≥ 25$ atom/cm³. #rt([FIXME: include confidence level])]
+      caption: [Requirements for every reconstructed voxel $hat(rho)_"trea"$ where ground truth density $x_"trea" ≥ 25$ atom/cm³ and $r > 3$ Re.]
   ) <requirements>
 
     Using the forward model from @measurement_constraints and ground truth datasets, it is possible to simulate measurements that will be taken by Carruthers on-orbit.  With accurate simulated measurements, performance of retrieval algorithms can be analyzed in a Monte Carlo fashion against the mission requirements given in @requirements. The block diagram in @codeoverview shows an overview of an end-to-end validation of an arbitrary iterative retrieval algorithm against a ground truth dataset.
+    Validation consists of four stages: a simulator for generating realistic noisy radiance measurements in #gls("DN"); a calibrator to convert sensor readings to interpretable column densities while removing instrument effects; a retrieval algorithm which iteratively fits a density to the column densities; a validator which checks that retrieved density $hat(rho)$ meets the requirements defined above.  On orbit, the simulator output will be replaced with actual downlinked measurements from Carruthers.
 
     #figure(
-        image("figures/retrieval_overview.png", width: 90%),
-        caption: "Diagram of simulator and retrieval loop used during validation"
+        // image("figures/code_overview.drawio.png", width: 90%),
+        image("figures/thin_retrieval_flowchart.svg", width: 140%),
+        caption: "Flowchart of simulator, calibration, retrieval loop, and validation test"
 
     ) <codeoverview>
 
-  == Retrieval Performance <retrieval_validation>
-
-    The Spherical Harmonic Spline method introduced in @spline_model will be used by the Carruthers mission for static retrieval of exosphere during geomagnetically quiet conditions.  @quiet_recon gives accuracy error for a single static density retrieval which assumes the hydrogen density is stationary during a 2 week observation window with evolving vantage.  This test was repeated on the Zoennchen and Pratik datasets for #rt("50 trials (FIXME)") to establish that accuracy requirements are met at the necessary confidence level.
-
-  #figure(
-      grid(
-          columns: 2, column-gutter: 1em,
-          subfigure(box(width:100pt, height:100pt, stroke:1pt), "quietrecon", "Zoennchen recon. error"),
-          subfigure(box(width:100pt, height:100pt, stroke:1pt), "quietrecon", "Pratik recon. error"),
-          subfigure(box(width:100pt, height:100pt, stroke:1pt), "quietrecon", "Zoennchen error variance (50 trials (FIXME))"),
-          subfigure(box(width:100pt, height:100pt, stroke:1pt), "quietrecon", "Pratik error variance (50 trials (FIXME))"),
-
-      ),
-      caption: [#rt([FIXME: placeholder]).  Static retrieval error during geomagnetically quiet conditions shown over 3 cardinal Cartesian planes.  Monte-Carlo trials show reconstructions meet accuracy requirement with sufficiently high confidence.]
-  ) <quiet_recon>
+    @quietbins and @stormbins give the grid used for retrieving densities, derived from the requirements in @requirements.
 
   #figure(
       table(
-          columns: 2,
+          columns: 4,
+          table.header(
+              "Dimension", "Range", "# of Bins", "Spacing",
+          ),
+          table.hline(stroke: 2pt),
+          [time], [NA], [NA], [linear, 6 hr],
+          [radius], [3-25 Re], [200], [logarithmic],
+          [elevation], [0-180 deg.], [60], [linear, 3 deg.],
+          [azimuth], [0-360 deg.], [80], [linear, 4.5 deg.],
+      ),
+      caption: "Quiet Time Reconstruction Grid"
+  ) <quietbins>
+
+  #figure(
+      table(
+          columns: 4,
+          table.header(
+              "Dimension", "Range", "# of Bins", "Spacing",
+          ),
+          table.hline(stroke: 2pt),
+          [time], [NA], [NA], [linear, 1 hr],
+          [radius], [3-25 Re], [200], [logarithmic],
+          [elevation], [0-180 deg.], [45], [linear, 3 deg.],
+          [azimuth], [0-360 deg.], [60], [linear, 4.5 deg.],
+      ),
+      caption: "Storm Time Reconstruction Grid"
+  ) #label("stormbins")
+
+  == Datasets <datasets>
+
+    The retrieval algorithm implicitly encodes assumptions about hydrogen density distribution (smoothness, spherical harmonic structures, etc.), and verification that these assumption hold requires testing against plausible ground truth densities.  This section overviews some of the ground truth datasets that are available for validation, their origins, spatiotemporal coverage, and model assumptions
+
+  #rt([FIXME: Lara will give more descriptions about datasets])
+
+    ==== Zoennchen & TWINS
+
+    Using the parametric model described in @sph_power, Zoennchen et. al fit several density distributions to Lyman-α radiance measurements observed by TWINS @twins from specific days in both solar minimum and maximum conditions during geomagnetic quiet conditions.
+    Notably, this dataset (referred to as the *Zoennchen* dataset) was generated from a spherical harmonic model with order L=3 and stronger assumptions about radial decay of hydrogen distribution.  It is included here for completeness, but validation against models with dissimilar assumptions is important to avoid an _inverse crime_ @inversecrime.
+
+    Zoennchen et. al also present a second dataset (known as the *TWINS* dataset) derived from the model discussed in @hdof using the same measurement constraints as the *Zoennchen* dataset and a prior of a spherically-symmetric Chamberlain model with exobase parameters extracted from NRLMSIS 2.0 @msis.  This dataset is radially non-monotic in some high-altitude regions, which is not physically realistic based on current understanding of the exosphere.
+
+  ==== Vidal-Madjar and Bertaux
+
+  Another validation dataset which will be referred to as the *VMB* (Vidal-Madjar & Bertaux) model @vmb is a physics-based simulation of the exosphere.  It takes as input a 2D temperature distribution at the exobase (derived from NRLMSIS 2.0 @msis) and propagates this upwards and laterally.  By choosing different dates of the MSIS inputs, the model supports generating both geomagnetically quiet and storm-condition densities.  This simulation utilizes Louisville equations to propagate constraints from the exobase, ignoring physical processes which are known to influence exospheric hydrogen distribution such as solar radiation pressure and charge exchange. #rt([FIXME: wording?])
+
+  @datasets_table gives an overview of these datasets.
+
+  #figure(
+      table(
+          columns: 5,
           inset: 4pt,
           align: horizon,
           table.header(
               "Dataset", [Dynamic/\ Static], "Derived from", [Storm\ Condition], [Coverage],
           ),
           table.hline(stroke: 2pt),
-          [Observation window], [14 days],
-          [Number of observations], [14],
-          [Observation period], []
+          [*Zoennchen* @zoennchen_new], [Static], [Data\ (TWINS)], [Quiet], [3-25 Re],
+          [Cucho-Padin \ *TWINS* @zoennchen_new], [Static], [Data\ (TWINS)], [Quiet], [3-25 Re],
+          [Vidal-Madjar\ & Bertaux (*VMB*)], [Dynamic], [Simulation], [Quiet/Storm], [3-15 Re\ 3 months],
+          [Connor\ *MSIS*], [Dynamic], [Simulation\ (MSIS)], [Quiet], [3-25 Re\ 3 weeks],
+          [Connor\ *TIMEGCM*], [Dynamic], [Simulation\ (TIMEGCM)], [Storm], [3-25 Re\ 10 days],
+          // [Cucho-Padin\ Dynamic], [Dynamic], [TWINS], [], []
+      ),
+      caption: "Synthetic ground-truth datasets"
+  ) <datasets_table>
+
+  #rt([FIXME: add section about connor datasets, or remove the rows])
+
+  == Retrieval Performance <retrieval_validation>
+
+    The Spherical Harmonic Spline method introduced in @spline_model will be used by the Carruthers mission for static retrieval of exosphere during geomagnetically quiet conditions.  @quiet_recon gives accuracy error for a single static density retrieval which assumes the hydrogen density is stationary during a 2 week observation window with evolving vantage.  This test was repeated on the Zoennchen and VMB datasets for #rt("50 trials (FIXME)") to establish that accuracy requirements are met at the necessary confidence level.
+
+    Notably, the retrieval error is the smallest in the transverse (YZ) plane which is especially noticeable in the VMB retrieval.  This plane is oriented roughly perpendicular to measured #gls("LOS"), which intuitively should give good conditioning, and thus high-quality retrievals, to voxels in this region.
+
+    Additionally, errors are larger in the low-altitude region near the midnight (-X) side of Earth, where no #gls("LOS") intersect due to occlusion by the Earth and optically-thick exosphere.  Voxels in this region are constrained only by spatial smoothing in the reconstruction model.
+
+    The complete model parameters (e.g. control points, spherical harmonic order, etc.) and experimental settings (e.g. grid and view geometry resolution) used for reconstructing both of these cases is given in @quiet_recon_params.
+    Experimental justification for model parameter selection is given in the next section.
+
+  #let h = ("height": 12em);
+  #figure(
+      grid(
+          columns: 1, column-gutter: 1em,
+          subfigure(image("figures/zoennchen_err.png", ..h), "quietrecon", "Zoennchen reconstruction error"),
+          subfigure(image("figures/vmb_err.png", ..h), "quietrecon", "VMB reconstruction error"),
+      ),
+      caption: [Static retrieval error during geomagnetically quiet conditions shown over 3 cardinal Cartesian planes.]
+
+  ) <quiet_recon>
+
+  #let h = ("height": 15em);
+  #figure(
+      grid(
+          columns: 2, column-gutter: 1em,
+          subfigure(image("figures/zoennchen_coeffs.png", ..h), "quietcoeffs", "Zoennchen retrieved coefficients"),
+          subfigure(image("figures/zoennchen_direct.png", ..h), "quietcoeffs", "Zoennchen ground truth coefficients"),
+          subfigure(image("figures/vmb_coeffs.png", ..h), "quietcoeffs", "VMB retrieved coefficients"),
+          subfigure(image("figures/vmb_direct.png", ..h), "quietcoeffs", "VMB ground truth coefficients"),
+      ),
+      caption: [Static retrieval error during geomagnetically quiet conditions shown over 3 cardinal Cartesian planes.  Monte-Carlo trials show reconstructions meet accuracy requirement with sufficiently high confidence.]
+
+  ) <quiet_recon_coeffs>
+
+  #figure(
+      table(
+          columns: 2,
+          inset: 4pt,
+          align: horizon,
+          "Problem Parameter", "Value",
+          table.hline(stroke: 2pt),
+          "Simulation Grid", [500x45x60],
+          "Reconstruction Grid", [see @quietbins],
+          "View Geometry", [see @camera_specs_sci],
+          "Observation window", "14 days",
+          "Harmonic Truncation Order (L)", "3",
+          "Harmonic Spline C. Points", "16"
       ),
       caption: "Reconstruction parameters"
   ) <quiet_recon_params>
 
+  #figure(
+      table(
+          table.header([Camera], [FOV\ (degrees)], [Resolution\ (pixels)], [Angular Res.\ (degrees)], [Spatial Res.\ (Re, projected)]),
+          align: horizon,
+          [Polar WFI], [18°], [50x100], [FIXME xxx radial\ yyy azimuthal], [xxx radial],
+          [Polar NFI], [3.6°], [50x100], [xxx radial\ yyy azimuthal], [xxx radial],
+          columns: (auto, auto, auto, auto, auto),
+      ),
+      caption: [Circular camera geometry specifications.\ Spatial resolution is projected onto Earth tangent plane as in @earth_fov(a)]
+  ) <camera_specs_sci>
 
-  == Implementation Approach Justification
 
-    The purpose of this section is to justify configurable experimental parameters (i.e. excluding algorithm hyperparameters) used to evaluate retrieval performance.  This includes observation window, observation orbit location, science binning resolution, and density spherical grid resolution.  Aliasing effects due to misconfigured experimental settings can
+
+  == Implementation Approach Justification <static_justification>
+
+  The purpose of this section is to justify configurable experimental parameters (i.e. excluding algorithm hyperparameters) used to evaluate retrieval performance.  This includes observation window, observation orbit location, science binning resolution, and density spherical grid resolution.  Improper choice of these parameters can introduce numerical errors that significantly impact retrieval performance.
 
     === Temporal Baseline of Stacked Images <static_dynamic>
 
-    The algorithms described in @static_retrieval implicitly assume that densities being retrieved do not vary temporally within the observation window.  While this holds approximately true for quiet conditions when exospheric dynamics are slowly evolving, an averaging effect from this assumption contribute non-neglible error to the retrieval.  To upper-bound the error from this effect, it is possible to compute the worst case of the error between mean of the density within the window to an instantaneous density within the window.  An explicit expression is given below for voxel $r e a$,
+    The algorithms described in @static_retrieval implicitly assume that densities being retrieved do not vary temporally within the observation window.  While this holds approximately true for quiet conditions when exospheric dynamics are slowly evolving, an averaging effect from this assumption contributes non-neglible error to the retrieval.  To upper-bound the error from this effect, it is possible to compute the worst case of the error between mean of the density within the window to an instantaneous density within the window.  An explicit expression is given below for voxel $r e a$,
 
     #math.equation(
-        $e_(r e a)(t) = max_(s in [t, t + Delta t])
-            abs(("mean"_(tau in [t, t + Delta t]) x_(tau r e a) - x_(s r e a)) / x_(s r e a)) \
-            e(t) = max_(r, e, a) e_(r e a)(t)
+        $e_(r e a)(t) &= max_(s in [t, t + Delta t])
+            abs((limits("mean")_(tau in [t, t + Delta t]) x_(tau r e a) - x_(s r e a)) / x_(s r e a)) \
+            e(t) &= max_(r, e, a) e_(r e a)(t)
         $
     ) <static_equation>
 
@@ -1732,67 +1794,174 @@ A summary of all variables and sources of randomness is given in @knownvariables
     //     $"mean"_(tau in [t, t + Delta t]) = sum_(tau=t)^(t + Delta t) x_(tau r e a)$
     // )
 
-        Where $e(t)$ considers the worst-case error across all voxels.  @static_assumption shows @static_equation above evaluated at all times in the Pratik dataset #rt([(FIXME: more official name?)]) for various $Delta t$.   Based on this data, Carruthers has chosen an observation window size of $Delta t = 14 "days"$ to constrain averaging effects to no more than 10% error.
+        Where $e(t)$ considers the worst-case error across all voxels.  @static_assumption shows @static_equation above evaluated at all times in the VMB dataset for various $Delta t$.   Based on this data, Carruthers has chosen an observation window size of $Delta t = 14 "days"$ to constrain averaging effects to no more than 10% error.
 
   #figure(
       image("figures/scratch_static_assumption.png", width: 20em),
-      caption: [A static algorithm returns a retrieval which ideally should be close to the average density over a given temporal window by the mean value theorem. #rt([FIXME: rerun this for Pratik dataset (and other datasets?)])]
+      caption: [Upper-bound of errors induced by temporal averaging effects of assuming a static scene. #rt([FIXME: rerun this for VMB dataset (and other datasets?)])]
   ) <static_assumption>
 
-    === Observation Period
+    === View Geometry and Grid Discretization <discretization>
 
-    === Science Pixel Binning Discretization <spb_discretization>
     @post_processing introduced the notion of _science pixel binning_, a log-polar binning scheme which reduces the number of data constraints that need to be ingested by the retrieval algorithm while attempting to minimize loss of information in the measurement data.
 
-    Choosing a science pixel binning scheme that has sufficient radial and azimuthal bins is important to retrieval performance, and is dependent on the 3D discretization grid, the density being observed, and view geometry.  A choice of resolution which is too low introduces binning error into the retrieval algorithm which can dominate noise-induced error and lead to poor retrieval performance even under high #gls("SNR").
+    Choosing a science pixel binning scheme that has sufficient radial and azimuthal resolution is important to retrieval accuracy, and depends on the 3D discretization grid, the density being observed, and view geometry.  A choice of resolution which is too low introduces binning error into the retrieval algorithm which can dominate noise-induced error and lead to poor retrieval performance even under high #gls("SNR").
 
-    For a science pixel measurement to match its centroid measurement, as described in @retrieval_validation, column density should vary linearly within the science pixel.  However, this assumption can be violated due to the exponential nature of the hydrogen density distribution.
+    The retrieval algorithm reduces computational complexity by substituting a set of native pixel measurements that fall within a science pixel with the mean and their associated #glspl("LOS") with a single #gls("LOS") at the science pixel centroid.  This operation implicitly assumes that column density varies linearly within a science pixel, but this assumption is violated by the radially-exponential nature of the hydrogen density distribution.
     @spb_bad_discretization illustrates a case where binned radial resolution is too low to capture large hydrogen density gradients at low altitudes, leading to overestimated column densities during retrieval.
 
     #figure(
         image("figures/scratch_spb_discretization.jpg", height: 15em),
-        caption: [#rt([FIXME: placeholder]).  Large measurement quantization error incurred in regions with high gradients when science pixel binning is too coarse.  X axis is tangent point altitude.]
+        caption: [#rt([FIXME: placeholder]).  Large measurement quantization error incurred in regions with high gradients when science pixel binning is too coarse.  X axis is tangent point (TP) altitude.]
     ) <spb_bad_discretization>
 
-    A few potential solutions to this problem are summarized below:
+      // FIXME: delete this.  after changing SPB to 100x50 and increasing grid, things are working OK now
+    // A few potential solutions to this problem are summarized below:
 
-    \
-    1. Correct column density overestimation analytically.
-    2. Increase bin resolution to decrease overestimation effect.
-    3. Redefine science pixel binning to avoid problematic #gls("LOS") directions entirely.
-    4. Mask out LOS which exhibit non-linear change over the science binned pixel.
-    \
+    // \
+    // 1. Correct column density overestimation analytically.
+    // 2. Increase bin resolution to decrease overestimation effect.
+    // 3. Mask out LOS which exhibit non-linear change over the science binned pixel.
+    // 4. Redefine science pixel binning to avoid problematic #gls("LOS") directions entirely.
+    // \
 
-    Solution 1 requires assuming a specific functional form to the column density distribution across a pixel, which is undesirable.  Solution 2 is also not practical as science pixel bin resolution is presumably already selected to use all available computational resources.  Solution 3 is feasible, but requires changes to how science pixel view geometries are generated.  Post-processing uses solution 4, as it eliminates the overestimation issue (at the expense of some lost measurements) and is the most straightforward to implement.
+    // Solution 1 requires assuming a specific functional form to the column density distribution across a pixel, which is undesirable.  Solution 2 is also not practical as science pixel bin resolution is presumably already selected to use all available computational resources.  Solution 3 is feasible, but requires changes to how science pixel view geometries are generated.  Post-processing for Carruthers uses solution 4, as it eliminates the overestimation issue (at the expense of some lost measurements) and is the most straightforward to implement.
 
-    #figure(
-        grid(
-            columns: 2, column-gutter: 1em,
-            subfigure(box(width:100pt, height:100pt, stroke:1pt), "spbbad", "Before mask"),
-            subfigure(box(width:100pt, height:100pt, stroke:1pt), "spbbad", "After mask"),
+    // #figure(
+    //     grid(
+    //         columns: 2, column-gutter: 1em,
+    //         subfigure(box(width:100pt, height:100pt, stroke:1pt), "spbbad", "Before mask"),
+    //         subfigure(box(width:100pt, height:100pt, stroke:1pt), "spbbad", "After mask"),
 
-        ),
-        caption: [#rt([FIXME: placeholder]).  Error in column densities with problematic LOS eliminated with mask.]
-    ) <spb_bad_discretization_fix>
+    //     ),
+    //     caption: [#rt([FIXME: placeholder]).  Error in column densities with problematic LOS eliminated with mask.]
+    // ) <spb_bad_discretization_fix>
 
-    Based on experimentation like in @spb_bad_discretization_fix, Carruthers has selected a lower limit of 5 Re for science pixel #gls("LOS") tangent points to ensure column densities are sufficiently linear within a pixel and limit error incurred due to binning to no more than #rt([(FIXME: rerun experiment)])%.
+    // Based on experimentation like the one shown in @spb_bad_discretization_fix, Carruthers has selected a lower limit of 5 Re for science pixel #gls("LOS") tangent points to ensure column densities are sufficiently linear within a pixel and limit error incurred due to binning to no more than #rt([(FIXME: rerun experiment)])%.
 
-
-    === Grid Discretization <grid_discretization>
+    In a similar vein, an undersampled 3D grid that is coarse relative to the number of constraining #gls("LOS") (particularly in regions of high density gradients) can yield discretization artifacts in the raytraced images that significantly impact performance of the retrieval algorithm.  This is especially prevalent in the simulator, which uses native #gls("NFI") view geometry that has both high resolution and narrow #gls("FOV") resulting in a particularly dense #gls("LOS") sampling of the scene as illustrated in @los_discretization.
 
     #figure(
         image("figures/scratch_grid_discretization.jpg", height: 12em),
         caption: [#rt([FIXME: placeholder]).  Undersampled grid becomes apparent in discontinuities visible in measurements when LOS are sufficiently dense. X axis is tangent point altitude.]
-    )
+    ) <los_discretization>
+
+
+    The quantization error introduced by raytracing and binning for a particular grid and view geometry selection can be isolated by disabling instrument effects and comparing the output against an analytically computed column density.  Test density datasets like those in @datasets do not have a closed-form analytic column density, so a simpler model from @1d_retrieval is necessary.
+
+      As the framework developed in this thesis allows for differing grids and view geometries in the simulator and retrieval, these pipelines (shown in @discretization_flowchart) must be validated separately against an analytically derived ground truth, shown in @discretization_flowchart.
+
+    #figure(
+        image("figures/discretization_err_flowchart.png", width: 30em),
+        caption: [Discretization error of the simulator/retrieval pipelines can be analyzed by comparing their noiseless column density outputs against an analytic integration]
+    ) <discretization_flowchart>
+
+    @discretization_err_wfi and @discretization_err_nfi show the total error introduced by discretization in the simulator for several radial science pixel binning resolutions and radial grid resolutions, which are the main drivers of error.
+
+    #rt([FIXME: Lara: plots are simulator only.  include results for retrieval stage?])
+
+    #figure(
+        image("figures/discretization_err_wfi.png", height: 40%),
+        caption: "WFI Column density error induced by discretization of simulator 3D grid and view geometry.  Tests sweep over 3D grid radial bins and view geometry radial bins"
+    ) <discretization_err_wfi>
+
+    #figure(
+        image("figures/discretization_err_nfi.png", height: 40%),
+        caption: "NFI Column density error induced by discretization of simulator 3D grid and view geometry.  Tests sweep over 3D grid radial bins and view geometry radial bins"
+    ) <discretization_err_nfi>
+
+    @discretization_table summarizes the choice of 3D density discretization grid and science pixel binning resolution selected based on @discretization_err_wfi and @discretization_err_nfi and similar experiments for the retrieval stage, with experimentally swept parameters in bold.
+
+    #figure(
+        table(
+            columns: 4,
+            table.header([Algorithm Stage], [WFI View Geom.\ (rad.×azi.)], [NFI View Geom.\ (rad.×azi.)], [Grid\ (rad.×elev.×azi.)]),
+            table.hline(stroke: 2pt),
+            align: horizon,
+            [Simulator], [*100*\×50], [*100*\×50], [*500*\×45×60],
+            [Retrieval], [*100*\×50], [*100*\×50], [*200*\×45×60],
+        ),
+        caption: [Forward operator discretization parameters chosen to minimize errors while keeping in mind computational burden]
+    ) <discretization_table>
+
+
+        // image("figures/discretization_err_nfi.png"),
+
+    In summary, the above analysis suggests that a science pixel resolution of 100×50 pixels and hydrogen density resolution of 200 radial bins during retrieval, while 500 radial bins are necessary during simulation ..... #rt([FIXME])
+
+    === Reconstruction Model Parameters
+
+      #let bdiag_args = ("width": 7em, "left_sep": 1em)
+      #let zoennchen_param_table = table(
+          columns: (bdiag_args.width, auto, auto, auto),
+          align: horizon + center,
+          bdiagbox(..bdiag_args)[*L*][*cpoints*], [8], [12], [16],
+          ..csv("zoennchen_params.csv").flatten(),
+      );
+      #let vmb_param_table = table(
+          columns: (bdiag_args.width, auto, auto, auto),
+          align: horizon + center,
+          bdiagbox(..bdiag_args)[*L*][*cpoints*], [8], [12], [16],
+          ..csv("vmb_params.csv").flatten(),
+      );
+      #figure(
+          grid(columns: 2, gutter: 1em,
+              subfigure(zoennchen_param_table, "dfit", [Zoennchen Dataset (2015)]),
+              subfigure(vmb_param_table, "dfit", [VMB Dataset (quiet)]),
+          ),
+          caption: "Direct Fit Maximum % Error over all voxels. Sweeping spherical harmonic truncation order and number of control points"
+      ) <parameter_sweep>
 
 
 
-= Dynamic Retrieval of Exosphere
 
-= Dynamic Retrieval Validation
-  - reconstruction requirements
-      - spatial resolution requirements and reporting interval - same as static
-      - change detection requirement
+
+= Proposed Future Work <future_work>
+
+  == Uncertainty Quantification
+  #rt([
+
+  - analysts rely on knowledge of uncertainty to make accurate decisions when reasoning about model predictions from real data
+  - example: mass predicted in a patient based on MRI data.  knowledge of uncertainty in prediction will be a factor in whether to operate or take further tests to improve confidence in presence of the mass
+  - in context of carruthers: reporting error margins can assist scientists in determining if features in retrievals or artifacts of the model prediction
+  - mission requires derivation of uncertainty with reported reconstructions
+  - should take into consideration measurement noise and forward operator (determined by view geometry) to estimate posterior
+  - montecarlo simulation is an approach - can estimate distribution of measurements, run ensemble of reconstructions
+    - impractical when retrievals are expensive
+
+  - epistemic uncertainty - sometimes called "model uncertainty". generally can be improved with access to more training data
+  - aleatoric uncertainty -
+
+  - important note: uncertainty quantification does not attempt to quantify error due to model mismatch ()
+      - https://tristanvanleeuwen.github.io/IP_and_Im_Lectures/statistical_perspective.html
+  ])
+
+  Analysts rely on knowledge of uncertainty to make accurate decisions when reasoning about predictions from models.  For example, a doctor looking at a a mass detected in a patient will want to the the level of certainty in the prediction before deciding to operate or conduct additional tests.
+
+  In the context of Carruthers, knowledge of model uncertainty will assist physicists studying the exosphere in determining if certain features in exospheric retrievals are real or artifacts of model prediction.  Carruthers reporting requirements include a map of expected errors to be delivered with retrievals.
+
+  Literature often divides uncertainty in model predictions into two types: _epistemic_ and _aleatoric_.  To avoid an overly broad or philosphical description of uncertainty, the following definition focuses on the case of a model $m_theta$ whose parameters are learned in a supervised manner from a dataset $D$:
+
+  - _epistemic uncertainty_ - Uncertainty due to training dataset, either due to noise in the dataset or lack of coverage to all inputs.  Generally can be reduced by introducing more data into training dataset.
+  - _aleatoric uncertainty_ - Uncertainty in measurement constraints which are propagated through the retrieval algorithm.
+
+  #figure(
+      grid(columns: 2, column-gutter: 2em,
+          subfigure(image("figures/epistemic_scratch.png"), "epiale", [Epistemic uncertainty due to limited training data]),
+          subfigure(image("figures/aleatoric_scratch.png", height: 12em), "epiale", [Aleatoric uncertainty due to noise in measurement constraints]),
+      ),
+      caption: [Simple example demonstrating different types of uncertainty in the solution a 1D inverse problem]
+  ) <uncertainty_types>
+
+  == Dynamic Retrieval <dynamic_retrieval>
+  - dynamic system identification
+      - greybox/semi-physical modelling - incorporate justifiable knowledge about system without going into too much detail
+      - whitebox modelling - complete system identification
+
+// = Dynamic Retrieval Validation
+//   - reconstruction requirements
+//       - spatial resolution requirements and reporting interval - same as static
+//       - change detection requirement
 
 = Conclusion
 
@@ -2029,7 +2198,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
   - #rt([come up with a better name - "second-order correction terms"])
 
 
-= Glossary <symbols>
+= Glossary
 
 
 

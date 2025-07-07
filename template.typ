@@ -62,6 +62,26 @@
         }
     }
 
+    // Give figures some spacing
+    // FIXME: this is quite ugly
+    // let figure_spacing = 1em // Additional spacing between figures and the text
+    // show figure: it => {
+    //     if it.placement == none {
+    //         block(it, inset: (y: figure_spacing))
+    //     } else if it.placement == top {
+    //         place(
+    //             it.placement,
+    //             float: true,
+    //             block(width: 100%, inset: (bottom: figure_spacing), align(center, it))
+    //         )
+    //     } else if it.placement == bottom {
+    //         place(
+    //             it.placement,
+    //             float: true,
+    //             block(width: 100%, inset: (top: figure_spacing), align(center, it))
+    //         )
+    //     }
+    // }
 
 
     // Configure lists.

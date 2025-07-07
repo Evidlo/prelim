@@ -15,7 +15,7 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns:ns4="http://www.iki.fi/pav/software/textext/"><sodipodi:namedview
+   xmlns:ns2="http://www.iki.fi/pav/software/textext/"><sodipodi:namedview
      id="namedview7"
      pagecolor="#ffffff"
      bordercolor="#ffffff"
@@ -26,13 +26,13 @@
      inkscape:deskcolor="#a1a1a1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="4.7057917"
-     inkscape:cx="219.41048"
-     inkscape:cy="221.96052"
+     inkscape:zoom="1.9425557"
+     inkscape:cx="232.94056"
+     inkscape:cy="84.939651"
      inkscape:window-width="1594"
-     inkscape:window-height="848"
+     inkscape:window-height="869"
      inkscape:window-x="0"
-     inkscape:window-y="49"
+     inkscape:window-y="25"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1"
      showborder="true"
@@ -476,16 +476,16 @@
        id="path1"
        sodipodi:nodetypes="cc" /><g
        transform="matrix(0.529167,0,0,0.529167,26.668366,22.132996)"
-       ns4:version="1.10.2"
-       ns4:texconverter="pdflatex"
-       ns4:pdfconverter="inkscape"
-       ns4:text="$\\text{Re}\\left[Y_{lm}(e, a)\\right]$"
-       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns4:scale="1.5"
-       ns4:alignment="middle center"
-       ns4:stroke-to-path="0"
-       ns4:inkscapeversion="1.3.2"
-       ns4:jacobian_sqrt="0.529167"
+       ns2:version="1.10.2"
+       ns2:texconverter="pdflatex"
+       ns2:pdfconverter="inkscape"
+       ns2:text="$\\text{Re}\\left[Y_{lm}(e, a)\\right]$"
+       ns2:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns2:scale="1.5"
+       ns2:alignment="middle center"
+       ns2:stroke-to-path="0"
+       ns2:inkscapeversion="1.3.2"
+       ns2:jacobian_sqrt="0.529167"
        id="g13"><defs
    id="id-b2130787-ba88-413c-b0dc-16a931c1f151">
     <g
@@ -726,16 +726,16 @@
   </g>
 </g><g
        transform="matrix(0.529167,0,0,0.529167,35.267132,29.364996)"
-       ns4:version="1.10.2"
-       ns4:texconverter="pdflatex"
-       ns4:pdfconverter="inkscape"
-       ns4:text="$\\bm{A_{lm}}$"
-       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns4:scale="1.5"
-       ns4:alignment="middle center"
-       ns4:stroke-to-path="0"
-       ns4:inkscapeversion="1.3.2"
-       ns4:jacobian_sqrt="0.529167"
+       ns2:version="1.10.2"
+       ns2:texconverter="pdflatex"
+       ns2:pdfconverter="inkscape"
+       ns2:text="$\\bm{A_{lm}}$"
+       ns2:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns2:scale="1.5"
+       ns2:alignment="middle center"
+       ns2:stroke-to-path="0"
+       ns2:inkscapeversion="1.3.2"
+       ns2:jacobian_sqrt="0.529167"
        id="g14"><defs
    id="id-0c081a7b-f9fa-4d12-b627-454bd116bbf4">
     <g
@@ -814,16 +814,16 @@
   </g>
 </g><g
        transform="matrix(0.529167,0,0,0.529167,-32.122533,22.1328)"
-       ns4:version="1.10.2"
-       ns4:texconverter="pdflatex"
-       ns4:pdfconverter="inkscape"
-       ns4:text="$\\text{Im}\\left[Y_{lm}(e, a)\\right]$"
-       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns4:scale="1.5"
-       ns4:alignment="middle center"
-       ns4:stroke-to-path="0"
-       ns4:inkscapeversion="1.3.2"
-       ns4:jacobian_sqrt="0.529167"
+       ns2:version="1.10.2"
+       ns2:texconverter="pdflatex"
+       ns2:pdfconverter="inkscape"
+       ns2:text="$\\text{Im}\\left[Y_{lm}(e, a)\\right]$"
+       ns2:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns2:scale="1.5"
+       ns2:alignment="middle center"
+       ns2:stroke-to-path="0"
+       ns2:inkscapeversion="1.3.2"
+       ns2:jacobian_sqrt="0.529167"
        id="g14-5"><defs
    id="id-9af9e320-bf79-48bd-bbb3-f2a9d85f44bb">
     <g
@@ -1064,16 +1064,16 @@
   </g>
 </g><g
        transform="matrix(0.529167,0,0,0.529167,-24.650433,28.9085)"
-       ns4:version="1.10.2"
-       ns4:texconverter="pdflatex"
-       ns4:pdfconverter="inkscape"
-       ns4:text="$\\bm{B_{l|m|}}$"
-       ns4:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
-       ns4:scale="1.5"
-       ns4:alignment="middle center"
-       ns4:stroke-to-path="0"
-       ns4:inkscapeversion="1.3.2"
-       ns4:jacobian_sqrt="0.529167"
+       ns2:version="1.10.2"
+       ns2:texconverter="pdflatex"
+       ns2:pdfconverter="inkscape"
+       ns2:text="$\\bm{B_{l|m|}}$"
+       ns2:preamble="/home/evan/.config/inkscape/extensions/textext/default_packages.tex"
+       ns2:scale="1.5"
+       ns2:alignment="middle center"
+       ns2:stroke-to-path="0"
+       ns2:inkscapeversion="1.3.2"
+       ns2:jacobian_sqrt="0.529167"
        id="g15"><defs
    id="id-12d0d3b4-681e-46c4-856f-edaf4ef3eba1">
     <g
@@ -1266,7 +1266,7 @@
        x="-150"
        y="160"
        id="text92"
-       transform="scale(0.26458333)"><tspan
+       transform="matrix(0.26458333,0,0,0.26458333,-0.0155237,-1.3536055)"><tspan
          sodipodi:role="line"
          id="tspan92"
          x="-150"
@@ -1276,7 +1276,7 @@
        x="-150"
        y="210"
        id="text93"
-       transform="scale(0.26458333)"><tspan
+       transform="matrix(0.26458333,0,0,0.26458333,0.00193884,-1.3536056)"><tspan
          sodipodi:role="line"
          id="tspan93"
          x="-150"
@@ -1286,7 +1286,7 @@
        x="-150"
        y="260"
        id="text94"
-       transform="scale(0.26458333)"><tspan
+       transform="matrix(0.26458333,0,0,0.26458333,0.00193884,-1.3962919)"><tspan
          sodipodi:role="line"
          id="tspan94"
          x="-150"
@@ -1296,7 +1296,7 @@
        x="-150"
        y="110"
        id="text95"
-       transform="scale(0.26458333)"><tspan
+       transform="matrix(0.26458333,0,0,0.26458333,0.00193884,-1.3962916)"><tspan
          sodipodi:role="line"
          id="tspan95"
          x="-150"
