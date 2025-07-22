@@ -625,7 +625,16 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
 
 
-  An inverse problem is the procedure of determining the causative factors of a set of measurements derived from an observation process.  In exospheric tomography, the factor driving the intensity of column density measurements is the distribution of hydrogen in the regions being observed.  Direct analytic solutions to tomographic or other inverse problems are not always possible, so numerical approximations and discretization become necessary.  In this chapter, I lay out key concepts of linear inverse problems, detail a discretization scheme for approaching tomographic inversion numerically, and introduce notation which will be used later in the manuscript to describe tomographic retrieval algorithms.
+An inverse problem is the procedure of determining the causative factors of a set of measurements derived from an observation process.  In exospheric tomography, the factor driving the intensity of column density measurements is the distribution of hydrogen in the regions being observed.  @inverse_problem_schematic shows a generalized example of an inverse problem
+
+#figure(
+    image("figures/inverse_problem.svg"),
+    caption: "General schematic for an observing system and inverse problem"
+) <inverse_problem_schematic>
+
+where $bold(rho)$ and $bold(hat(rho))$ are ground truth and estimate for density distribution, $I$ and $C$ are instrument model and calibration, $bold(y)$ are measurements, $R$ is some retrieval algorithm, and $F_0$ is a forward tomographic operator describing reality while $F$ is a numerical approximation.  This distinction between forward operators matters when considering model uncertainty or mismatch discussed in @uncertainty.
+
+Direct analytic solutions to tomographic or other inverse problems are not always possible, so numerical approximations and discretization become necessary.  In this chapter, I lay out key concepts of linear inverse problems, detail a discretization scheme for approaching tomographic inversion numerically, and introduce notation which will be used later in the manuscript to describe tomographic retrieval algorithms.
 
   == Discretization
 
@@ -686,7 +695,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
     While inversion of $F$ is impossible, the problem of obtaining estimate $hat(bold(rho))$ is sometimes reformulated as a minimization of some objective function, such as the common least squares
 
     #math.equation(
-        $hat(bold(rho)) = min_bold(rho) ||bold(y) - F bold(rho)||_2^2$
+        $hat(bold(rho)) = R(bold(y)) = min_bold(rho) ||bold(y) - F bold(rho)||_2^2$
     ) <cost_function>
 
     A _generalized inverse_ such as the Moore-Penrose pseudoinverse, can be constructed from $F$ which selects the solution with the smallest norm or which best fits the measurements.  Another approach is to assume that $bold(rho)$ has some low degree-of-freedom representation on a subspace (linear) or manifold (non-linear) within the space of all solutions.  Such a mapping $M$ is referred to as a #gls("model") in this manuscript and is represented as
@@ -713,11 +722,13 @@ A summary of all variables and sources of randomness is given in @knownvariables
               table.header([Symbol], [Meaning], [Description], [Shape]),
               align: horizon,
               columns: (5em, 10em, 14em, 12em),
-              $F$, [Forward operator], [Mapping from 3D H-density to column density], [$F: bb(R)^3 → bb(R)^3$ (static) \ $F: bb(R)^4→bb(R)^3$ (dynamic)],
+              $F$, [Forward operator], [Mapping from 3D H-density to measurement stack], [$F: bb(R)^3 → bb(R)^3$ (static) \ $F: bb(R)^4→bb(R)^3$ (dynamic)],
               $M$, [Model], [Mapping from model \ parameters to 3D H-density], [$M: bb(R)^* → bb(R)^3$ (static) \ $M: bb(R)^* → bb(R)^4$ (dynamic)],
               $bold(c)$, [Model \ params./coeffs.], "Free model variables,\n usually low-dimensional.", [$bold(c) ∈ bb(R)^*$ \ \* model dependent],
-              $bold(rho)$, [H density], [Spatial distribution of \ exospheric Hydrogen], [$bold(rho) ∈ bb(R)^3$ (static) \ $bold(rho) ∈ bb(R)^4$ (dynamic)],
-              $bold(y)$, [Measurements.], "Column densities measured\n by instrument", [$bold(y) ∈ bb(R)^3$],
+              $bold(rho)$, [H-density], [Spatial distribution of \ exospheric Hydrogen], [$bold(rho) ∈ bb(R)^3$ (static) \ $bold(rho) ∈ bb(R)^4$ (dynamic)],
+              $bold(y)$, [Measurements], "Column densities measured\n by instrument", [$bold(y) ∈ bb(R)^3$],
+              $R$, [Retrieval algorithm], "Mapping from measurement stack to 3D H-density", [$R: bb(R)^3→bb(R)^3$ (static)\ $R: bb(R)^3→bb(R)^4$ (dynamic)],
+              $hat(gt(circle.dotted))$, [Retrieved], [Term is retrieved\ (rather than ground truth)], [],
           ),
       ),
       caption: [Symbols],
