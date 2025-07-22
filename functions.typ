@@ -53,3 +53,13 @@
 #let ga(content) = {
     highlight(fill: gray, extent: 3pt, radius: 8pt, content)
 }
+
+// showy box definition
+#import "@preview/showybox:2.0.4": showybox
+#let sb(title, content) = {
+    showybox(
+        title-style: (weight: "bold", boxed-style: (:)),
+        title: title,
+        content
+    )
+}

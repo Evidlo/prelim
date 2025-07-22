@@ -1918,7 +1918,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
 = Proposed Future Work <future_work>
 
-  == Uncertainty Quantification
+  == Uncertainty Quantification <uncertainty>
   #rt([
 
   - analysts rely on knowledge of uncertainty to make accurate decisions when reasoning about model predictions from real data
@@ -1934,25 +1934,124 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   - important note: uncertainty quantification does not attempt to quantify error due to model mismatch ()
       - https://tristanvanleeuwen.github.io/IP_and_Im_Lectures/statistical_perspective.html
-  - foo
+    - https://en.wikipedia.org/wiki/Sensitivity_analysis#Metamodels
   ])
 
   Analysts rely on knowledge of uncertainty to make accurate decisions when reasoning about predictions from models.  For example, a doctor looking at a a mass detected in a patient will want to the the level of certainty in the prediction before deciding to operate or conduct additional tests.
 
-  In the context of Carruthers, knowledge of model uncertainty will assist physicists studying the exosphere in determining if certain features in exospheric retrievals are real or artifacts of model prediction.  Carruthers reporting requirements include a map of expected errors to be delivered with retrievals.
+  In the context of Carruthers, knowledge of model uncertainty will assist physicists studying the exosphere in determining if certain features in exospheric retrievals are real or artifacts of model prediction.  Carruthers reporting requirements include a map of expected errors for every spatiotemporal voxel to be delivered with retrievals.  This section defines different types of uncertainty and computational limitations on estimating uncertainty, especially in the context of iterative retrieval algorithms.
 
-  Literature often divides uncertainty in model predictions into two types: _epistemic_ and _aleatoric_.  To avoid an overly broad or philosphical description of uncertainty, the following definition focuses on the case of a model $m_theta$ whose parameters are learned in a supervised manner from a dataset $D$:
+  Literature often divides uncertainty in model predictions into two types: _epistemic_ and _aleatoric_.  To avoid an overly broad or philosphical description of uncertainty, the following definition focuses on the case of a parametric density model $M_bold(theta)$ whose parameters $bold(theta)$ are either learned in a supervised manner from a dataset $D$ or hand-tuned:
 
-  - _epistemic uncertainty_ - Uncertainty due to training dataset, either due to noise in the dataset or lack of coverage to all inputs.  Generally can be reduced by introducing more data into training dataset.
-  - _aleatoric uncertainty_ - Uncertainty in measurement constraints which are propagated through the retrieval algorithm.
+  - _epistemic uncertainty_ - Uncertainty in the model parameters, either due to noise in the training dataset or lack of coverage over the domain of possible hydrogen distributions.  Generally can be reduced by introducing more data into training dataset.
+  - _aleatoric uncertainty_ - Uncertainty in measurement constraints which are propagated through the retrieval algorithm during inference (retrieval).
+
+  These uncertainties are often quantified in a covariance matrix of the estimate $Sigma_hat(bold(rho))$ or its diagonal $text("diag")(Sigma_hat(bold(rho)))$ to obtain variances on a per-voxel basis.
+
+  #grid(
+      columns: (60%, 40%),
+      column-gutter: 1em,
+      sb(
+          [Inference/Retrieval],
+          $
+              hat(bold(rho)) = R(bold(y)) = M_hat(bold(theta)) (arg min_(bold(c)) ||bold(y) - F(M_bold(hat(theta)) (bold(c)))||)
+          $
+      ),
+      sb(
+          [Training],
+          $
+              hat(bold(theta)) = arg min_(bold(theta)) ||y_i - F(M_bold(theta) (bold(c)_i))||)
+          $
+      )
+  )
+
 
   #figure(
       grid(columns: 2, column-gutter: 2em,
           subfigure(image("figures/epistemic_scratch.png"), "epiale", [Epistemic uncertainty due to limited training data]),
-          subfigure(image("figures/aleatoric_scratch.png", height: 12em), "epiale", [Aleatoric uncertainty due to noise in measurement constraints]),
+          subfigure(image("figures/aleatoric_scratch.png", width: 19em), "epiale", [Aleatoric uncertainty due to noise in measurement constraints]),
       ),
-      caption: [Simple example demonstrating different types of uncertainty in the solution a 1D inverse problem]
+      caption: [#rt([FIXME: placeholder]) 1D inverse problem example which isolates different types of uncertainty for the cases of (a) an inexact learned model with exact measurement constraints and (b) assumed exact model with inexact constraints.]
   ) <uncertainty_types>
+
+  @uncertainty_types shows two cases of a 1D inverse problem which demonstrates the two types of uncertainty.
+  In practice, both types of uncertainty are present to some degree in all inverse problems, but the rest of this section focuses on aleatoric noise because it applies to many classical methods shown in @static_retrieval that assume an exact density model formulation.
+
+  Analytic methods for propagating measurement uncertainty through the retrieval process are generally impractical due to the complex and high-dimensional inverse function involved, so uncertainty quantification often relies on numerical methods instead.
+
+  One option for estimating aleatoric uncertainty is via Monte Carlo methods which requires propagating an ensemble of measurements ${bold(y)_1, bold(y)_2, ..., bold(y)_N}$ through the retrieval algorithm.
+  For example, _bootstrapping_ involves generating a set synthetic noisy measurements  from knowledge of the real measurement $bold(y)$ and its noise statistics, then individually performing $N$ retrievals to obtain an ensemble ${hat(bold(rho))_1, .., hat(bold(rho))_N}$ from which the variance of the posterior $P(bold(rho)|bold(y))$ can be estimated.
+  #rt([FIXME: cite])
+
+  // FIXME: glossary MCMC
+
+  Another option is _MCMC_ (Markov Chain Monte Carlo), in which an initial retrieval $hat(bold(rho))$ from measurement $bold(y)$ is perturbed into an ensemble ${hat(bold(rho))_1, ..., hat(bold(rho))_N}$ (e.g. by addition of Gaussian noise).  This ensemble is passed through the forward model and either accepted or rejected if the resulting measurements are "close enough" to the original $bold(y)$.  The posterior can be estimated from the retrieval perturbations which have been accepted.  Information from previous perturbations can be used in future runs to sample the space more efficiently.
+  #rt([FIXME: cite])
+
+  Both of these methods suffer from high computational complexity.  Bootstrapping requires N full inversions for every synthetic measurement in the ensemble. MCMC only needs a single forward/backward pass through the model, but may require millions of perturbations to sample the high-dimensional space of $bold(rho)$ adequately.
+  #rt([FIXME: cite])
+
+  === Aleatoric Uncertainty Propagation with Delta Method and Implicit Function Theorem
+
+  While analytically propagating measurement uncertainty $Sigma_y$ through the retrieval process is impractical due to the highly nonlinear loss surface, it is possible to approximate $R$ locally as a linear function which permits a simple analytical mapping $Sigma_x = J_R Sigma_y J_R^T$, where $J_R = nabla_y R(y)$ represents the gradient or _Jacobian_ of $R$ with respect to $bold(y)$ @deltavariances.  This is known as the _delta method_, named as such because early derivations involved splitting random variable $bold(y)$ into a constant part and a stochastic part $delta_y$ @deltamethod @deltamethod2.
+
+  Unfortunately, computing $J_R$ efficiently is not trivial.  Computing gradients of functions implemented in automatic differentiation frameworks is straightforward but is particularly expensive when the function is defined in an iterative manner.  @torchgraph demonstrates the growing complexity of the computational graph needed to compute $J_R$ as number of iterations increases when solving a simple optimization problem such as
+
+  #math.equation(
+      $hat(bold(rho)) = R(bold(y)) = arg min_bold(rho) ||bold(y) - F bold(rho)||$
+  )
+
+  For retrievals that require many optimizer iterations, storing and evaluating this graph quickly becomes untenable.
+
+  #figure(
+      grid(
+          columns: 2, column-gutter: 1em,
+          subfigure(image("figures/torchgraph_loss.svg", height: 15em), "implicit", [PyTorch computational graph of $R$ for single retrieval iteration]),
+          subfigure(image("figures/torchgraph_iterations.svg", height: 15em), "implicit", [Computational graph of $R$ for 3 iterations of gradient descent]),
+      ),
+      caption: [Jacobian $J_R$ is computationally expensive to produce when solving for $hat(bold(rho))$ involves many iterations. (b) shows only a small number of iterations, but real problems may require hundreds or thousands.]
+  ) <torchgraph>
+
+  One approach which has recently been applied in deep learning is to recognize that $bold(hat(rho)) = R(bold(y))$ can be rewritten as an _implicit function_
+
+  #math.equation(
+      $nabla_rho cal(L)(bold(hat(rho)), bold(y)) = 0$
+  )
+
+  which assumes that $R(bold(y))$ has found a stable, _fixed point_ solution $bold(hat(rho))$ where loss is at a local minimum @implicit_layers @deep_equilibrium.  The _implicit function theorem_ states that there exists a function $bold(rho^*)(·)$ such that
+
+  #math.equation(
+      $nabla_rho cal(L)(bold(rho^*(bold(y))), bold(y)) = 0$
+  )
+
+  for some neighborhood around $(bold(hat(rho)), bold(y))$.  Effectively, $bold(rho^*(bold(y)))$ serves as a local approximation of $R(bold(y))$.
+
+  Differentiating both sides with respect to $bold(y)$ and rearranging yields an expression for the Jacobian which depends only on the loss $cal(L)(x, y)$.
+
+
+
+  #math.equation(
+      $J_R (bold(y)) = - [ nabla_rho^2 cal(L)(hat(bold(rho)), bold(y)) ]^(-1) nabla_(rho y)^2
+      cal(L)(hat(bold(rho)), bold(y))$
+  ) <implicit_jacobian>
+
+  @implicit_jacobian avoids the computational complexity of differentiating through the potentially hundreds or thousands of layers of the computational graph of $R$ by applying the implicit function theorem at a specific point $(bold(hat(rho)), bold(y))$
+
+
+  *I propose to apply the delta method of uncertainty propagation and the implicit function theorem to obtain an approximation of aleatoric uncertainty $Sigma_y$.*
+
+  A remaining issue is that the matrices in @implicit_jacobian are large (summarized in @implicit_matrices_size), which will necessitate a _matrix-free_ approach for approximating $J_R(bold(y))$.
+
+  #figure(
+      table(
+          columns: 3, align: horizon,
+          table.header("Term", "Matrix Size", "Float64 Memory Usage"),
+          table.hline(stroke: 2pt),
+          [Jacobian: $nabla_(rho y) cal(L)(hat(bold(rho)), bold(y))$], [$ℝ^(1×(N_rho+N_y))$], "21.6 GB",
+          [Hessian: $nabla_rho^2 cal(L)(hat(bold(rho)), bold(y))$], [$ℝ^((N_rho+N_y)×(N_rho+N_y))$], "2376 GB",
+      ),
+      caption: [Size of matrices needed to compute Jacobian of retrieval $J_R$ via implicit function theorem for object size $N_rho = 200×45×60$ and measurement size $N_y = 100×50$]
+  ) <implicit_matrices_size>
 
   == Dynamic Retrieval <dynamic_retrieval>
   - dynamic system identification
