@@ -519,7 +519,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
       where $M$ is the number of stacked frames, $N$ is the number of binned pixels, and $u_Y$ and $sigma^2_Y$ are the mean and variance of individual frames.  See @instrument_clt for a derivation of these values and numerical validation of the #gls("CLT") approximation.
 
-  == Post-Processing <post_processing>
+  == Post-Processing and Calibration <post_processing>
 
     As will be shown in @inverse_problem, many retrieval algorithms amount to applying the emission and instrument models to a candidate density and comparing the resulting candidate measurements to real measurements obtained on orbit to update the density in an iterative fashion.  However, this can be computationally expensive, especially when a retrieval algorithm requires hundreds or thousands of iterations to converge to a solution.   An alternative to applying the emission and instrument models every iteration is to reverse the effects of these models on the real measurements in a process known as _subtraction_ or _calibration_.  Subtraction need only occur once after images are downlinked, greatly accelerating the iterative retrieval process as in @subtraction_efficiency.
 
@@ -684,9 +684,9 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
   )
 
 
-  #math.equation(
-      $y_"tij" = sum_(r, e, a) F_("ij","trea") rho_"trea"$
-  )
+  // #math.equation(
+  //     $y_"tij" = sum_(r, e, a) F_("ij","trea") rho_"trea"$
+  // )
 
     with measurements $bold(y)$, forward operator $F$, solution $bold(rho)$, time t, pixel ij, and spatial voxel rea.
 
@@ -1901,6 +1901,8 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
     In summary, the above analysis suggests that a science pixel resolution of 100×50 pixels and hydrogen density resolution of 200 radial bins during retrieval, while 500 radial bins are necessary during simulation ..... #rt([FIXME])
 
     === Reconstruction Model Parameters
+
+    #rt([FIXME: incomplete])
 
       #let bdiag_args = ("width": 7em, "left_sep": 1em)
       #let zoennchen_param_table = table(
