@@ -63,3 +63,11 @@
         content
     )
 }
+
+#let s(title, content) = {
+    showybox(
+        title-style: (boxed-style: (:)),
+        title: title,
+        content
+    )
+}

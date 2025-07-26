@@ -108,6 +108,11 @@
         short: "PINN",
         long: [Physics-Informed Neural Network]
     ),
+    (
+        key: "MCMC",
+        short: "MCMC",
+        long: [Markov Chain Monte Carlo]
+    ),
 
 
 
