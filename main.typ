@@ -276,7 +276,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
     //     $y' = g phi.alt(beta_(i,j)) integral_(l=0)^(infinity) bold(a)(vc(x) + vc(n)l) bold(rho)(vc(x) + vc(n)l) dif l$
     // ) <integral2>
     #math.equation(
-        $I_"exo,t" = g^*_t phi.alt(beta) integral_l bold(a)_t (vc(r))  bold(rho)_t (vc(r)) dif s #gt([(phot/s/cm²/sr)])$
+        $I_"exo,t" = g_t phi.alt(beta) integral_l bold(a)_t (vc(r))  bold(rho)_t (vc(r)) dif s #gt([(phot/s/cm²/sr)])$
     ) <integral2>
 
     // #rt([FIXME: notation inconsistent with other sections])
@@ -294,14 +294,14 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
     // )
 
 
-  where $g^*_t$ is angular g-factor, $t$ is time, $phi.alt$ is scattering phase function, $bold(a)_t$ is albedo, $vc(r)$ is position vector, $bold(rho)$ is hydrogen density and $l$ is the #gls("LOS") along the #gls("FOV").  $phi.alt$, known as the #gls("scattering phase function"), represents the directional distribution of resonantly-scattered photons relative to the direction of the Sun, shown in @scatteringphase.
+  where $g_t$ is angular g-factor, $t$ is time, $phi.alt$ is scattering phase function, $bold(a)_t$ is albedo, $vc(r)$ is position vector, $bold(rho)$ is hydrogen density and $l$ is the #gls("LOS") along the #gls("FOV").  $phi.alt$, known as the #gls("scattering phase function"), represents the directional distribution of resonantly-scattered photons relative to the direction of the Sun, shown in @scatteringphase.
 
     #figure(
         image("figures/physics_scattering.svg", height: 15em),
         caption: [Scattering phase function]
     ) <scatteringphase>
 
-    Angular solar g-factor $g^*_t$ (phot/s/atom/sr) relates hydrogen quantity (atoms) to photon flux emitted per unit solid angle (phot/s/sr).  This quantity is linearly related to solar activity and is assumed to be a known, external input to the emission model.
+    Angular solar g-factor $g_t$ (phot/s/atom/sr) relates hydrogen quantity (atoms) to photon flux emitted per unit solid angle (phot/s/sr).  This quantity is linearly related to solar activity and is assumed to be a known, external input to the emission model.
     @gfactor_difference illustrates the important $4 pi$ difference between angular g-factor (per steradian) and _isotropic_ g-factor (per whole sphere), which are sometimes not explicitly distinguished in literature.
 
     #figure(
@@ -332,7 +332,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
             table.header([Quantity], [Symbol], [Units]),
             "Density", $bold(rho)$, "atom/cm³",
             "Non-spectral radiance", $I_"exo"$, "phot/s/atom/cm²/sr",
-            "Angular g-factor", $g^*$, "phot/s/atom/sr",
+            "Angular g-factor", $g$, "phot/s/atom/sr",
             "Albedo", $bold(a)$, "unitless",
             [Scattering phase function], $phi.alt$, "unitless"
             // "Emissivity", "", "",
@@ -365,7 +365,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
     // While the volume integral in @integral1 is accurate for any pixel geometry, the expression can be simplified to a line integral when the pixel #gls("FOV") is small.  Using conservation of etendue and the paraxial approximation (pixel #gls("FOV") lies close to the optical axis), @integral1 can be written
 
     // #math.equation(
-    //     $I_"exo,t" = g^*_t phi.alt(beta) integral_V bold(a)_t (vc(r)) bold(rho)_t (vc(r)) dif v #gt([(phot/s/cm²/sr)])$
+    //     $I_"exo,t" = g_t phi.alt(beta) integral_V bold(a)_t (vc(r)) bold(rho)_t (vc(r)) dif v #gt([(phot/s/cm²/sr)])$
     // ) <integral1>
 
     ])
