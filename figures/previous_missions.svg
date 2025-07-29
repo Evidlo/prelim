@@ -25,9 +25,9 @@
      inkscape:deskcolor="#a1a1a1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="2.1171542"
-     inkscape:cx="202.15816"
-     inkscape:cy="64.001007"
+     inkscape:zoom="2.9790351"
+     inkscape:cx="218.02362"
+     inkscape:cy="64.28256"
      inkscape:window-width="1594"
      inkscape:window-height="848"
      inkscape:window-x="0"
@@ -300,6 +300,28 @@
        r="4.5987797"
        gradientTransform="matrix(-1.1431922,-0.00714676,0.00598953,-0.9579076,67.709456,60.738953)"
        gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient18"
+       id="radialGradient19-54"
+       cx="-18.255255"
+       cy="11.350805"
+       fx="-18.255255"
+       fy="11.350805"
+       r="4.5987797"
+       gradientTransform="matrix(-1.1431922,-0.00714676,0.00598953,-0.9579076,67.709456,60.738953)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient18"
+       id="radialGradient1-4"
+       cx="-18.255255"
+       cy="11.350805"
+       fx="-18.255255"
+       fy="11.350805"
+       r="4.5987797"
+       gradientTransform="matrix(-1.1431922,-0.00714676,0.00598953,-0.9579076,67.709456,60.738953)"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <g
      inkscape:label="Layer 1"
@@ -325,11 +347,18 @@
        cx="12.274163"
        cy="50"
        r="26.122725" />
+    <use
+       x="0"
+       y="0"
+       xlink:href="#use25"
+       id="use27"
+       transform="rotate(-90,12.032461,49.949628)"
+       style="stroke-width:1;stroke-dasharray:none" />
     <ellipse
        style="font-variation-settings:normal;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#888a85;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.2, 0.2;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke;stop-color:#000000"
        id="path17-2-3"
-       cx="1.1123332"
-       cy="-49.847775"
+       cx="10.699422"
+       cy="-85.627281"
        rx="2.062526"
        ry="4.6664648"
        transform="rotate(165)" />
@@ -339,6 +368,22 @@
        xlink:href="#rect17"
        id="use24-6"
        transform="rotate(-103.43375,47.524995,77.984279)" />
+    <g
+       id="g3"
+       transform="translate(12.700002,6.6864437)">
+      <use
+         x="0"
+         y="0"
+         xlink:href="#rect17"
+         id="use44-0-0"
+         transform="rotate(180,43.089069,47.970548)" />
+      <use
+         x="0"
+         y="0"
+         xlink:href="#path18"
+         id="use45-6-7"
+         transform="rotate(180,43.089069,47.970548)" />
+    </g>
     <use
        x="0"
        y="0"
@@ -349,8 +394,8 @@
     <ellipse
        style="font-variation-settings:normal;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#888a85;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.2, 0.2;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke;stop-color:#000000"
        id="path17-2-1"
-       cx="-43.831253"
-       cy="-25.234066"
+       cx="-70.023659"
+       cy="-51.426472"
        rx="2.0704949"
        ry="4.6844945"
        transform="rotate(-135)" />
@@ -388,24 +433,13 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#555753;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"
-       x="12.260403"
-       y="47.54784"
-       id="text16"><tspan
-         sodipodi:role="line"
-         id="tspan16"
-         style="font-size:2.11667px;fill:#555753;stroke:none;stroke-width:1"
-         x="12.260403"
-         y="47.54784">Earth</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#555753;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"
+       style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#000000;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"
        x="26.294254"
        y="39.179127"
        id="text16-0"><tspan
          sodipodi:role="line"
          id="tspan16-2"
-         style="font-size:2.11667px;fill:#555753;stroke:none;stroke-width:1"
+         style="font-size:2.11667px;fill:#000000;stroke:none;stroke-width:1"
          x="26.294254"
          y="39.179127">Moon</tspan></text>
     <text
@@ -442,13 +476,13 @@
          y="48.077007">L1</tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#555753;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"
+       style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#000000;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"
        x="102.68433"
        y="50.722843"
        id="text16-3-9-5"><tspan
          sodipodi:role="line"
          id="tspan16-7-2-6"
-         style="font-size:2.11667px;fill:#555753;stroke:none;stroke-width:1"
+         style="font-size:2.11667px;fill:#000000;stroke:none;stroke-width:1"
          x="102.68433"
          y="50.722843">Sun</tspan></text>
     <ellipse
@@ -461,15 +495,15 @@
     <ellipse
        style="font-variation-settings:normal;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#888a85;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.2, 0.2;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke;stop-color:#000000"
        id="path17-2"
-       cx="-26.814785"
-       cy="45.423405"
+       cx="-53.007191"
+       cy="71.615814"
        rx="2.062526"
        ry="4.6664648"
        transform="rotate(-45.000002)" />
     <ellipse
        style="font-variation-settings:normal;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#888a85;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:0.2, 0.2;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke;stop-color:#000000"
        id="path17-2-4"
-       cx="-50"
+       cx="-87.041656"
        cy="14.903255"
        rx="2.062526"
        ry="5.6443815"
@@ -517,13 +551,6 @@
        xlink:href="#path18"
        id="use25"
        transform="rotate(46.566251,47.75085,-32.356466)"
-       style="stroke-width:1;stroke-dasharray:none" />
-    <use
-       x="0"
-       y="0"
-       xlink:href="#use25"
-       id="use27"
-       transform="rotate(-90,12.032461,49.949628)"
        style="stroke-width:1;stroke-dasharray:none" />
     <use
        x="0"
@@ -608,11 +635,11 @@
          id="tspan12-5-3"
          style="font-style:italic;font-size:2.11667px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1"
          x="26.379181"
-         y="44.817932">Apollo 11</tspan><tspan
+         y="44.817932">Apollo 16</tspan><tspan
          sodipodi:role="line"
          style="font-style:normal;font-size:2.11667px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1"
          x="26.379181"
-         y="46.934601"
+         y="46.935017"
          id="tspan34">62 Re</tspan></text>
     <text
        xml:space="preserve"
@@ -649,6 +676,22 @@
     <text
        xml:space="preserve"
        style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"
+       x="5.4230485"
+       y="55.273376"
+       id="text12-4-0-6-6"><tspan
+         sodipodi:role="line"
+         style="font-style:italic;font-weight:normal;font-size:2.11667px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1"
+         x="5.4230485"
+         y="55.273376"
+         id="tspan33-8">TIMED</tspan><tspan
+         sodipodi:role="line"
+         style="font-style:normal;font-weight:normal;font-size:2.11667px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1"
+         x="5.4230485"
+         y="57.390461"
+         id="tspan5">0.2 Re</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"
        x="72.524155"
        y="41.765728"
        id="text12-7"><tspan
@@ -671,15 +714,15 @@
        transform="translate(0.0955299,-21.806455)"><tspan
          x="12.246643"
          y="88.222404"
-         id="tspan6"><tspan
+         id="tspan7"><tspan
            style="stroke:none"
-           id="tspan5">
+           id="tspan6">
 </tspan></tspan><tspan
          x="12.246643"
          y="91.044626"
-         id="tspan8"><tspan
+         id="tspan13"><tspan
            style="stroke:none"
-           id="tspan7">0</tspan></tspan></text>
+           id="tspan8">0</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:2.82222px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:1.6, 0.8;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke;stop-color:#000000"
@@ -814,19 +857,30 @@
     <text
        xml:space="preserve"
        style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"
-       x="9.3599958"
-       y="53.175003"
+       x="5.6558299"
+       y="46.825001"
        id="text12-4-0-5-9"><tspan
          sodipodi:role="line"
          id="tspan12-5-3-2-3"
          style="font-style:italic;font-size:2.11667px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1"
-         x="9.3599958"
-         y="53.175003">Hisaki</tspan><tspan
+         x="5.6558299"
+         y="46.825001">Hisaki</tspan><tspan
          sodipodi:role="line"
          style="font-style:normal;font-size:2.11667px;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1"
-         x="9.3599958"
-         y="55.291672"
+         x="5.6558299"
+         y="48.942085"
          id="tspan34-5-6">0.2 Re</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#000000;stroke:none;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"
+       x="12.260403"
+       y="47.54784"
+       id="text16"><tspan
+         sodipodi:role="line"
+         id="tspan16"
+         style="font-size:2.11667px;fill:#000000;stroke:none;stroke-width:1"
+         x="12.260403"
+         y="47.54784">Earth</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:2.11667px;line-height:1;font-family:'CMU Serif';-inkscape-font-specification:'CMU Serif';text-align:center;text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;text-anchor:middle;fill:#000000;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:4, 2;stroke-opacity:1;-inkscape-stroke:none;paint-order:markers fill stroke;stop-color:#000000"

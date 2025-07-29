@@ -113,9 +113,29 @@
         short: "MCMC",
         long: [Markov Chain Monte Carlo]
     ),
+    (
+        key: "CGO",
+        short: "CGO",
+        long: [Carruthers Geocoronal Observatory]
+    ),
+    (
+        key: "IMAP",
+        short: "IMAP",
+        long: [Interstellar Mapping and Acceleration Probe]
+    ),
+    (
+        key: "ICON",
+        short: "ICON",
+        long: [Ionospheric Connection Explorer]
+    ),
 
 
 
+    (
+        key: "exobase",
+        short: "exobase",
+        description: [lower limit of the exosphere]
+    ),
     (
         key: "voxel",
         short: "voxel",

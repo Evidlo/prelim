@@ -56,120 +56,157 @@
 
 = Introduction
 
+This thesis is focused on remote sensing of the Earth's outermost neutral atmosphere.  This chapter will provide key definitions of this atmospheric regime, give a background on processes that drive exospheric dynamics, highlight the need for improved remote sensing observations, and introduce the #gls("CGO"), which is designed to fill this observation gap.
 
   == Earth's Exosphere and Hydrogen <earth_exosphere>
 
-  The term _exosphere_ was originally coined by Lyman Spitzer to denote the outermost part of a planetary atmosphere, where density is low enough that individual particles rarely collide.  This region has long been known to primarily be constituted of hydrogen, detectable by the resonance scattering of #gls("UV") Lyman-α photons at 121.6nm from the Sun.  As #gls("UV") is strongly absorbed by the lower atmosphere, knowledge of exospheric hydrogen originates primarily from space-based experiments @baliukin.
+  The term _exosphere_ was originally coined by Lyman Spitzer to denote the outermost layer of a planetary atmosphere where density is low enough that individual particles rarely collide.  On Earth, the primary constituent of this region has long been known to be atomic hydrogen (H), detectable by the resonant scattering of #gls("UV") Lyman-α photons at 121.6 nm from the Sun.  As #gls("UV") is strongly absorbed by the lower atmosphere, knowledge of exospheric properties such as density distribution and spatial extent originate mostly from space-based experiments @baliukin.
 
-  Exospheric hydrogen is produced from the dissociation of H₂O and CH₄ (methane) at altitudes below 100km where they diffuse upwards to the bottom of the exosphere at 500-1000km, known as the _exobase_.  Here, hydrogen atoms are launched on ballistic trajectories, where they eventually return to Earth or are lost to space.  These atoms may be _thermal_, meaning their kinetic energy comes from normal collisions with other atoms at altitudes below the exobase, or _non-thermal_, which are provided with an extra "kick" from a high-energy event.
+  Exospheric hydrogen is produced from the dissociation of H₂O and CH₄ (methane) at altitudes below 100 km where they diffuse upwards to the bottom of the exosphere at 500-1000 km, known as the _exobase_.
+
+  #rt([FIXME: anything salvageable here? #strike[Here, hydrogen atoms are launched on ballistic trajectories, where they eventually return to Earth or are lost to space.  These atoms may be _thermal_, meaning their kinetic energy comes from normal collisions with other atoms at altitudes below the exobase, or _non-thermal_, which are provided with an extra "kick" from a high-energy event.
 
   - _thermal atoms_ - Atoms with energy derived from normal collisions from gas in thermal equilibrium at low altitudes.  Velocity is described by Maxwell-Boltzmann distribution, with only the very fastest atoms in the tail of this distribution escaping (_Jeans escape_)
   - _non-thermal atoms_ - Atoms with extra energy imparted from high-energy events.  Velocities are much higher than surrounding thermal atoms
 
-  Along their trajectories, non-thermal H atoms are ionized either by extreme UV (EUV) photons or by charge-exchange with solar wind protons, making them susceptible to influence from the Earth's electric and magnetic fields.
-  The exosphere is of particular interest to physicists because it serves as the pathway for permanent hydrogen escape, which is important for understanding long-term evolution and historical loss of water from the Earth.  Additionally, exospheres serve as indicators for the presence of water on other worlds, like Venus, Mars or distant exoplanets @baliukin.
-  Factors which influence the distribution of exospheric hydrogen, and thus the rate of loss, are not well-understood.
+    Along their trajectories, non-thermal H atoms are ionized either by extreme UV (EUV) photons or by charge-exchange with solar wind protons, making them susceptible to influence from the Earth's electric and magnetic fields.]])
 
-  Significant exospheric response to solar storms has been observed, shown in @radial_profile @gonzalostorm, with competing theories that charge-exchange redistributes thermal atoms to higher altitudes by perturbing their velocity distributions, or that temperature changes in the thermosphere increases the rate of upwards diffusion towards the exobase.
+  // The exosphere is of particular interest to physicists because it serves as the pathway for permanent H escape, which is important for understanding long-term evolution and historical loss of water from the Earth.
+  // Additionally, the presence of hydrogen in exospheres serves as an indicator for water on other worlds like Venus, Mars or distant exoplanets @baliukin, and the structure of the hydrogen distribution can provide information on the rate of loss of this water. #rt([FIXME: is this just a repeat of the previous sentence?])
 
-  #figure(
-      image("figures/scratch_radial_profile.png", height: 17em),
-      caption: "Radial profile under quiet and storm conditions.  a) Subsolar point b) Geographic North pole"
-  ) <radial_profile>
+  The exosphere is of particular interest to physicists because it serves as the pathway for permanent H escape, important for understanding long-term evolution and historical loss of water from the Earth.  The presence of hydrogen in exospheres also serves as an indicator for water on other worlds like Venus, Mars or exoplanets @baliukin.
+  Significant exospheric response to geomagnetic storms has been observed @gonzalostorm, with competing theories that charge-exchange redistributes thermal atoms to higher altitudes by perturbing their velocity distributions, or that temperature changes in the thermosphere increases the rate of upwards diffusion towards the exobase.  Charge-exchange with magnetospheric ions dissipates ring current energy after storms and influences recovery rates of exospheric H atoms, making study of these atoms relevant for space weather research @ilie.
 
-  The charge of non-thermal atoms makes physics-based modelling particularly challenging due to their interaction with Earth's fields.  Even quiet, non-storm conditions are not well-understood due to limited observations of the exosphere, which are described in the next section.
+  The shape of the exospheric H density distribution and the factors that influence are not well understood.
+  Even the total extent of exosphere has not been constrained, with some studies reporting 40 Earth radii (Re) and others reporting a limit well beyond the Moon.  The next section discusses historical attempts to observe the exosphere, which have often been hampered by limited orbital vantages which cannot observe the entirety of the exosphere or slow measurement cadences not able to capture fast temporal response and recovery during storms.
+
+  // #figure(
+  //     image("figures/scratch_radial_profile.png", height: 17em),
+  //     caption: "Radial profile under quiet and storm conditions.  a) Subsolar point b) Geographic North pole"
+  // ) <radial_profile>
+
+  #rt([#strike[The charge of non-thermal atoms makes physics-based modelling particularly challenging due to their interaction with Earth's fields.  Even quiet, non-storm conditions are not well-understood due to limited observations of the exosphere, which are described in the next section.]])
 
   == Prior Exospheric Measurements and Retrievals
 
-  Understanding of the distribution of hydrogen in the exosphere has advanced primarily due to spaceborne #gls("UV") sensing.  While direct measurement is possible with mass spectrometers (e.g. sounding rockets), the sheer size of the exosphere makes this approach impractical.  Ground-based sensing has been hampered by the fact that O₂ at lower altitudes is opaque to #gls("UV").  Balmer-α emission from resonant fluorescence of exospheric hydrogen has been observed on the ground for decades @balmer1, but the signal is very dim and no reliable density distributions have been derived due to limited data constraints from ground-based sensors.  However, attempts have been made to exploit vantage evolution of rotating Earth's surface @balmer2.
+  Understanding of the H density distribution in the exosphere has advanced primarily due to spaceborne #gls("UV") sensing.  While direct measurement is possible with mass spectrometers (e.g. sounding rockets), the sheer size of the exosphere makes this approach impractical.  Ground-based sensing has been hampered by the fact that O₂ at lower altitudes is opaque to #gls("UV").  Visible H emission (Balmer-α line) from resonant fluorescence has been observed on the ground for decades @balmer1, but the signal is very dim and no reliable density distributions have been derived due to limited data constraints from ground-based sensors.  However, attempts have been made to exploit vantage evolution of rotating Earth's surface @balmer2.
 
   Lyman-α is ideal as a target to study the exosphere as these photons excite hydrogen by resonant scattering from their ground states, producing very bright emissions.  Lyman-α is absorbed by atmospheric O₂, necessitating space-based sensing.
-  Lyman-α studies of the exosphere have occured sporadically for decades, but usually as opportunistic, one-off measurements during missions studying other targets.  @previous_measurements shows two examples of such measurements.
-  @previous_mission provides an overview of previous observations with an accompanying descriptions given below.
+  Lyman-α studies of the exosphere have occured sporadically for decades, but usually as opportunistic measurements as a secondary science goal.
+ @previous_mission provides an overview of previous observations with accompanying descriptions given below.
+
+  An early exospheric measurement came from OGO-5 in 1969 which detected H atoms out to 7 Re and proved the existence of a geotail and Lyman-α background from #gls("IPH") @ogo5 @baliukin.
+  This was followed by Apollo 16 in 1972 which carried a photocathode-based UV imager to the Lunar surface that serves as the basis for modern UV instruments. It obtained a single image, the first ever wide-field exospheric measurement @apollo2 @apollo.
+  Much later Galileo performed an Earth flyby during a gravity assist in 1991 towards Jupiter, capturing a single composite image which indicated an exospheric radial extent beyond that found by Apollo.
+  A few years later in 1996, the SWAN spacecraft with its SOHO hydrogen absorption cell @baliukin launched towards Lagrange point L1 (ideal for observing the exosphere globally) captured full-sky Lyman-α images, with some high-resolutions scans directed towards the Earth finding presence of H atoms out to 100Re.
+  In 2000, the IMAGE spacecraft and GEO instrument with three scanning photometers slowly scanned over different altitudes, detecting the presence of a geotail and additionally found significant temporal variation in measured flux which was not well explained by solar variation, suggesting complicated exosphere dynamics @ostgaard.
+  One year later, the TIMED spacecraft and GUVI instrument launched and began long-term UV imaging through the limb near the exobase, finding an inverse correlation between H temperature and solar activity @timed_guvi2.
+  In 2015, the PROCYON spacecraft and LAICA instrument captured a single wide-field from 2350 Re, with studies reporting agreement of retrieved H density distribution with predictions from radiation pressure theory @procyon_laica.
+  In the same year, the dual TWINS spacecraft launched and began acquiring composite Lyman-α measurements, identifying storm-time variations in the exosphere with radial enhancements of H density propagating outwards @gonzalostorm @zoennchen2011.
+
 
   #figure(
-    grid(columns: 2, column-gutter: 1pt,
-        subfigure(image("figures/procyon.png", height: 10em), "meas", "PROCYON/LAICA"),
-        subfigure(image("figures/mooncarruthers.png", height: 10em), "meas", "Apollo 16 Carruthers camera")
+    grid(columns: 3, column-gutter: 2em,
+        subfigure(image("figures/procyon.png", height: 10em), "meas", [PROCYON/LAICA @procyon_laica2]),
+        subfigure(image("figures/mooncarruthers.png", height: 10em), "meas", [Apollo 16 Carruthers camera @apollo2]),
+        subfigure(image("figures/swan_soho.png", height: 10em), "meas", [OGO-5 composite @ogo5]),
     ),
-      caption: "Previous measurements of exospheric Lyman-α"
+      caption: "Wide-field measurements of exospheric Lyman-α"
   ) <previous_measurements>
+
 
   #figure(
       image("figures/previous_missions.svg", width: 100%),
       caption: "Past observations of exospheric hydrogen at Lyman-α.\n* not representative of actual spacecraft location"
   ) <previous_mission>
 
-  #s([*OGO-5 (1968)* - Measurement at 24 Re, 15.5° FOV @ogo5 @baliukin], [
-      - Detected H atoms out to 7 Re
-      - Proved existence of geotail and Lyman-α background from #gls("IPH")
-  ])
-
-  #s([*Apollo 16 (1968)* - Measurement at 62 Re, 20° FOV @apollo], [
-      - From Lunar surface. First photocathode-based UV imager
-      - First wide-field exosphere image.  Only one measurement acquired
-  ])
-
-  // #s([*Dynamics Explorer (1986)* - Measurements at 0.1-3.7 Re, 0.32° FOV @dynamicsexplorer], [
-  // - Taken from Lunar surface. First photocathode-based UV imager
-  // - First wide-field exosphere image.  Only one measurement acquired
+  // #s([*OGO-5 (1968)* - Measurement at 24 Re, 15.5° FOV @ogo5 @baliukin], [
+  //     - Detected H atoms out to 7 Re
+  //     - Proved existence of geotail and Lyman-α background from #gls("IPH")
   // ])
 
-  #s([*Galileo (1990)* - Measurement at 680 Re], [
-      - Science target not Earth.  Single Lyman-α image acquired (composite)
-      - Indicated large exosphere radial extent beyond Apollo measurements
-  ])
+  // #s([*Apollo 16 (1972)* - Measurement at 62 Re, 20° FOV @apollo], [
+  //     - From Lunar surface. First photocathode-based UV imager
+  //     - First wide-field exosphere image.  Only one measurement acquired
+  // ])
 
-  #s([*SWAN/SOHO (1996)* - Measurement at 2350 Re, 1° FOV @baliukin], [
-      - Science target not Earth.  Full-sky Lyman-α image acquired (composite)
-      - Orbiting Lagrange point L1 provides ideal outside vantage
-      - Confirmed extent of exosphere out to 100 Re
-  ])
+  // #s([*Dynamics Explorer (1986)* - Measurements at 0.1-3.7 Re, 0.32° FOV @dynamicsexplorer], [
+  // ])
 
-  #s([*IMAGE/GEO (2000)* - Measurement at 7 Re @ostgaard], [
-      - Three scanning photomers at 0° and ±30° from boresight
-      - Slowly scans over different altitudes through Earth orbit evolution
-      - Detected presence of geotail with density enhancement
-      - Significant temporal variation not controlled by solar flux suggest more complicated dynamics
-  ])
+  // #s([*Galileo (1990)* - Measurement at 680 Re], [
+  //     - Science target not Earth.  Single Lyman-α image acquired (composite)
+  //     - Indicated large exosphere radial extent beyond Apollo measurements
+  // ])
 
-  #s([*PROCYON/LAICA (2015)* - Measurement at 2350 Re, 2° FOV @gonzalolaica], [
-      - Science target not Earth.  Single Lyman-α wide-field image acquired
-      - Confirmed extent of exosphere out to 38 Re
-      - More spherical symmetry in exosphere than previous reports
-  ])
+  // #s([*SWAN/SOHO (1996)* - Measurement at 2350 Re, 1° FOV @baliukin], [
+  //     - Science target not Earth.  Full-sky Lyman-α image acquired (composite)
+  //     - Orbiting Lagrange point L1 provides ideal outside vantage
+  //     - Reported extent of exosphere out to 100 Re
+  // ])
 
-  #s([*TWINS (2015)* - Measurement at 7 Re, 4° FOV @twins], [
-      - Acquired composite Lyman-α measurements over several years
-      - Studies identified storm-time variation with radial enhancement propagating outward @gonzalostorm @zoennchen2011
-  ])
+  // #s([*IMAGE/GEO (2000)* - Measurement at 7 Re @ostgaard], [
+  //     - Three scanning photomers at 0° and ±30° from boresight
+  //     - Slowly scans over different altitudes through Earth orbit evolution
+  //     - Detected presence of geotail with density enhancement
+  //     - Significant temporal variation not controlled by solar flux suggest more complicated dynamics
+  // ])
 
-  Of these missions, only the TWINS mission has observed the exosphere over long timescales, but its low-altitude observations and measurement gaps limit its utility in understanding the global exosphere.
-  Longterm study of the exosphere has not been a priority on any mission, with only 4 wide-field images in existence.  Available data is sparse, especially with regards to storm-time evolution.
+  // #s([*TIMED/GUVI (2001)* - Measurement at 0.1 Re, 12° fan FOV @timed_guvi @timed_guvi2], [
+  // ])
+
+  // #s([*PROCYON/LAICA (2015)* - Measurement at 2350 Re, 2° FOV @procyon_laica], [
+  //     - Science target not Earth.  Single Lyman-α wide-field image acquired
+  //     - Reported extent of exosphere out to 38 Re
+  //     - More spherical symmetry in exosphere than previous reports
+  // ])
+
+  // #s([*TWINS (2015)* - Measurement at 7 Re, 4° FOV @twins], [
+  //     - Acquired composite Lyman-α measurements over several years
+  //     - Studies identified storm-time variation with radial enhancement propagating outward @gonzalostorm @zoennchen2011
+  // ])
+
+  Of these missions, only the TWINS and TIMED missions have observed the exosphere over long timescales, but their low-altitude observations and measurement gaps limit their utility in understanding the global exosphere.
+  Longterm study of the exosphere has not been a priority on any mission, with only 3 wide-field images in existence, shown in @previous_measurements.  Available data is sparse, especially with regards to storm-time evolution.
 
   == Carruthers Mission Overview
 
 
   The historical overview of exospheric studies in the previous section highlights a need for global exospheric measurements at high temporal cadence.
 
-  The Carruthers mission was proposed in #rt([FIXME: 2021]) to fill this observation gap by making wide-field Lyman-α observations from the L1 Lagrange point, ideal for observing the exosphere globally.
-  Carruthers will ride-share with the IMAP spacecraft to L1, inserting into a 6 month orbit with angular deviation up to 28° for observing from diverse perspectives.  Its #gls("GCI"), shown in @gci2, contains two #gls("UV") cameras based on the Apollo 16 camera design, representing the first standalone exospheric mission capable of making continuous global measurements. @viewgeom1 provides an overview of the L1 orbit and camera #gls("FOV") relative to the currently-known extent of the exosphere.
+  The _Carruthers Geocorona Observatory_ (CGO) mission was selected by NASA in 2020 to fill this observation gap by making wide-field Lyman-α observations from the L1 Lagrange point, ideal for observing the exosphere globally.
+  Carruthers will ride-share with the #gls("IMAP") spacecraft to L1, inserting into a 6 month orbit with wide angular deviation for observing from diverse perspectives.  Its #gls("GCI"), shown in @gci2, contains two #gls("UV") cameras derived from the #gls("ICON") far ultraviolet (FUV) instrument that will simultaneously image the inner exosphere at high resolution and the global exosphere out to 25 Re.  Carruthers represents the first standalone exospheric mission capable of making continuous global measurements.
+  Carruthers will reveal the relative importance of thermal evaporation, charge-exchange, and solar radiation pressure in controlling exospheric dynamics.  It will also determine the spatial extent and shape of global H distribution and its response to impulsive space weather events.
+
 
 
   #figure(
-      image("figures/gci2.png", width: 40em),
-      caption: [External view of GCI instrument containing two #gls("UV") cameras]
+      image("figures/gci.png", width: 40em),
+      caption: [Internal view of GCI instrument containing two #gls("UV") cameras]
   ) <gci2>
 
-  #figure(
-      image("figures/viewgeom1.svg", width: 20em),
-      caption: [#rt([FIXME: update figure, remove GLIDE]) Carruthers will observe the exosphere in a 6 month orbit around L1, with a maximum angular deviation of 28°]
-  ) <viewgeom1>
+
+  // @viewgeom1 provides an overview of the L1 orbit and camera #gls("FOV") relative to the currently-known extent of the exosphere.
+  // #figure(
+  //     image("figures/viewgeom1.svg", width: 20em),
+  //     caption: [#rt([FIXME: update figure, remove GLIDE]) Carruthers will observe the exosphere in a 6 month orbit around L1, with a maximum angular deviation of 28°]
+  // ) <viewgeom1>
 
 
-  == Thesis Organization and Contributions
+  == Thesis Contributions and Organization
 
-  #rt([FIXME: todo])
+  The main contributions of this thesis are listed below:
+
+  - A GPU-accelerated rayracer in spherical coordinates designed to be integrated into machine learning frameworks.  Includes common projection types like cone-bean and parallel-beam and easily composes these together to support complex viewing geometries.
+  - An H density model which utilizes a truncated spherical harmonic basis and cubic b-splines to enforce a smooth H density distribution without overly strict assumptions of a functional form for radial decay or relying on any density priors
+  - A novel demonstration of the flexibility of automatic differentiation frameworks in exospheric density retrievals, enabled by the differentiability of the above raytracer and density model
+  - A stochastic model of the #gls("GCI") instrument and an accurate approximation of it which can generate simulated observations for the purpose of retrieval validation.
+
+  This document is organized as follows:  @measurement_constraints describes the details of the Carruthers orbit, camera geometry and post-processing algorithm, and covers the physics of the emission model which relates an H density distribution to measurable Lyman-α radiance.
+  @inverse_problem lays out the concepts of linear inverse problems and describes how to discretize the tomographic inverse problem associated with exospheric H density retrieval.
+  @raytracer describes the implementation of a tomographic projector which is differentiable and GPU-enabled, used during retrievals.
+  @static_retrieval explains historical approaches to static retrievals and introduces the aforementioned retrieval method based on spherical harmonics and cubic b-splines.
+  @static_validation demonstrates the methodology used to verify that the retrieval algorithm meets requirements set during the mission proposal, relying on synthetic ground truth datasets generated by the exospheric sensing community.
+  Finally, @future_work discusses potential future directions of research to be undertaken in the completion of this thesis.
 
 = Measurement Constraints <measurement_constraints>
 
@@ -191,35 +228,36 @@
 
     Carruthers will be inserted into a halo orbit around the L1 Lagrange point (about 1.5 million km from Earth, 235 Re), which is distant enough to observe the entirety of the geocorona from an outside vantage @baliukin over a long period.
 
-    Shown in @carruthers_orbit, this orbit deviates above/below the ecliptic plane by ±7° (31 Re) and ±28° (112 Re) in the dawn/dusk direction, providing important angular measurement diversity for tomographic analysis.
-    While multiple spacecraft would be ideal for improving spatiotemporal measurement resolution from the relatively slow 6 month orbital period, analysis in @static_validation shows that an observation window of just 2 weeks is sufficient to meet mission retrieval requirements during quiet exospheric conditions.
+    Shown in @carruthers_orbit, this orbit deviates above/below the ecliptic plane by ±7° (31 Re) and ±28° (112 Re) in the dawn/dusk direction, providing angular measurement diversity for tomographic analysis of the exosphere, shown @carruthers_orbit.
 
     #figure(
         grid(
-            columns: 2, gutter: 5pt,
+            rows: 2, gutter: 1em,
             subfigure(image("figures/carruthers_orbit_placeholder.jpg", width: 15em), "orbitfig", "6 month Carruthers orbit around L1"),
-            subfigure(image("figures/los_evolution_15d.png"), "orbitfig", "Angular diversity of orbit in ecliptic plane")
+            subfigure(image("figures/los_evolution_15d.png", width: 40em), "orbitfig", "Two week angular diversity of orbit in ecliptic plane")
         ),
         caption: [#rt([FIXME: placeholder.]) Carruthers orbit details]
     ) <carruthers_orbit>
 
 
-    Two cameras within Carruthers make up the #gls("GCI"), the primary instrument on board the spacecraft.  The #gls("NFI") observes the inner exosphere at high resolution on a 30 minute cadence and the #gls("WFI") observes global distribution of exospheric hydrogen out to 25 Re on a 60 minute cadence.  Together, these cameras are capable of measuring both the fast-evolving dynamics of the inner exosphere and global distribution of hydrogen along with interplanetary background Lyman-α signal (discussed in the next section).  @earth_fov shows the #gls("FOV") of the cameras relative to the inner exosphere boundary and outer exospheric limit (#rt[justifying 25 Re here?  exosphere goes out to 100 Re and beyond]).  A summary of camera geometry specifications is given in @camera_specs.
+  Two cameras comprise the #gls("GCI"), the primary instrument on board the Carruthers spacecraft.  The #gls("NFI") observes the inner exosphere at high resolution on a 30 minute cadence and the #gls("WFI") observes global distribution of exospheric hydrogen out to and arbitrary limit 25 Re on a 60 minute cadence.
+  A summary of camera geometry specifications is given in @camera_specs.
+  Together, these cameras are capable of measuring both the fast-evolving dynamics of the inner exosphere and the global distribution of hydrogen along with the interplanetary background Lyman-α signal (discussed in the next section).  @earth_fov shows the #gls("FOV") of the cameras relative to the inner exosphere boundary and outer exospheric limit (#rt[justifying 25 Re here?  exosphere goes out to 100 Re and beyond]).
 
     #figure(
         image("figures/scratch_fov.jpg"),
-        caption: [#rt([FIXME: placeholder.])  (a) Carruthers camera FOV projected onto Earth tangent plane. (b) FOV relative to outer exosphere boundaries.]
+        caption: [#rt([FIXME: placeholder.])  (a) Carruthers camera FOV projected onto Earth tangent plane. (b) FOV relative to nominal exosphere boundaries.]
     ) <earth_fov>
 
     #figure(
         table(
-            table.header([Camera], [FOV\ (degrees)], [Resolution\ (pixels)], [Angular Res.\ (degrees)], [Spatial Res.\ (Re, projected)]),
+            table.header([Camera], [FOV\ (degrees)], [Resolution\ (pixels)], [Angular Res.\ (degrees)], [Spatial Res. \*\ (Re, projected)]),
             align: horizon,
             [WFI], [18°], [512²], $35·10^(-3)$, [0.14],
             [NFI], [3.6°], [1024²], $3.5·10^(-3)$, [0.014],
             columns: (auto, auto, auto, auto, auto),
         ),
-        caption: [Camera geometry specifications.\ Spatial resolution is projected onto Earth tangent plane as in @earth_fov(a)]
+        caption: [Camera geometry specifications.\ Spatial resolution is projected onto Earth tangent plane as in @earth_fov(a)\ \* Assuming spacecraft is located at 1.5·10⁶ km distance from Earth]
     ) <camera_specs>
 
 
@@ -228,7 +266,7 @@
     In order to recover a hydrogen density distribution from measurements, it is necessary to mathematically model the process by which Lyman-α photons propagate through the exosphere and enter the camera.
     This is known as an emission model and is a central component of tomographic retrieval algorithms.
 
-    Numerically modelling the physics of radiative transfer is a computationally complex task, as photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interdependencies between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the #gls("optically thin") regime it is possible to assume photons scatter only once without significant loss of accuracy @ostgaard, simplifying computational requirements and implementation complexity of the emission model.
+    Numerically modelling the physics of radiative transfer is a computationally complex task, as solar Lyman-α photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interdependencies between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the #gls("optically thin") regime it is a valid approximation that incident photons scatter only once @ostgaard, simplifying computational requirements and implementation complexity of the emission model.
 
     Anderson and Hord Jr. @opticaldepththin, define the optically thin regime as starting when $tau <= 0.1$, where optical depth $tau$ is a measure of the proportion of photons expected to scatter only once.
 
@@ -256,14 +294,14 @@
     // )
 
 
-    where $g^*_t$ is angular g-factor, $t$ is time, $phi.alt_t$ is scattering phase function, $bold(a)_t$ is albedo, $vc(r)$ is position vector, $bold(rho)$ is hydrogen density and $V$ is the exosphere volume in the #gls("FOV").  $phi.alt$, known as the #gls("scattering phase function"), represents the directional distribution of resonantly-scattered photons relative to the direction of the sun, shown in @scatteringphase.
+  where $g^*_t$ is angular g-factor, $t$ is time, $phi.alt$ is scattering phase function, $bold(a)_t$ is albedo, $vc(r)$ is position vector, $bold(rho)$ is hydrogen density and $l$ is the #gls("LOS") along the #gls("FOV").  $phi.alt$, known as the #gls("scattering phase function"), represents the directional distribution of resonantly-scattered photons relative to the direction of the Sun, shown in @scatteringphase.
 
     #figure(
         image("figures/physics_scattering.svg", height: 15em),
         caption: [Scattering phase function]
     ) <scatteringphase>
 
-    Angular solar g-factor $g^*_t$ (phot/s/atom/sr) relates hydrogen quantity (atoms) to photon flux emitted per unit solid angle (phot/s/sr).  This quantity is directly related to solar activity and is assumed to be a known, external input to the emission model.
+    Angular solar g-factor $g^*_t$ (phot/s/atom/sr) relates hydrogen quantity (atoms) to photon flux emitted per unit solid angle (phot/s/sr).  This quantity is linearly related to solar activity and is assumed to be a known, external input to the emission model.
     @gfactor_difference illustrates the important $4 pi$ difference between angular g-factor (per steradian) and _isotropic_ g-factor (per whole sphere), which are sometimes not explicitly distinguished in literature.
 
     #figure(
@@ -272,7 +310,7 @@
             subfigure(image("figures/g_factor_angular.svg", height:8em), "gfact", "Angular"),
             subfigure(image("figures/g_factor.svg", height:8em), "gfact", "Isotropic"),
         ),
-        caption: [Angular vs. Isotropic g-factor],
+        caption: [Angular vs. Isotropic g-factor.  Angular g-factor measures scattered photon flux emitted per steradian from an infinitesimal unit volume, while isotropic measures the flux over the whole 4π sphere],
     ) <gfactor_difference>
 
     Finally, $bold(a)_t (vc(r))$ is a unitless multiplicative correction factor (assumed known) to account for high-density regions of the inner optically thick exosphere which act as a secondary source of Lyman-α photons illuminating the outer exosphere from below.
@@ -294,7 +332,7 @@
             table.header([Quantity], [Symbol], [Units]),
             "Density", $bold(rho)$, "atom/cm³",
             "Non-spectral radiance", $I_"exo"$, "phot/s/atom/cm²/sr",
-            "Isotropic g-factor", $g^*$, "phot/s/atom/sr",
+            "Angular g-factor", $g^*$, "phot/s/atom/sr",
             "Albedo", $bold(a)$, "unitless",
             [Scattering phase function], $phi.alt$, "unitless"
             // "Emissivity", "", "",
@@ -303,13 +341,13 @@
         )
     ) <emission_units>
 
-  Zoennchen et al. @zoennchen_new have found that extending the optically thin model to include extinction along the LOS and extinction between the sun and scattering point reduced discrepancy between tomographic retrievals and physics-based simulations.  The scope of this manuscript does not include these correction terms.
+  Zoennchen et al. @zoennchen_new have found that extending the optically thin model to include extinction along the LOS and extinction between the Sun and scattering point reduced discrepancy between tomographic retrievals and physics-based simulations.  The scope of this manuscript does not include these correction terms.
 
   // FIXME - extra physics
   // , but @appendix_extra_physics describes the procedure for implementing these terms with the raytracer in @raytracer.
 
     A tenuous distribution of hydrogen throughout the solar system, known as #gls("IPH"), also contributes to the radiance detected by the spacecraft.  Estimation of #gls("IPH") is an involved process, and Carruthers will dedicate a portion of on-orbit operations to making observations of an annulus around the Earth where exospheric hydrogen is not present.  @iph shows a typical #gls("IPH") distribution expected to be observed during the mission.  #gls("IPH") radiance contribution from behind the exosphere envelope is interpolated from the measured annulus.  The impact of biases introduced by #gls("IPH") estimation are considered in @static_validation.
-    Other unwanted sources of Lyman-α signal which violate emission model assumptions include the moon and stars and optically thick exosphere, as shown in @moon_stars, but these sources will be masked out and ignored during retrieval instead of estimated.  Together, these radiance sources are referred to as $I_"bkg"$.
+    Other unwanted sources of Lyman-α signal which violate emission model assumptions include the Moon and stars and optically thick exosphere, as shown in @moon_stars, but these sources will be masked out and ignored during retrieval instead of estimated.  Together, these radiance sources are referred to as $I_"bkg"$.
 
 
     #figure(
@@ -336,7 +374,7 @@
 
   This section describes a statistical model for the instrument noise and background signals present in the NFI and WFI cameras during measurement of exospheric Lyman-α.  Modelling these processes is important for converting raw sensor measurements in digital numbers (DN) as telemetered by the spacecraft to corresponding radiances that can be used for tomographic reconstruction.   A statistical model is also important for generating synthetic noisy measurements to validate the performance of retrieval algorithms.  As a result, the Carruthers cameras have undergone extensive laboratory characterization to determine instrument model parameters and periodic on-orbit calibration is planned to account for parameter drift due to exposure to the space environment.
 
-    The Carruthers spacecraft contains two #gls("UV") cameras designed for detecting exospheric Lyman-α emission, an indicator of the amount of atomic hydrogen present along a #gls("LOS").  These cameras utilize a design which has heritage with other #gls("UV") instruments such as ICON @icon and GUVI @guvi and contain the following stages @rider (shown in @instrument_stages):
+    The Carruthers spacecraft contains two #gls("UV") cameras designed for detecting exospheric Lyman-α emission, an indicator of the amount of atomic hydrogen present along a #gls("LOS").  These cameras utilize a design which has heritage with other #gls("UV") instruments such as ICON @icon and GUVI @timed_guvi and contain the following stages @rider (shown in @instrument_stages):
 
   // TODO: WIP
 
@@ -347,8 +385,8 @@
   - *ADC* - #gls("ADC") for reading out #gls("CCD") charge.  (together with the #gls("CCD") this is sometimes referred to as an #gls("APS"))
 
   #figure(
-      image("figures/gci.png", width: 40em),
-      caption: [Internal diagram of GCI instrument containing two #gls("UV") cameras]
+      image("figures/gci2.png", width: 40em),
+      caption: [External diagram of GCI instrument containing two #gls("UV") cameras]
   ) <instrument_stages>
 
     The rest of this section will consist of a derivation of a single pixel noisy measurement in #gls("DN") given a photon spectral radiance and other quantities in @knownvariables and @randomvariables.
@@ -548,7 +586,7 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
   // FIXME - explain switch to lowercase variable here
 
-    As mentioned previously, some #gls("LOS") contain Lyman-α signals which are unknown or violate the emission model assumptions and must be marked so they are ignored during retrieval.  These include the moon, stars, optically thick exosphere, and Earth shadow, shown in @moon_stars @zoennchen_old.
+    As mentioned previously, some #gls("LOS") contain Lyman-α signals which are unknown or violate the emission model assumptions and must be marked so they are ignored during retrieval.  These include the Moon, stars, optically thick exosphere, and Earth shadow, shown in @moon_stars @zoennchen_old.
 
     - #rt([FIXME: refer to Earth shadow mask in albedo intro section])
 
@@ -600,7 +638,7 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
 
   Choosing a discretization grid which is well-suited to the data is critical, as an improper grid can create aliasing and other artifacts that cause the numerical result to deviate from the functions they approximate.  Since the exosphere is well-understood to smoothly vary with larger density gradients at lower altitudes, a regular spherical grid with logarithmically spaced radial bins is appropriate.  The nature of regular grids allows for a simple multidimensional array as the underlying data structure, and the property of shared boundaries between voxels simplifies tomography calculations, as demonstrated in @alg_outline.
 
-    The regular spherical grid used in this manuscript has its 0° elevation pole aligned to ecliptic north (+Z Cartesian GSE axis) and ±180° azimuth branch point pointed away from the sun (-X Cartesian GSE axis), as shown in @grid_details.
+    The regular spherical grid used in this manuscript has its 0° elevation pole aligned to ecliptic north (+Z Cartesian GSE axis) and ±180° azimuth branch point pointed away from the Sun (-X Cartesian GSE axis), as shown in @grid_details.
 
     This manuscript uses convention $r$, $e$, $a$ when referring to radial, elevational, and azimuthal dimensions to avoid ambiguity with astrophysical versus mathematical conventions for spherical coordinates as in @sph_convention that denote the elevational and azimuthal dimensions differently.
 
@@ -1342,7 +1380,7 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
 
     == High Degree-of-Freedom <hdof>
 
-      An alternative approach presented in Zoennchen et al. @zoennchen_new  @gonzalolaica and based on @solartomography1 is the #gls("HDOF") method which uses a non-parametric model where each voxel in the underyling density discretization is a separately optimizable parameter.  This method utilizes #gls("MAP") estimation which is optimal in a probabilistic sense but requires assumptions about the density distribution and noise statistics.  Specifically this method assumes that hydrogen density is a #gls("GMRF") distributed according to a known prior distribution $cal(N)(bold(rho)_"pr", Σ_"pr")$ with mean and covariance $bold(rho)_"pr"$ and $Σ_"pr"$ provided externally (e.g. a spherically-symmetric Chamberlain model) and measurements follow a noise distribution $Σ_"e"$.
+      An alternative approach presented in Zoennchen et al. @zoennchen_new  @procyon_laica and based on @solartomography1 is the #gls("HDOF") method which uses a non-parametric model where each voxel in the underyling density discretization is a separately optimizable parameter.  This method utilizes #gls("MAP") estimation which is optimal in a probabilistic sense but requires assumptions about the density distribution and noise statistics.  Specifically this method assumes that hydrogen density is a #gls("GMRF") distributed according to a known prior distribution $cal(N)(bold(rho)_"pr", Σ_"pr")$ with mean and covariance $bold(rho)_"pr"$ and $Σ_"pr"$ provided externally (e.g. a spherically-symmetric Chamberlain model) and measurements follow a noise distribution $Σ_"e"$.
 
       Under these assumptions, the #gls("MAP") solution has closed form
 
