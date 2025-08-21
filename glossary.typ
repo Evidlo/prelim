@@ -18,6 +18,11 @@
         long: "charged-coupled device"
     ),
     (
+        key: "CMOS",
+        short: "CMOS",
+        long: "Complementary metal-oxide-semiconductor"
+    ),
+    (
         key: "APS",
         short: "APS",
         long: "advanced photo system"

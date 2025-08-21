@@ -2,7 +2,7 @@
 // it as an article in the style of the IEEE.
 #let ieee(
     // The paper's title.
-    title: "Paper Title",
+    title: none,
 
     // An array of authors. For each author you can specify a name,
     // department, organization, location, and email. Everything but
@@ -35,14 +35,14 @@
     set page(
         // paper: paper-size,
         // FIXME - for Lara's notes
-        width: 12.5in, height: 11in,
+        // width: 12.5in, height: 11in,
         // The margins depend on the paper size.
         margin: (
-            x: 1.45in,
+            x: 1.25in,
             top: 5%,
             bottom: 5%,
             // FIXME - for Lara's notes
-            right: 5.0119in
+            // right: 5.0119in
         ),
         numbering: "1"
     )
@@ -82,6 +82,26 @@
     //         )
     //     }
     // }
+
+    let figure_spacing = 0.75em // Additional spacing between figures and the text
+    show figure: it => {
+        if it.placement == none {
+            block(it, inset: (y: figure_spacing))
+        } else if it.placement == top {
+            place(
+                it.placement,
+                float: true,
+                block(width: 100%, inset: (bottom: figure_spacing), align(center, it))
+            )
+        } else if it.placement == bottom {
+            place(
+                it.placement,
+                float: true,
+                block(width: 100%, inset: (top: figure_spacing), align(center, it))
+            )
+        }
+    }
+
 
 
     // Configure lists.
@@ -170,7 +190,7 @@
             v(16pt, weak: true)
         }
     }
-    align(center, text(12pt, emph("Electrical and Computer Engineering\nUniversity of Illinois Urbana-Champaign")))
+    // align(center, text(12pt, emph("Electrical and Computer Engineering\nUniversity of Illinois Urbana-Champaign")))
     v(40pt, weak: true)
 
     // Start two column mode and configure paragraph properties.

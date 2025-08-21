@@ -2,10 +2,9 @@
 #import "./diagbox.typ": *
 #import "@preview/glossarium:0.5.1": make-glossary, register-glossary, print-glossary, gls, glspl
 #import "glossary.typ": glossary
-#show: make-glossary
 #register-glossary(glossary)
 
-#show link: set text(style: "italic")
+// #show link: set text(style: "italic")
 
 // custom functions for math/text
 #import "functions.typ": *
@@ -15,35 +14,80 @@
 // - remove heading numbers when introducing autograd, gpu usage, discretization
 // - fix tick sizes in plots
 
+
 #let title = "Exospheric Hydrogen Density Retrieval Using Dynamic Optical Tomography"
 #set document(title: title)
 #show: ieee.with(
-    title: title,
-    abstract: [
-    ],
-    authors: (
-        (
-            name: "Evan Widloski",
-            // department: "Electrical and Computer Engineering",
-            // organization: "University of Illinois Urbana-Champaign",
-            email: "evanw3@illinois.edu"
-        ),
-        (
-            name: "Lara Waldrop",
-            // department: "Electrical and Computer Engineering",
-            // organization: "University of Illinois Urbana-Champaign",
-            email: "lwaldrop@illinois.edu"
-        ),
-        (
-            name: "Farzad Kamalabadi",
-            // department: "Electrical and Computer Engineering",
-            // organization: "University of Illinois Urbana-Champaign",
-            email: "farzadk@illinois.edu"
-        ),
-    ),
-    index-terms: ("raytracer", "projector", "spherical coordinates", "remote sensing", "tomography", "PyTorch", "GPU"),
+    // title: title,
+    // abstract: [
+    //     Knowledge of the structure of the Earth's exosphere, the outermost layer of atmosphere, is on the critical path to understanding several important atmospheric processes like plasmaspheric refilling and ring current recovery during geomagnetic storms.  Additionally, the exosphere serves as the pathway for permanent escape to space of atomic hydrogen (H), the main constituent of the exosphere and a key driver of long-term loss of water on Earth.
+    //     The Carruthers Geocoronal Observatory represents the first spacecraft dedicated to studying this region of our planet's atmosphere, making continuous, wide-field observations of scattered Lyman-α H emission from a distant vantage at the Earth-Sun L1 Lagrange point with its GeoCoronal Imager (GCI).
+
+    //     This document is focused on the tomographic retrieval of a global H density distribution from Lyman-α emission and introduces several significant technical advancements.  The first is a detailed stochastic instrument model that is capable of generating realistic noisy Lyman-α radiance measurements from synthetic ground truth datasets, needed for validating retrieval performance of the Carruthers data processing pipeline.  Next is a GPU-accelerated raytracer compatible with automatic differentiation (AD) machine-learning frameworks and released as a standalone software package for easily constructing arbitrary projectors for tomography problems.  Last is a flexible 3D parametric retrieval model which improves upon previous approaches by replacing rigid radial density decay assumptions and density priors with a truncated spherical harmonic basis and adaptible cubic b-splines, performing strongly in geomagnetically quiet conditions.
+
+    //     Finally, this document proposes two new research directions for the completion of the degree.  The first is a new approach to uncertainty quantification of tomographic retrievals which leans on the delta method of variance propagation and utilizes the implicit function theorem for efficiently computing Jacobians within an automatically-differentiated iterative retrieval framework.  The second is #rt([FIXME: dynamic retrievals via kalman filter.  joint estimation of state and system dynamics])
+
+    // ],
+    // authors: (
+    //     (
+    //         name: "Evan Widloski",
+    //         // department: "Electrical and Computer Engineering",
+    //         // organization: "University of Illinois Urbana-Champaign",
+    //         email: "evanw3@illinois.edu"
+    //     ),
+    // ),
+    // index-terms: ("raytracer", "projector", "spherical coordinates", "remote sensing", "tomography", "PyTorch", "GPU"),
     // bibliography-file: "refs.bib",
 )
+
+#[
+    #set align(center)
+
+    \ \ \
+
+    EXOSPHERIC HYDROGEN DENSITY RETRIEVAL USING DYNAMIC OPTICAL TOMOGRAPHY
+
+    \ \ \
+
+    BY
+
+    EVAN MICHAEL WIDLOSKI
+    \ \ \ \ \ \ \ \
+
+    PRELIMINARY EXAMINATION
+]
+
+\ \ \ \ \ \
+
+Doctoral Committee:
+
+#[
+    #set list(marker: "      ")
+    - Associate Professor Lara Waldrop, Chair
+    - Professor Farzad Kamalabadi
+    - Professor Larry Di Girolamo
+    - Assistant Professor Ilan Shomorony
+]
+
+#colbreak()
+
+#[
+    #set text(size: 20pt)
+    #set align(center)
+    ABSTRACT
+
+    \
+]
+
+Knowledge of the structure of the Earth's exosphere, the outermost layer of atmosphere, is on the critical path to understanding several important atmospheric processes like plasmaspheric refilling and ring current recovery during geomagnetic storms.  Additionally, the exosphere serves as the pathway for permanent escape to space of atomic hydrogen (H), the main constituent of the exosphere and a key driver of long-term loss of water on Earth.
+        The Carruthers Geocorona Observatory represents the first spacecraft dedicated to studying this region of our planet's atmosphere, making continuous, wide-field observations of scattered Lyman-α H emission from a distant vantage at the Earth-Sun L1 Lagrange point with its GeoCoronal Imager (GCI).
+
+        This document is focused on the tomographic retrieval of a global H density distribution from Lyman-α emission and introduces several significant technical advancements.  The first is a detailed stochastic instrument model that is capable of generating realistic noisy Lyman-α radiance measurements from synthetic ground truth datasets, needed for validating retrieval performance of the Carruthers data processing pipeline.  Next is a GPU-accelerated raytracer compatible with automatic differentiation (AD) machine-learning frameworks and released as a standalone software package for easily constructing arbitrary projectors for tomography problems.  Last is a flexible 3D parametric retrieval model which improves upon previous approaches by replacing rigid radial density decay assumptions and density priors with a truncated spherical harmonic basis and adaptible cubic b-splines, performing strongly in geomagnetically quiet conditions.
+
+Finally, this document proposes two new research directions for the completion of the degree.  The first is a new approach to uncertainty quantification of tomographic retrievals which leans on the delta method of variance propagation and utilizes the implicit function theorem for efficiently computing Jacobians within an automatically-differentiated iterative retrieval framework.  The second is an approach towards dynamic retrieval of the exosphere which will learn a time-evolving state-space model by combining temporally spaced observations from a single spacecraft, using changes in vantage to incrementally constrain the underlying dynamics and improve future state estimates through Kalman filtering.
+
+#colbreak()
+
 
 
 // ----------- Document Styling ------------
@@ -54,9 +98,11 @@
 
 #outline(indent: auto, depth: 2)
 
+#colbreak()
+
 = Introduction
 
-This thesis is focused on remote sensing of the Earth's outermost neutral atmosphere.  This chapter will provide key definitions of this atmospheric regime, give a background on processes that drive exospheric dynamics, highlight the need for improved remote sensing observations, and introduce the #gls("CGO"), which is designed to fill this observation gap.
+This thesis is focused on remote sensing of the Earth's outermost neutral atmosphere.  This chapter will provide key definitions of this atmospheric regime, give a background on processes that drive exospheric dynamics, highlight the need for improved remote sensing observations, and introduce the Carruthers mission, which is designed to fill this observation gap.
 
   == Earth's Exosphere and Hydrogen <earth_exosphere>
 
@@ -64,20 +110,20 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   Exospheric hydrogen is produced from the dissociation of H₂O and CH₄ (methane) at altitudes below 100 km where they diffuse upwards to the bottom of the exosphere at 500-1000 km, known as the _exobase_.
 
-  #rt([FIXME: anything salvageable here? #strike[Here, hydrogen atoms are launched on ballistic trajectories, where they eventually return to Earth or are lost to space.  These atoms may be _thermal_, meaning their kinetic energy comes from normal collisions with other atoms at altitudes below the exobase, or _non-thermal_, which are provided with an extra "kick" from a high-energy event.
+  // #rt([FIXME: anything salvageable here? #strike[Here, hydrogen atoms are launched on ballistic trajectories, where they eventually return to Earth or are lost to space.  These atoms may be _thermal_, meaning their kinetic energy comes from normal collisions with other atoms at altitudes below the exobase, or _non-thermal_, which are provided with an extra "kick" from a high-energy event.
 
-  - _thermal atoms_ - Atoms with energy derived from normal collisions from gas in thermal equilibrium at low altitudes.  Velocity is described by Maxwell-Boltzmann distribution, with only the very fastest atoms in the tail of this distribution escaping (_Jeans escape_)
-  - _non-thermal atoms_ - Atoms with extra energy imparted from high-energy events.  Velocities are much higher than surrounding thermal atoms
+  // - _thermal atoms_ - Atoms with energy derived from normal collisions from gas in thermal equilibrium at low altitudes.  Velocity is described by Maxwell-Boltzmann distribution, with only the very fastest atoms in the tail of this distribution escaping (_Jeans escape_)
+  // - _non-thermal atoms_ - Atoms with extra energy imparted from high-energy events.  Velocities are much higher than surrounding thermal atoms
 
-    Along their trajectories, non-thermal H atoms are ionized either by extreme UV (EUV) photons or by charge-exchange with solar wind protons, making them susceptible to influence from the Earth's electric and magnetic fields.]])
+  //   Along their trajectories, non-thermal H atoms are ionized either by extreme UV (EUV) photons or by charge-exchange with solar wind protons, making them susceptible to influence from the Earth's electric and magnetic fields.]])
 
   // The exosphere is of particular interest to physicists because it serves as the pathway for permanent H escape, which is important for understanding long-term evolution and historical loss of water from the Earth.
   // Additionally, the presence of hydrogen in exospheres serves as an indicator for water on other worlds like Venus, Mars or distant exoplanets @baliukin, and the structure of the hydrogen distribution can provide information on the rate of loss of this water. #rt([FIXME: is this just a repeat of the previous sentence?])
 
   The exosphere is of particular interest to physicists because it serves as the pathway for permanent H escape, important for understanding long-term evolution and historical loss of water from the Earth.  The presence of hydrogen in exospheres also serves as an indicator for water on other worlds like Venus, Mars or exoplanets @baliukin.
-  Significant exospheric response to geomagnetic storms has been observed @gonzalostorm, with competing theories that charge-exchange redistributes thermal atoms to higher altitudes by perturbing their velocity distributions, or that temperature changes in the thermosphere increases the rate of upwards diffusion towards the exobase.  Charge-exchange with magnetospheric ions dissipates ring current energy after storms and influences recovery rates of exospheric H atoms, making study of these atoms relevant for space weather research @ilie.
+  Significant exospheric response to geomagnetic storms has been observed @gonzalostorm, with competing theories that charge-exchange redistributes thermal atoms to higher altitudes by perturbing their velocity distributions, or that temperature changes in the thermosphere increase the rate of upwards diffusion towards the exobase.  Charge-exchange with magnetospheric ions dissipates ring current energy after storms and influences recovery rates of exospheric H atoms, making study of these atoms relevant for space weather research @ilie.
 
-  The shape of the exospheric H density distribution and the factors that influence are not well understood.
+  The shape of the exospheric H density distribution and the factors that influence it are not well understood.
   Even the total extent of exosphere has not been constrained, with some studies reporting 40 Earth radii (Re) and others reporting a limit well beyond the Moon.  The next section discusses historical attempts to observe the exosphere, which have often been hampered by limited orbital vantages which cannot observe the entirety of the exosphere or slow measurement cadences not able to capture fast temporal response and recovery during storms.
 
   // #figure(
@@ -85,20 +131,20 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
   //     caption: "Radial profile under quiet and storm conditions.  a) Subsolar point b) Geographic North pole"
   // ) <radial_profile>
 
-  #rt([#strike[The charge of non-thermal atoms makes physics-based modelling particularly challenging due to their interaction with Earth's fields.  Even quiet, non-storm conditions are not well-understood due to limited observations of the exosphere, which are described in the next section.]])
+  // #rt([#strike[The charge of non-thermal atoms makes physics-based modelling particularly challenging due to their interaction with Earth's fields.  Even quiet, non-storm conditions are not well-understood due to limited observations of the exosphere, which are described in the next section.]])
 
   == Prior Exospheric Measurements and Retrievals
 
   Understanding of the H density distribution in the exosphere has advanced primarily due to spaceborne #gls("UV") sensing.  While direct measurement is possible with mass spectrometers (e.g. sounding rockets), the sheer size of the exosphere makes this approach impractical.  Ground-based sensing has been hampered by the fact that O₂ at lower altitudes is opaque to #gls("UV").  Visible H emission (Balmer-α line) from resonant fluorescence has been observed on the ground for decades @balmer1, but the signal is very dim and no reliable density distributions have been derived due to limited data constraints from ground-based sensors.  However, attempts have been made to exploit vantage evolution of rotating Earth's surface @balmer2.
 
   Lyman-α is ideal as a target to study the exosphere as these photons excite hydrogen by resonant scattering from their ground states, producing very bright emissions.  Lyman-α is absorbed by atmospheric O₂, necessitating space-based sensing.
-  Lyman-α studies of the exosphere have occured sporadically for decades, but usually as opportunistic measurements as a secondary science goal.
+  Lyman-α studies of the exosphere have occurred sporadically for decades, but usually as opportunistic measurements as a secondary science goal.
  @previous_mission provides an overview of previous observations with accompanying descriptions given below.
 
   An early exospheric measurement came from OGO-5 in 1969 which detected H atoms out to 7 Re and proved the existence of a geotail and Lyman-α background from #gls("IPH") @ogo5 @baliukin.
   This was followed by Apollo 16 in 1972 which carried a photocathode-based UV imager to the Lunar surface that serves as the basis for modern UV instruments. It obtained a single image, the first ever wide-field exospheric measurement @apollo2 @apollo.
   Much later Galileo performed an Earth flyby during a gravity assist in 1991 towards Jupiter, capturing a single composite image which indicated an exospheric radial extent beyond that found by Apollo.
-  A few years later in 1996, the SWAN spacecraft with its SOHO hydrogen absorption cell @baliukin launched towards Lagrange point L1 (ideal for observing the exosphere globally) captured full-sky Lyman-α images, with some high-resolutions scans directed towards the Earth finding presence of H atoms out to 100Re.
+  A few years later in 1996, the SWAN spacecraft with its SOHO hydrogen absorption cell @baliukin launched towards Lagrange point L1 (ideal for observing the exosphere globally) captured full-sky Lyman-α images, with some high-resolution scans directed towards the Earth finding presence of H atoms out to 100 Re.
   In 2000, the IMAGE spacecraft and GEO instrument with three scanning photometers slowly scanned over different altitudes, detecting the presence of a geotail and additionally found significant temporal variation in measured flux which was not well explained by solar variation, suggesting complicated exosphere dynamics @ostgaard.
   One year later, the TIMED spacecraft and GUVI instrument launched and began long-term UV imaging through the limb near the exobase, finding an inverse correlation between H temperature and solar activity @timed_guvi2.
   In 2015, the PROCYON spacecraft and LAICA instrument captured a single wide-field from 2350 Re, with studies reporting agreement of retrieved H density distribution with predictions from radiation pressure theory @procyon_laica.
@@ -165,15 +211,15 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
   //     - Studies identified storm-time variation with radial enhancement propagating outward @gonzalostorm @zoennchen2011
   // ])
 
-  Of these missions, only the TWINS and TIMED missions have observed the exosphere over long timescales, but their low-altitude observations and measurement gaps limit their utility in understanding the global exosphere.
-  Longterm study of the exosphere has not been a priority on any mission, with only 3 wide-field images in existence, shown in @previous_measurements.  Available data is sparse, especially with regards to storm-time evolution.
+  Of these missions, only TWINS and TIMED have observed the exosphere over long timescales, but their low-altitude observations and measurement gaps limit their utility in understanding the global exosphere.
+  Long-term study of the exosphere has not been a priority on any mission, with only 3 wide-field images in existence, shown in @previous_measurements.  Available data is sparse, especially with regards to storm-time evolution.
 
   == Carruthers Mission Overview
 
 
   The historical overview of exospheric studies in the previous section highlights a need for global exospheric measurements at high temporal cadence.
 
-  The _Carruthers Geocorona Observatory_ (CGO) mission was selected by NASA in 2020 to fill this observation gap by making wide-field Lyman-α observations from the L1 Lagrange point, ideal for observing the exosphere globally.
+  The _Carruthers Geocorona Observatory_ mission was selected by NASA in 2020 to fill this observation gap by making wide-field Lyman-α observations from the L1 Lagrange point, ideal for observing the exosphere globally.
   Carruthers will ride-share with the #gls("IMAP") spacecraft to L1, inserting into a 6 month orbit with wide angular deviation for observing from diverse perspectives.  Its #gls("GCI"), shown in @gci2, contains two #gls("UV") cameras derived from the #gls("ICON") far ultraviolet (FUV) instrument that will simultaneously image the inner exosphere at high resolution and the global exosphere out to 25 Re.  Carruthers represents the first standalone exospheric mission capable of making continuous global measurements.
   Carruthers will reveal the relative importance of thermal evaporation, charge-exchange, and solar radiation pressure in controlling exospheric dynamics.  It will also determine the spatial extent and shape of global H distribution and its response to impulsive space weather events.
 
@@ -210,43 +256,43 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
 = Measurement Constraints <measurement_constraints>
 
-  The Sun is a strong source of Lyman-α photons, which enter the Earth's atmosphere and interact with neutral hydrogen atoms before being reemitted in a process known as resonant scattering.  Aside from in-situ spectrometric measurements of hydrogen (impractical for global atmospheric measurements), this Lyman-α emission is the only available indicator of hydrogen in the exosphere.
+  // The Sun is a strong source of Lyman-α photons, which enter the Earth's atmosphere and interact with neutral hydrogen atoms before being reemitted in a process known as resonant scattering.  Aside from in-situ spectrometric measurements of hydrogen (impractical for global atmospheric measurements), this Lyman-α emission is the only available indicator of hydrogen in the exosphere.
   Carruthers is equipped with UV-capable cameras and will observe the entirety of the exosphere at Lyman-α from a distant vantage, providing constraints on the global distribution of hydrogen.
 
-  This chapter will describe the Carruthers observational orbit, camera geometry, an emission model of Lyman-α interaction with and propagation through exospheric hydrogen, instrument model, and end with an overview of the post-processing procedure for converting raw sensor measurements to usable science constraints.
+  This chapter will describe the Carruthers observational orbit, camera geometry, an emission model of Lyman-α interaction with and propagation through exospheric hydrogen, instrument model, and end with an overview of the post-processing procedure for converting raw sensor measurements to salient science constraints.
 
 
   == Carruthers Orbit and Camera Geometry
 
-    The #gls("GSE") coordinate system (shown in @gse_coordinates) is a natural fit when describing spacecraft position and exospheric hydrogen distribution, since properties of the exosphere such as the hypothesized nightside _geotail_ are aligned to an Earth-Sun frame.  The rest of this manuscript uses #gls("GSE") in units of Earth radii (1 Re = 6371 km) either in cartesian or spherical coordinates.
+    The #gls("GSE") coordinate system is a natural fit when describing spacecraft position and the exospheric hydrogen distribution, since radiation pressure is expected to impose Sun-Earth alignment on global exospheric structure, such as the hypothesized nightside _geotail_.  The rest of this manuscript uses #gls("GSE") in units of Earth radii (1 Re = 6371 km) either in cartesian or spherical coordinates.
 
-    #figure(
-        image("figures/gse_coordinates_placeholder.jpg", height: 10em),
-        caption: [#rt([FIXME: placeholder.]) GSE coordinate system.  +X is Sunwards, +Y is Earth wake (approximately dusk), +Z is ecliptic North]
+    // #figure(
+    //     image("figures/gse_coordinates_placeholder.jpg", height: 10em),
+    //     caption: [#rt([FIXME: placeholder.]) GSE coordinate system.  +X is Sunward, +Y is Earth orbital wake (dusk), +Z is ecliptic North]
 
-    ) <gse_coordinates>
+    // ) <gse_coordinates>
 
-    Carruthers will be inserted into a halo orbit around the L1 Lagrange point (about 1.5 million km from Earth, 235 Re), which is distant enough to observe the entirety of the geocorona from an outside vantage @baliukin over a long period.
+    Carruthers will be inserted into a halo orbit around the L1 Lagrange point (about 1.5 million km from Earth, 235 Re), which is distant enough to observe the entirety of the geocorona from an outside vantage @baliukin over its mission lifetime.
 
-    Shown in @carruthers_orbit, this orbit deviates above/below the ecliptic plane by ±7° (31 Re) and ±28° (112 Re) in the dawn/dusk direction, providing angular measurement diversity for tomographic analysis of the exosphere, shown @carruthers_orbit.
+    This orbit deviates above/below the ecliptic plane by ±7° (31 Re) and ±28° (112 Re) in the dawn/dusk direction, providing angular measurement diversity for tomographic analysis of the exosphere, shown in @carruthers_orbit.
 
     #figure(
         grid(
             rows: 2, gutter: 1em,
-            subfigure(image("figures/carruthers_orbit_placeholder.jpg", width: 15em), "orbitfig", "6 month Carruthers orbit around L1"),
-            subfigure(image("figures/los_evolution_15d.png", width: 40em), "orbitfig", "Two week angular diversity of orbit in ecliptic plane")
+            subfigure(image("figures/orbit.svg", width: 35em), "orbitfig", [6 month Carruthers orbit around L1.  Earth/Moon not to scale #footnote[Earth/Moon courtesy of Wikimedia user Master Uegly]]),
+            subfigure(image("figures/los_evolution_15d.png", width: 40em), "orbitfig", "Two week angular diversity of orbit in ecliptic plane from beginning (red) to end (blue) of the observation window")
         ),
-        caption: [#rt([FIXME: placeholder.]) Carruthers orbit details]
+        caption: [Carruthers orbit and view geometry]
     ) <carruthers_orbit>
 
 
-  Two cameras comprise the #gls("GCI"), the primary instrument on board the Carruthers spacecraft.  The #gls("NFI") observes the inner exosphere at high resolution on a 30 minute cadence and the #gls("WFI") observes global distribution of exospheric hydrogen out to and arbitrary limit 25 Re on a 60 minute cadence.
+  Two cameras comprise the #gls("GCI"), the primary instrument on board the Carruthers spacecraft.  The #gls("NFI") observes the inner exosphere at high resolution on a 30 minute cadence and the #gls("WFI") observes global distribution of exospheric hydrogen out to an arbitrary limit 25 Re on a 60 minute cadence.
   A summary of camera geometry specifications is given in @camera_specs.
-  Together, these cameras are capable of measuring both the fast-evolving dynamics of the inner exosphere and the global distribution of hydrogen along with the interplanetary background Lyman-α signal (discussed in the next section).  @earth_fov shows the #gls("FOV") of the cameras relative to the inner exosphere boundary and outer exospheric limit (#rt[justifying 25 Re here?  exosphere goes out to 100 Re and beyond]).
+  Together, these cameras are capable of measuring both the fast-evolving dynamics of the inner exosphere and the global distribution of hydrogen along with the interplanetary background Lyman-α signal (discussed in the next section).  @earth_fov shows the #gls("FOV") of the cameras relative to the inner exosphere boundary and outer exospheric limit.
 
     #figure(
-        image("figures/scratch_fov.jpg"),
-        caption: [#rt([FIXME: placeholder.])  (a) Carruthers camera FOV projected onto Earth tangent plane. (b) FOV relative to nominal exosphere boundaries.]
+        image("figures/fov.svg", height: 15em),
+        caption: [Carruthers camera FOV projected onto Earth tangent plane   FOV relative to retrieval boundaries.]
     ) <earth_fov>
 
     #figure(
@@ -266,24 +312,28 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
     In order to recover a hydrogen density distribution from measurements, it is necessary to mathematically model the process by which Lyman-α photons propagate through the exosphere and enter the camera.
     This is known as an emission model and is a central component of tomographic retrieval algorithms.
 
-    Numerically modelling the physics of radiative transfer is a computationally complex task, as solar Lyman-α photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interdependencies between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the #gls("optically thin") regime it is a valid approximation that incident photons scatter only once @ostgaard, simplifying computational requirements and implementation complexity of the emission model.
+  Numerically modelling the physics of radiative transfer is a computationally complex task, as solar Lyman-α photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interdependencies between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the #gls("optically thin") regime) it is a valid approximation that incident photons scatter only once @ostgaard, simplifying computational requirements and implementation complexity of the emission model.
 
-    Anderson and Hord Jr. @opticaldepththin, define the optically thin regime as starting when $tau <= 0.1$, where optical depth $tau$ is a measure of the proportion of photons expected to scatter only once.
+  Anderson and Hord Jr. @opticaldepththin, define the optically thin regime as starting when $tau <= 0.1$, where optical depth $tau$ is a measure of the proportion of photons scattering only once.
 
-    With these assumptions, the measurement by the spacecraft is proportional to a line integral of the total mass of hydrogen present in the atmosphere along the #gls("LOS") of a particular pixel, given by photon radiance
+  With these assumptions, the measurement by the spacecraft is proportional to a line integral of the total mass of hydrogen present in the atmosphere along the #gls("LOS") of a particular pixel, given by photon radiance
 
-    // #math.equation(
-    //     $y' = g phi.alt(beta_(i,j)) integral_(l=0)^(infinity) bold(a)(vc(x) + vc(n)l) bold(rho)(vc(x) + vc(n)l) dif l$
-    // ) <integral2>
     #math.equation(
-        $I_"exo,t" = g_t phi.alt(beta) integral_l bold(a)_t (vc(r))  bold(rho)_t (vc(r)) dif s #gt([(phot/s/cm²/sr)])$
+        $I_"exo,t" = g_t / (4 pi) phi.alt(beta) integral_S bold(a)_t (vc(s))  bold(rho)_t (vc(s)) dif s #gt([(phot/s/cm²/sr)])$
     ) <integral2>
 
     // #rt([FIXME: notation inconsistent with other sections])
 
 
-    where $l$ is the pixel #gls("LOS"), illustrated in @emission_model_physics.
-    Through Beer's law and a logarithmic transform, this integral equation is also valid for many modalities featuring absorptive rather than emissive media.
+  where $S$ is the pixel #gls("LOS"), $g_t$ is solar g-factor, $t$ is time, $phi.alt$ is the scattering phase function, $bold(a)_t$ is albedo, $vc(s)$ is position vector and $bold(rho)$ is hydrogen density, illustrated in @emission_model_physics.  $I_"exo,t"$ is _line-integrated_ radiance, an integral over wavelength of the Lyman-α emission line whose width is due to thermal broadening.
+    // Through Beer's law and a logarithmic transform, this integral equation is also valid for many modalities featuring absorptive rather than emissive media.
+
+    #figure(
+        image("figures/physics.svg", height:20em),
+        caption: [Emission model overview for a #gls("LOS"). Not to scale]
+    ) <emission_model_physics>
+
+    @emission_units gives an overview of different measurement quantities and their units.
 
 
     // knlown as a #gls("LOS"), an example of the Fredholm integral of the first kind.
@@ -294,36 +344,30 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
     // )
 
 
-  where $g_t$ is angular g-factor, $t$ is time, $phi.alt$ is scattering phase function, $bold(a)_t$ is albedo, $vc(r)$ is position vector, $bold(rho)$ is hydrogen density and $l$ is the #gls("LOS") along the #gls("FOV").  $phi.alt$, known as the #gls("scattering phase function"), represents the directional distribution of resonantly-scattered photons relative to the direction of the Sun, shown in @scatteringphase.
+  Scattering phase function $phi.alt$ represents the directional distribution of resonantly-scattered photons relative to the direction of the Sun, shown in @scatteringphase.
 
     #figure(
         image("figures/physics_scattering.svg", height: 15em),
         caption: [Scattering phase function]
     ) <scatteringphase>
 
-    Angular solar g-factor $g_t$ (phot/s/atom/sr) relates hydrogen quantity (atoms) to photon flux emitted per unit solid angle (phot/s/sr).  This quantity is linearly related to solar activity and is assumed to be a known, external input to the emission model.
-    @gfactor_difference illustrates the important $4 pi$ difference between angular g-factor (per steradian) and _isotropic_ g-factor (per whole sphere), which are sometimes not explicitly distinguished in literature.
+  #rt([
+      Solar g-factor $g_t$ (phot/s/atom) relates hydrogen density (atoms/cm³) to photon flux emitted per unit volume (phot/s/cm³) @gfactor.   The quantity $g_t / (4 pi) phi.alt(beta)$ describes the rate of photons being emitted into a part of the sky (1 steradian) from a unit volume of gas and is assumed to be a known, external input to the emission model.
+  ])
 
-    #figure(
-        grid(
-            columns: 2, gutter: 12pt,
-            subfigure(image("figures/g_factor_angular.svg", height:8em), "gfact", "Angular"),
-            subfigure(image("figures/g_factor.svg", height:8em), "gfact", "Isotropic"),
-        ),
-        caption: [Angular vs. Isotropic g-factor.  Angular g-factor measures scattered photon flux emitted per steradian from an infinitesimal unit volume, while isotropic measures the flux over the whole 4π sphere],
-    ) <gfactor_difference>
+    // #figure(
+    //     grid(
+    //         columns: 2, gutter: 12pt,
+    //         subfigure(image("figures/g_factor_angular.svg", height:8em), "gfact", "Angular"),
+    //         subfigure(image("figures/g_factor.svg", height:8em), "gfact", "Isotropic"),
+    //     ),
+    //     caption: [Angular vs. Isotropic g-factor.  Angular g-factor measures scattered photon flux emitted per steradian from an infinitesimal unit volume, while isotropic measures the flux over the whole 4π sphere],
+    // ) <gfactor_difference>
 
-    Finally, $bold(a)_t (vc(r))$ is a unitless multiplicative correction factor (assumed known) to account for high-density regions of the inner optically thick exosphere which act as a secondary source of Lyman-α photons illuminating the outer exosphere from below.
+    Finally, $bold(a)_t (vc(s))$ is a unitless multiplicative correction factor (assumed known) to account for high-density regions of the inner optically thick exosphere which act as a secondary source of Lyman-α photons illuminating the outer exosphere from below.
 
     // - #rt([FIXME: derivation of line integral from first principles?  Make use of etendue, pixel area, paraxial approximation to convert volume integral to line integral]) //
 
-
-    #figure(
-        image("figures/physics.svg", height:20em),
-        caption: [Emission model overview for a #gls("LOS")]
-    ) <emission_model_physics>
-
-    @emission_units gives an overview of different measurement quantities and their units.
 
     #figure(
         table(
@@ -331,7 +375,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
             align: horizon,
             table.header([Quantity], [Symbol], [Units]),
             "Density", $bold(rho)$, "atom/cm³",
-            "Non-spectral radiance", $I_"exo"$, "phot/s/atom/cm²/sr",
+            "Line-integrated radiance", $I_"exo"$, "phot/s/atom/cm²/sr",
             "Angular g-factor", $g$, "phot/s/atom/sr",
             "Albedo", $bold(a)$, "unitless",
             [Scattering phase function], $phi.alt$, "unitless"
@@ -346,14 +390,12 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
   // FIXME - extra physics
   // , but @appendix_extra_physics describes the procedure for implementing these terms with the raytracer in @raytracer.
 
-    A tenuous distribution of hydrogen throughout the solar system, known as #gls("IPH"), also contributes to the radiance detected by the spacecraft.  Estimation of #gls("IPH") is an involved process, and Carruthers will dedicate a portion of on-orbit operations to making observations of an annulus around the Earth where exospheric hydrogen is not present.  @iph shows a typical #gls("IPH") distribution expected to be observed during the mission.  #gls("IPH") radiance contribution from behind the exosphere envelope is interpolated from the measured annulus.  The impact of biases introduced by #gls("IPH") estimation are considered in @static_validation.
-    Other unwanted sources of Lyman-α signal which violate emission model assumptions include the Moon and stars and optically thick exosphere, as shown in @moon_stars, but these sources will be masked out and ignored during retrieval instead of estimated.  Together, these radiance sources are referred to as $I_"bkg"$.
+  A tenuous distribution of hydrogen throughout the solar system, known as #gls("IPH"), also contributes to the line-integrated Lyman-α radiance detected by the spacecraft.
+  // Estimation of #gls("IPH") is an involved process, and Carruthers will dedicate a portion of on-orbit operations to making observations of an annulus around the Earth where exospheric hydrogen is not present.  @iph shows a typical #gls("IPH") distribution expected to be observed during the mission.  #gls("IPH") radiance contribution from behind the exosphere envelope is interpolated from the measured annulus.
+  #gls("IPH"), like solar g-factor, will be measured independently by Carruthers and is assumed to be known.
+  The impact of biases introduced by #gls("IPH") subtraction are considered in @static_validation.
+    Other unwanted sources of Lyman-α signal which violate emission model assumptions include the Moon and stars and the optically thick exosphere, as shown in @moon_stars, but these sources will be masked out and ignored during retrieval instead of estimated.  Together, these radiance sources are referred to as $I_"bkg"$.
 
-
-    #figure(
-        image("figures/iph_placeholder.jpg", height: 10em),
-        caption: [#rt([FIXME: placeholder]) IPH distribution and observation annulus]
-    ) <iph>
 
     // The quantity in @integral1 is known as _column density_, but on orbit the spacecraft is actually measuring _photon flux_ shown in @integral2, the total photon rate entering the instrument.
 
@@ -370,41 +412,55 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
     ])
 
-    As mentioned in the previous section, accurately modelling the physical processes involved in obtaining tomographic measurements of a density distribution is critical for retrieval accuracy.  While the emission model describes the physics of Lyman-α photons interacting with the exosphere, an instrument model explains how photon radiance received at the front of the instrument passes through the stages of the #gls("GCI") and is converted to digital measurements.
+  As mentioned in the previous section, accurately modelling the physical processes involved in obtaining tomographic measurements of a density distribution is critical for retrieval accuracy.  While the emission model describes the physics of Lyman-α photons interacting with the exosphere, an instrument model explains how photons incident on the #gls("GCI") instrument are detected and converted to raw sensor measurements in #gls("DN") that are telemetered by the spacecraft.
 
-  This section describes a statistical model for the instrument noise and background signals present in the NFI and WFI cameras during measurement of exospheric Lyman-α.  Modelling these processes is important for converting raw sensor measurements in digital numbers (DN) as telemetered by the spacecraft to corresponding radiances that can be used for tomographic reconstruction.   A statistical model is also important for generating synthetic noisy measurements to validate the performance of retrieval algorithms.  As a result, the Carruthers cameras have undergone extensive laboratory characterization to determine instrument model parameters and periodic on-orbit calibration is planned to account for parameter drift due to exposure to the space environment.
+  This section describes a statistical model for the instrument noise and background signals present in the NFI and WFI cameras during measurement of exospheric Lyman-α.
+  A statistical model is also necessary for generating synthetic noisy measurements to validate the performance of retrieval algorithms.  The Carruthers cameras have undergone extensive laboratory characterization to determine instrument parameters, and periodic on-orbit calibration is planned to account for parameter drift due to exposure to the space environment.
 
-    The Carruthers spacecraft contains two #gls("UV") cameras designed for detecting exospheric Lyman-α emission, an indicator of the amount of atomic hydrogen present along a #gls("LOS").  These cameras utilize a design which has heritage with other #gls("UV") instruments such as ICON @icon and GUVI @timed_guvi and contain the following stages @rider (shown in @instrument_stages):
+  The Carruthers spacecraft contains two #gls("UV") cameras designed for detecting exospheric Lyman-α emission, with the following components @rider (shown in @instrument_stages).
+
+  // These cameras utilize a design which has heritage with other #gls("UV") instruments such as ICON @icon and GUVI @timed_guvi and contain the following stages @rider (shown in @instrument_stages):
 
   // TODO: WIP
 
-  - *optical filter wheel* - provides multispectral capability for out-of-band signal measurement used in thick exosphere retrievals
+  - *optical filter wheel* - provides multispectral capability for out-of-band signal measurement used in thick exosphere retrievals. Has 6 settings:
+      - open and blocked - for making measurements and dark images
+      - 2 longpass filters (CaF₂, SrF₂) and 2 narrowband transmission filters
   - *KBr photocathode* - potassium bromide photocathode for converting #gls("UV") photons to electrons (known as _photoelectrons_)
-  - *#gls("MCP")* - amplifies individual photoelectrons to a detectable shower of electrons
-  - *phosphor and #gls("CCD")* - phosphor produces light pulses from electrons which are detected by a #gls("CCD") and converted to an electrical charge
-  - *ADC* - #gls("ADC") for reading out #gls("CCD") charge.  (together with the #gls("CCD") this is sometimes referred to as an #gls("APS"))
+  - *#gls("MCP")* - amplifies individual photoelectrons to a detectable cloud of lower energy electrons
+  - *phosphor screen* - phosphor produces visible spectrum photons from electrons
+  - *active pixel sensor (APS) camera* - detects visible photons and converts them into electrical charge
+  - *ADC* - #gls("ADC") for reading out charge
 
   #figure(
       image("figures/gci2.png", width: 40em),
       caption: [External diagram of GCI instrument containing two #gls("UV") cameras]
   ) <instrument_stages>
 
-    The rest of this section will consist of a derivation of a single pixel noisy measurement in #gls("DN") given a photon spectral radiance and other quantities in @knownvariables and @randomvariables.
+    The rest of this section will consist of a derivation of a single pixel noisy measurement in #gls("DN"), given a photon spectral radiance and other quantities in @knownvariables and @randomvariables.
 
-  Let $L_("exo")(lambda) + L_("bkg")(lambda)$ represent exospheric photon spectral radiance and background.
-    After entering the instrument and passing through several optical stages, photon spectral radiance is converted to a photon flux
+  Let $L_("exo")(lambda) + L_("bkg")(lambda)$ represent exospheric photon spectral radiance and background.  The spectral photons incident on the instrument aperture, which has area $A$, within the solid angle of a detector pixel $Omega$, is
+
   #math.equation(numbering: none,
       $p_("phot")(lambda) = lr(\[D(L_("exo")(lambda) + L_("bkg")(lambda)) * h)\]_j dot.op A dot.op Omega gt("(phot/s/nm)")$
   )
     where $A dot.op Omega$ is pixel etendue, $D$ is a non-linear spatial distortion, and $h$ is a convolutional kernel representing optical blur.  Subscript $j$ denotes that only a single pixel is considered of the spatially-distorted and blurred signal.
     Note that the above expression implicitly assumes that radiance is constant over the entire pixel, an approximation that holds true so long as hydrogen density does not vary much in the #gls("FOV") in the direction perpendicular to the #gls("LOS").
-  After entering the instrument, the photons pass through an optical filter and photocathode where they are converted to a stream of photoelectrons (also known as _events_) with rate $e_"phot"$.  This conversion happens with efficiency $f_"opt" epsilon(lambda)$ (events/phot) where unitless scaling factor $f_"opt"$ (known as a _flat-field_) accounts for spatial variation in the optics, filters and photocathode.
+
+  @bd_annotated shows the Lyman-α signal at each stage in the camera, starting with photon spectral flux and ending with a final measurement in DN.
+
+  #figure(
+      image("figures/bd_annotated2.svg", width: 120%),
+      caption: [Statistical model of instrument, showing instrument stages and sources of background noise]
+  ) <bd_annotated>
+
+  After entering the instrument, the photons pass through an optical filter and photocathode where they are converted to a stream of photoelectrons (also known as _events_) with rate $e_"phot"$.  This conversion happens with efficiency $f_"opt" epsilon(lambda)$ (events/phot) where a unitless scaling factor $f_"opt"$ (known as a _flat-field_) accounts for spatial variation in the optics, filters and photocathode.
 
   #math.equation(numbering: none,
       $e_"phot" = f_"opt" integral_lambda p_("phot")(lambda) epsilon(lambda) dif lambda gt("(events/s)")$
   )
 
-  Alternatively, if $L_"exo"$ and $L_"bkg"$ are monochromatic with intensity $I_"exo"$ and $I_"bkg"$ and wavelength $lambda_0$
+  Approximating $L_"exo"$ and $L_"bkg"$ as monochromatic sources with intensity $I_"exo"$ and $I_"bkg"$ and wavelength $lambda_0$
 
   #math.equation(numbering:none,
       $e_"phot" &= f_"opt" integral_lambda p_("phot")(lambda) epsilon(lambda) dif lambda \
@@ -413,43 +469,41 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   )
 
-  Assuming Lyman-α photons are emitted in a Poisson process, the actual number of photoelectrons created in a single camera frame of duration $t_"fr"$ is given by random variable
+  where $I_"exo" = integral_lambda L_"exo" (lambda) dif lambda$.
+
+  Assuming Lyman-α photons follow a Poisson process, the actual number of photoelectrons created in a single camera frame of duration $t_"fr"$ is given by random variable
 
   #math.equation(numbering:none,
       $E_"phot" tilde.op "Pois"(t_"fr" e_"phot") gt("(events)")$
   )
 
-  In general, single photoelectrons are difficult to detect, so the Carruthers cameras employ an #gls("MCP") for turning a single particle into a detectable shower of particles.  #glspl("MCP") consist of an array of small glass tubes (channels) which are electrically charged so that a photoelectron striking the wall of one of these tubes will cause a cascade of particles via secondary emission @microchannelplate.  The small size of these channels ensures that the subsequent shower of particles exits the #gls("MCP") in the same location as the photoelectron, preserving image spatial resolution.  Due to the nature of secondary emission, the number of particles created by the #gls("MCP") from a photoelectron is given by the discrete random variable $G_"mcp"$, whose distribution has been measured in the laboratory.  The number of electrons leaving the MCP due to Lyman-α photoelectrons is given by
+  //FIXME glass or silicon
+
+  In general, single photoelectrons are difficult to detect, so the Carruthers cameras employ an #gls("MCP") for turning a single energetic photoelectron into a detectable cloud of lower energy electrons.  #glspl("MCP") consist of an array of small silicon tubes (channels) which are electrically charged so that a photoelectron striking the wall of one of these tubes will cause a cascade of particles via secondary emission @microchannelplate.  The small size of these channels ensures that the subsequent cloud of electrons exits the #gls("MCP") in approximately the same location as the photoelectron, minimizing spatial blurring.  Due to the nature of secondary emission, the signal gain from the #gls("MCP") from a photoelectron is given by the discrete random variable $G_"mcp"$, whose distribution is #gls("MCP") voltage-dependent and has been measured in the laboratory.  The number of electrons leaving the MCP due to Lyman-α photoelectrons is given by
 
   #math.equation(numbering: none,
-      $f_"mcp" sum_(l=1)^(E_"phot") G_"mcp,l" gt("(counts)")$
+      $f_"mcp" sum_(l=1)^(E_"phot") G_"mcp,l" gt("(counts/event)")$
   )
 
-  where $f_"mcp"$ is a flat-field representing spatial gain variation on the #gls("MCP").
+  where $f_"mcp"$ is a dimensionless scaling factor representing spatial gain variation on the #gls("MCP").
 
-  Energetic particles from space which directly penetrate the spacecraft body and impinge on the MCP are modeled by $E_"mcp" tilde.op "Pois"(t_"fr" e_"mcp")$ and the number of counts is given by
+  Solar energetic particles which directly penetrate the spacecraft body and impinge on the MCP are modeled by $E_"mcp" tilde.op "Pois"(t_"fr" e_"mcp")$ and the number of counts is given by
 
   #math.equation(numbering: none,
       $f_"mcp" sum_(l=1)^(E_"mcp") G_"mcp,l" gt("(counts)")$
   )
 
-  Additional sources of electron counts are energetic particles impinging on the #gls("APS") ($C_"aps"$), as well as thermally generated electrons from the instrument electronics known as _dark current_ ($C_"dark"$).  The charge from these electrons accumulates in the #gls("CCD") until it is amplified and read out by the #gls("ADC") as #gls("DN") given by
+  Additional sources of detected electron counts are solar energetic particles impinging on the #gls("APS") ($C_"aps"$), as well as thermally generated electrons from the instrument electronics known as _dark current_ ($C_"dark"$).  The charge from these electrons accumulates in the #gls("CMOS") until it is amplified and read out by the #gls("ADC") as #gls("DN") given by
 
   #math.equation(numbering: none,
       $Y &= (f_"mcp" sum_(l=1)^(E_"phot" + E_"mcp") G_"mcp,l" + C_"aps" + C_"dark") g_"aps" + R gt("(DN)")$
   )
 
 
-  where $R$ is normally distributed read noise with bias introduced during readout and $g_"aps"$ is configurable gain in the #gls("APS") electronics.
+  where $R$ is normally distributed read noise with bias $b$ introduced during readout and $g_"aps"$ is configurable gain in the #gls("APS") electronics.
 
 
-  @bd_annotated shows the Lyman-α signal at each stage in the camera, starting with photon spectral flux and ending with a final measurement in DN.
-A summary of all variables and sources of randomness is given in @knownvariables and @randomvariables.
-
-  #figure(
-      image("figures/bd_annotated2.svg", width: 120%),
-      caption: [Statistical model of instrument, showing instrument stages and sources of background noise]
-  ) <bd_annotated>
+  A summary of all variables and sources of randomness is given in @knownvariables and @randomvariables.
 
   #figure(
       table(
@@ -499,9 +553,11 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
     == Frame Stacking, Time Binning, and Instrument Model Approximation
 
-    A common technique to increase measurement #gls("SNR") in spaceborne telescopes is to increase exposure time at the expense of temporal resolution.  As frames are read out by the #gls("APS"), they are accumulated digitally on the spacecraft in a process known as _frame stacking_.  This effectively achieves the #gls("SNR") of a single, long exposure measurement while avoiding the problem of charge well saturation in the #gls("CCD") and has the added benefit of reducing bandwidth requirements by only downlinking a single frame-stacked measurement.  The loss of temporal resolution is negligible relative to the rate of evolution of the exosphere (#rt("FIXME: citation?")).
+    A common technique to increase measurement #gls("SNR") in spaceborne telescopes is to increase exposure time at the expense of temporal resolution.  As frames are read out by the #gls("APS"), they are accumulated digitally on the spacecraft in a process known as _frame stacking_.  This effectively achieves the #gls("SNR") of a single, long exposure measurement while avoiding the problem of charge well saturation in the #gls("CMOS") and has the added benefit of reducing bandwidth requirements by only downlinking a single frame-stacked measurement.  The loss of temporal resolution is negligible relative to the rate of evolution of the exosphere
 
-    Likewise, spatial resolution can be sacrificed to boost measurement #gls("SNR") by _pixel binning_ adjacent pixels on the detector together.  Binning may be performed digitally, but additional read noise reduction can be achieved in the #gls("APS") if pixels can be merged before being read out by the #gls("ADC"). @binningtype demonstrates the effect of binning on read noise variance for different detector types, with #gls("CCD") detectors achieving a factor $N^2$ reduction in read noise variance against purely digital binning.
+    // (#rt("FIXME: citation?")).
+
+    Likewise, spatial resolution can be sacrificed to boost measurement #gls("SNR") by _pixel binning_ adjacent pixels on the detector together.  Binning may be performed digitally, but additional read noise reduction can be achieved in the #gls("APS") if pixels can be merged before being read out by the #gls("ADC"). @binningtype demonstrates the effect of binning on read noise variance for different detector types, with #gls("CMOS") detectors achieving a factor $N^2$ reduction in read noise variance against purely digital binning.
 
     #figure(
       grid(columns: 2,
@@ -542,13 +598,49 @@ A summary of all variables and sources of randomness is given in @knownvariables
 
       where $M$ is the number of stacked frames, $N$ is the number of binned pixels, and $u_Y$ and $sigma^2_Y$ are the mean and variance of individual frames.  See @instrument_clt for a derivation of these values and numerical validation of the #gls("CLT") approximation.
 
+  #figure(
+      table(columns: 4, align: horizon,
+          table.header("Binning\nType", "Derivation\n(2x2 binning example)", "", "Read Noise\n(NxN binning)"),
+          table.hline(stroke: 2pt),
+
+          "Digital",
+          math.equation(numbering:none, $
+              x_1, &..., x_4 tilde.op cal(N)([mu_1, ..., mu_4], sigma^2) \
+              y &= x_1 + ... + x_4 \
+                  &tilde.op cal(N)(mu_1 + ... + mu_4, 4sigma^2)
+          $),
+          image("figures/bin_digital.png", height: 10em),
+          $R tilde.op cal(N)(..., N^2 sigma^2)$,
+
+          "CMOS",
+          math.equation(numbering:none, $
+              x_a &tilde.op cal(N)(mu_1 + mu_3, sigma^2) \
+              x_b &tilde.op cal(N)(mu_2 + mu_4, sigma^2) \
+              y &= x_a + x_b \
+                  &tilde.op cal(N)(mu_1 + ... + mu_4, 2sigma^2)
+          $),
+          image("figures/bin_cmos.png", height: 7.5em),
+          $R tilde.op cal(N)(..., N sigma^2)$,
+
+          "CCD",
+          math.equation(numbering:none, $
+              x &tilde.op cal(N)(mu_1 + ... +  mu_4, sigma^2) \
+              y &= x
+              tilde.op cal(N)(mu_1 + ... + mu_4, sigma^2)
+          $),
+          image("figures/bin_ccd.png", height: 7.5em),
+          $R tilde.op cal(N)(..., sigma^2)$,
+      ),
+      caption: "Binned read noise for different detector binning types"
+  ) <binningtype>
+
   == Post-Processing and Calibration <post_processing>
 
     As will be shown in @inverse_problem, many retrieval algorithms amount to applying the emission and instrument models to a candidate density and comparing the resulting candidate measurements to real measurements obtained on orbit to update the density in an iterative fashion.  However, this can be computationally expensive, especially when a retrieval algorithm requires hundreds or thousands of iterations to converge to a solution.   An alternative to applying the emission and instrument models every iteration is to reverse the effects of these models on the real measurements in a process known as _subtraction_ or _calibration_.  Subtraction need only occur once after images are downlinked, greatly accelerating the iterative retrieval process as in @subtraction_efficiency.
 
     #figure(
-        image("figures/subtraction_efficiency_placeholder.jpg", height:25em),
-        caption: [#rt([FIXME: placeholder]). Subtraction eliminates the need for most of emission and instrument model from the retrieval loop.],
+        image("figures/subtraction_efficiency.svg", height:25em),
+        caption: [Subtraction eliminates the need for most of the emission model and all of the instrument model from the retrieval loop.],
     ) <subtraction_efficiency>
 
     // Subtraction greatly accelerates retrieval and involves reversing the effects of all steps described in the past two sections excluding the integral given in @integral2.
@@ -579,30 +671,33 @@ A summary of all variables and sources of randomness is given in @knownvariables
     The resulting estimate is known as a _column density_ and is independent of any instrument parameters or solar conditions
 
     #math.equation(
-        $y_(t,j) approx integral_(l_(t,j)) bold(a)_t (vc(r)) bold(rho)_t (vc(r)) dif l gt("(atom/cm²)")$
+        $y_(t,j) approx integral_(S_(t j)) bold(a)_t (vc(s)) bold(rho)_t (vc(s)) dif s gt("(atom/cm²)")$
     )
 
-    where #gls("LOS") $l$ is annotated with index $t,j$ to emphasize time and pixel dependence.
+  where #gls("LOS") $S_(t j)$ is annotated with indices $t j$ to emphasize time and pixel dependence.
 
   // FIXME - explain switch to lowercase variable here
 
     As mentioned previously, some #gls("LOS") contain Lyman-α signals which are unknown or violate the emission model assumptions and must be marked so they are ignored during retrieval.  These include the Moon, stars, optically thick exosphere, and Earth shadow, shown in @moon_stars @zoennchen_old.
 
-    - #rt([FIXME: refer to Earth shadow mask in albedo intro section])
+    // - #rt([FIXME: refer to Earth shadow mask in albedo intro section])
 
     #figure(
         grid(
             columns: 3, gutter: 10pt,
-            subfigure(image("figures/moon_mask_placeholder.jpg"), "moonstars", "Moon in WFI FOV"),
-            subfigure(image("figures/star_mask_placeholder.jpg"), "moonstars", "Stars in WFI FOV"),
-            subfigure(image("figures/thick_mask_placeholder.jpg"), "moonstars", "Optically thick exosphere and shadow"),
+            subfigure(image("figures/moon_mask.svg"), "moonstars", "Moon mask"),
+            subfigure(image("figures/star_mask.svg"), "moonstars", "Stellar mask"),
+            subfigure(image("figures/thick_mask.svg"), "moonstars", "Optically thick exosphere and shadow mask"),
         ),
-        caption: [#rt([FIXME: placeholder]) IPH sources that must be masked. (#rt([combine these into a single figure that illustrates and labels all 3?]))]
+        caption: [Background sources of Lyman-α that must be masked, relative to NFI/WFI camera FOV)]
     ) <moon_stars>
 
     #figure(
-        image("figures/scratch_fov.jpg"),
-        caption: [#rt([FIXME: placeholder.])  (a) Polar-binned camera FOV projected onto Earth tangent plane. (b) Polar-binned FOV relative to outer exosphere boundaries.]
+        grid(columns: 2, gutter: 1em,
+            subfigure(image("figures/polar_fov_wfi.svg"), "polfov", [WFI]),
+            subfigure(image("figures/polar_fov_nfi.svg"), "polfov", [NFI]),
+        ),
+        caption: [Polar-binning for WFI and NFI cameras.  Radial binning is down-sampled by 5x for visualization]
     ) <earth_fov_science>
 
     A final step of post-processing is to bin the 512² pixel WFI and 1024² pixel NFI images to a lower resolution.  The dense #gls("LOS") spatial sampling and fast temporal cadence of these cameras creates significant memory and computational requirements for retrieval algorithm, which can be avoided by downsampling images in a way that preserves as much detail as possible.  This is similar to the stacking and binning described in @instrument_model, but occurs after downlink.  A good binning scheme is a log-polar grid, due to the roughly spherically-symmetric, radially exponential distribution of the exosphere.  Within the Carruthers mission, this is referred to as _science pixel binning_ and shown in @earth_fov_science. Similarly, temporal averaging can reduce the volume of data ingested by the retrieval algorithms without much loss of information on exosphere dynamic evolution, especially during quiet conditions.  These data reduction techniques help improve the memory resources required during retrieval, which is analyzed in @benchmarking.
@@ -676,7 +771,7 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
   //     $y_"tij" = sum_(r, e, a) F_("ij","trea") rho_"trea"$
   // )
 
-    with measurements $bold(y)$, forward operator $F$, solution $bold(rho)$, time t, pixel ij, and spatial voxel rea.
+    with measurements $bold(y)$, forward operator $F$, and solution $bold(rho)$.
 
     Direct inversion of the tomographic operator requires that the matrix $F$ be non-singular in order for an inverse $F^(-1)$ to exist.  However, tomography problems generally have fewer measurement constraints (#gls("LOS", display:"lines of sight")) than free variables (#glspl("voxel")), making them _ill-posed_ (lacking existence, uniqueness or stability of solutions).
 
@@ -1255,47 +1350,47 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
 
 
 = Static Retrieval of Exospheric Density <static_retrieval>
-  #rt([
-    - Chapter introduction section
-        - This thesis makes a distinction between two types of retrieval algorithms: static, where hydrogen density is assumed to have no temporal component, and dynamic, where the density distribution is allowed to vary between vantages.
-        - Static algorithms were introduced historically, but more recent algorithms have been developed that can handle a changing hydrogen distribution.
-        - Static algorithms are important because they are conceptually and computationally simpler, can serve as a basis for more sophisticated dynamic algorithms, and still perform well for dynamic densities under quiet, non-storm conditions (see @static_dynamic for analysis)
-        - This chapter introduces historical static retrieval approaches in order of increasing complexity, ending with a new static model contributed by this thesis.
+  // #rt([
+  //   - Chapter introduction section
+  //       - This thesis makes a distinction between two types of retrieval algorithms: static, where hydrogen density is assumed to have no temporal component, and dynamic, where the density distribution is allowed to vary between vantages.
+  //       - Static algorithms were introduced historically, but more recent algorithms have been developed that can handle a changing hydrogen distribution.
+  //       - Static algorithms are important because they are conceptually and computationally simpler, can serve as a basis for more sophisticated dynamic algorithms, and still perform well for dynamic densities under quiet, non-storm conditions (see @static_dynamic for analysis)
+  //       - This chapter introduces historical static retrieval approaches in order of increasing complexity, ending with a new static model contributed by this thesis.
 
-    - 1D Retrievals
-        - Early retrievals often relied on simple 1D models of exosphere
-            - Either one-off measurements taken opportunistically (galileo flyby), limited viewing diversity
-            - Avoids underdetermined system by limiting number of free parameters
-            - Spherically symmetric assumption means good problem conditioning from any single vantage
-            - Simpler models are computationally easier to retrieve
-        - SOHO/SWAN (1996) @baliukin
-            - Kinetic model of H atoms fit to observed data
-            - Simple model which ignores radiation pressure (chamberlain) and extension which includes radiation pressure
-                - Not quite 1D
-            - Requires knowledge of exobase (e.g. derived from NRLMSIS model)
-            - Applied onion-peeling technique in which outermost shells of model are fit to the data before proceeding inwards. high TP alt LOS pierce through few shells, low TP alt LOS pierce through more
-        - Østgaard - IMAGE (2003) double exponential parametric form
-            - Sph symmetric
-            - $n(r) = n_1 e^(-r/alpha_1) + n_2 e^(-r/alpha_2)$
-            - This specific formulation may have been chosen because of ease of computing analytic coldens/radiance
-            - Density analytically converted to radiance given LOS and fit to data
-        - PROCYON/LAICA (2015)
-    - Gonzalo MAP estimate
-        - Derived from earlier work from Butala
-        - Not enough viewing diversity, stereoscopic
-    - Zoennchen 2024
-        - Functional form based on spherical harmonics
-        - Defined at single shell with exponential decay (and other terms)
-    - Spherical harmonic model
-        - Applicability of spherical harmonic bases to modelling exospheres
-            - Figure: show direct fits for different L and the max error on each
-            - Conclusion: spherical harmonic basis is a good low rank representation of exospheric models
-        - Splines enforce smoothness
-            - Agnostic shape
-        - Figure: spherical bases
-        - Single measurement A00 retrieval
-    - [ ] Longterm: summary table?
-  ])
+  //   - 1D Retrievals
+  //       - Early retrievals often relied on simple 1D models of exosphere
+  //           - Either one-off measurements taken opportunistically (galileo flyby), limited viewing diversity
+  //           - Avoids underdetermined system by limiting number of free parameters
+  //           - Spherically symmetric assumption means good problem conditioning from any single vantage
+  //           - Simpler models are computationally easier to retrieve
+  //       - SOHO/SWAN (1996) @baliukin
+  //           - Kinetic model of H atoms fit to observed data
+  //           - Simple model which ignores radiation pressure (chamberlain) and extension which includes radiation pressure
+  //               - Not quite 1D
+  //           - Requires knowledge of exobase (e.g. derived from NRLMSIS model)
+  //           - Applied onion-peeling technique in which outermost shells of model are fit to the data before proceeding inwards. high TP alt LOS pierce through few shells, low TP alt LOS pierce through more
+  //       - Østgaard - IMAGE (2003) double exponential parametric form
+  //           - Sph symmetric
+  //           - $n(r) = n_1 e^(-r/alpha_1) + n_2 e^(-r/alpha_2)$
+  //           - This specific formulation may have been chosen because of ease of computing analytic coldens/radiance
+  //           - Density analytically converted to radiance given LOS and fit to data
+  //       - PROCYON/LAICA (2015)
+  //   - Gonzalo MAP estimate
+  //       - Derived from earlier work from Butala
+  //       - Not enough viewing diversity, stereoscopic
+  //   - Zoennchen 2024
+  //       - Functional form based on spherical harmonics
+  //       - Defined at single shell with exponential decay (and other terms)
+  //   - Spherical harmonic model
+  //       - Applicability of spherical harmonic bases to modelling exospheres
+  //           - Figure: show direct fits for different L and the max error on each
+  //           - Conclusion: spherical harmonic basis is a good low rank representation of exospheric models
+  //       - Splines enforce smoothness
+  //           - Agnostic shape
+  //       - Figure: spherical bases
+  //       - Single measurement A00 retrieval
+  //   - [ ] Longterm: summary table?
+  // ])
 
 
   This thesis makes a distinction between two types of retrieval algorithms: static, where hydrogen density is assumed to have no temporal component, and dynamic, where the density distribution is allowed to vary between vantages.
@@ -1458,7 +1553,7 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
 
     #math.equation(
         $
-            M(bold(c)) &= H(S(bold(c))) := sum_(l=0)^L sum_(m=-l)^l H_(l m)(e, a) S_(l m)(r) \
+            M(bold(c)) &:= H S bold(c) = sum_(l=0)^L sum_(m=-l)^l H_(l m)(e, a) S_(l m)(r) \
             S_(l m)(r) &= sum_(k=1)^K c_(l m k) B_(k 2)(r)
         $
     )
@@ -1562,10 +1657,6 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
   // ])
 
 
-  #rt("needs citations for each row")
-
-
-
 
   The Carruthers mission is required to prove that it is capable of meeting mission requirements set during its proposal.  With physics of the forward model, a retrieval algorithm implementation and knowledge of a hypothetical exosphere distribution, it is possible to justify that these requirements will be met through simulation.
   This chapter describes the retrieval algorithm performance requirements on the Carruthers mission, introduces synthetic ground truth datasets created by the exospheric research community, analyzes retrieval results of a few algorithms from @static_retrieval on a few of these datasets, and provides rationale for tunable settings used in the algorithms including model inputs and discretizations.
@@ -1577,7 +1668,7 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
     As the purpose of Carruthers is to make discoveries about an atmospheric regime which is not well-known, algorithm performance validation relies on testing against datasets which are derived from physics simulations or prior retrievals made from limited data.  @datasets goes into detail of available datasets and their origins.
 
     To meet science objective 1, Carruthers defines an "accuracy" requirement on densities retrieved from the datasets, constraining absolute error of every voxel in the retrieval to within ±50% of the ground truth.  Similarly, a "precision" requirement which is insensitive to bias in the retrieval ensures that temporal enhancements and depletions are measurable to within 20% of their actual value in the dynamic datasets.  These requirements also specify a minimum spatial reporting resolution of the retrievals, and either a 6 hour temporal resolution for geomagnetic quiet conditions or 1 hour for storm conditions.
-    Requirements are specified for a single arbitrary voxel at time $t$ and position $r e a$ and are limited to exospheric regions above 3 Re in altitude and where densities exceed 25 atoms/cm³ to avoid problems of ill-posedness during inversion.
+  Requirements are specified for a single arbitrary voxel at time $t$ and position $r e a$ (radius/elevation/azimuth) and are limited to exospheric regions above 3 Re in altitude and where densities exceed 25 atoms/cm³ to avoid problems of ill-posedness during inversion.
     // #rt([FIXME: The proposal does not specifically define a constraint on the confidence of the above requirements, but this will be considered in the next section.])
     The proposal specifies a confidence level requiring 84% success rate of requirements over an ensemble of trials.
 
@@ -1599,12 +1690,12 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
           //     $)],
           [Accuracy],
           [#math.equation(
-              $(|hat(rho)_"trea" - rho_"trea"|) / rho_"trea" ≤ 50% "with 84% confidence"$,
+              $(|hat(rho)_"trea" - rho_"trea"|) / rho_"trea" ≤ 50% "*"$,
           )],
 
           [Change],
           [#math.equation(
-              $abs((hat(rho)_"(t+1)rea" - hat(rho)_"trea")/hat(rho)_"trea" - (rho_"(t+1)rea" - rho_"trea")/rho_"trea") ≤ 20% "with 84% conf."$
+              $abs((hat(rho)_"(t+1)rea" - hat(rho)_"trea")/hat(rho)_"trea" - (rho_"(t+1)rea" - rho_"trea")/rho_"trea") ≤ 20% "*"$
           )],
 
           [Temporal Resolution], [Storm: $Delta t = 1$ hr\ Quiet: $Delta t = 6$ hr],
@@ -1614,7 +1705,7 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
           // [Additional constraints], [$r ≥ 3$ Re and $x_"trea" ≥ 25$ atom/cm³]
 
       ),
-      caption: [Requirements for every reconstructed voxel $hat(rho)_"trea"$ where ground truth density $x_"trea" ≥ 25$ atom/cm³ and $r > 3$ Re.]
+      caption: [Requirements for every reconstructed voxel $hat(rho)_"trea"$ where ground truth density $x_"trea" ≥ 25$ atom/cm³ and $r > 3$ Re.\ \* with 84% confidence]
   ) <requirements>
 
     Using the forward model from @measurement_constraints and ground truth datasets, it is possible to simulate measurements that will be taken by Carruthers on-orbit.  With accurate simulated measurements, performance of retrieval algorithms can be analyzed in a Monte Carlo fashion against the mission requirements given in @requirements. The block diagram in @codeoverview shows an overview of an end-to-end validation of an arbitrary iterative retrieval algorithm against a ground truth dataset.
@@ -1761,6 +1852,36 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
   // ) <camera_specs_sci>
   // FIXME - fit in this table
 
+    The model parameters used in the retrievals shown above were found by grid searching through many combinations of number of control points and truncation order.  To avoid the computational burden of a full retrieval for every combination of parameters, the minimization problem was replaced with a simplified "direct fit" minimization which removes the forward model entirely and fits the reconstruction model to each dataset on a voxel-by-voxel basis.
+
+    #math.equation(
+        $bold(hat(rho)) = arg min_bold(rho) || bold(rho)' - bold(hat(rho)) ||_2^2$
+    )
+
+    where $bold(rho)'$ is the ground truth dataset.
+
+    This minimization problem has much better conditioning than the original tomography problem and provides a best-case example of how well the retrieval model can represent the ground truth data, with the additional benefit of reduced computation time.
+
+      #let bdiag_args = ("width": 7em, "left_sep": 1em)
+      #let zoennchen_param_table = table(
+          columns: (bdiag_args.width, auto, auto, auto),
+          align: horizon + center,
+          bdiagbox(..bdiag_args)[*L*][*cpoints*], [8], [12], [16],
+          ..csv("zoennchen_params.csv").flatten(),
+      );
+      #let vmb_param_table = table(
+          columns: (bdiag_args.width, auto, auto, auto),
+          align: horizon + center,
+          bdiagbox(..bdiag_args)[*L*][*cpoints*], [8], [12], [16],
+          ..csv("vmb_params.csv").flatten(),
+      );
+      #figure(
+          grid(columns: 2, gutter: 1em,
+              subfigure(zoennchen_param_table, "dfit", [Zoennchen Dataset (2015)]),
+              subfigure(vmb_param_table, "dfit", [VMB Dataset (quiet)]),
+          ),
+          caption: "Direct Fit Maximum % Error over all voxels. Sweeping spherical harmonic truncation order and number of control points"
+      ) <parameter_sweep>
 
 
   == Implementation Approach Justification <static_justification>
@@ -1802,8 +1923,8 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
     @spb_bad_discretization illustrates a case where binned radial resolution is too low to capture large hydrogen density gradients at low altitudes, leading to overestimated column densities during retrieval.
 
     #figure(
-        image("figures/scratch_spb_discretization.jpg", height: 15em),
-        caption: [#rt([FIXME: placeholder]).  Large measurement quantization error incurred in regions with high gradients when science pixel binning is too coarse.  X axis is tangent point (TP) altitude.]
+        image("figures/spb_discretization.svg", height: 15em),
+        caption: [Large measurement quantization error incurred in regions with high gradients when science pixel binning is too coarse.  X axis is tangent point (TP) altitude.]
     ) <spb_bad_discretization>
 
       // FIXME: delete this.  after changing SPB to 100x50 and increasing grid, things are working OK now
@@ -1833,8 +1954,8 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
     In a similar vein, an undersampled 3D grid that is coarse relative to the number of constraining #gls("LOS") (particularly in regions of high density gradients) can yield discretization artifacts in the raytraced images that significantly impact performance of the retrieval algorithm.  This is especially prevalent in the simulator, which uses native #gls("NFI") view geometry that has both high resolution and narrow #gls("FOV") resulting in a particularly dense #gls("LOS") sampling of the scene as illustrated in @los_discretization.
 
     #figure(
-        image("figures/scratch_grid_discretization.jpg", height: 12em),
-        caption: [#rt([FIXME: placeholder]).  Undersampled grid becomes apparent in discontinuities visible in measurements when LOS are sufficiently dense. X axis is tangent point altitude.]
+        image("figures/grid_discretization.svg", height: 15em),
+        caption: [Undersampled grid becomes apparent in discontinuities visible in measurements when LOS are sufficiently dense. X axis is tangent point altitude.]
     ) <los_discretization>
 
 
@@ -1880,31 +2001,6 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
 
     In summary, the above analysis suggests that a science pixel resolution of 100×50 pixels and hydrogen density resolution of 200 radial bins during retrieval, while 500 radial bins are necessary during simulation.
 
-
-    === Reconstruction Model Parameters
-
-    #rt([FIXME: incomplete])
-
-      #let bdiag_args = ("width": 7em, "left_sep": 1em)
-      #let zoennchen_param_table = table(
-          columns: (bdiag_args.width, auto, auto, auto),
-          align: horizon + center,
-          bdiagbox(..bdiag_args)[*L*][*cpoints*], [8], [12], [16],
-          ..csv("zoennchen_params.csv").flatten(),
-      );
-      #let vmb_param_table = table(
-          columns: (bdiag_args.width, auto, auto, auto),
-          align: horizon + center,
-          bdiagbox(..bdiag_args)[*L*][*cpoints*], [8], [12], [16],
-          ..csv("vmb_params.csv").flatten(),
-      );
-      #figure(
-          grid(columns: 2, gutter: 1em,
-              subfigure(zoennchen_param_table, "dfit", [Zoennchen Dataset (2015)]),
-              subfigure(vmb_param_table, "dfit", [VMB Dataset (quiet)]),
-          ),
-          caption: "Direct Fit Maximum % Error over all voxels. Sweeping spherical harmonic truncation order and number of control points"
-      ) <parameter_sweep>
 
 
 
@@ -1962,10 +2058,10 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
 
   #figure(
       grid(columns: 2, column-gutter: 2em,
-          subfigure(image("figures/epistemic_scratch.png"), "epiale", [Epistemic uncertainty due to limited training data]),
-          subfigure(image("figures/aleatoric_scratch.png", width: 19em), "epiale", [Aleatoric uncertainty due to noise in measurement constraints]),
+          subfigure(image("figures/epistemic.svg"), "epiale", [Epistemic uncertainty due to noisy or sparse training data]),
+          subfigure(image("figures/aleatoric.svg", width: 18em), "epiale", [Aleatoric uncertainty due to noise in measurement constraints]),
       ),
-      caption: [#rt([FIXME: placeholder]) 1D inverse problem example which isolates different types of uncertainty for the cases of (a) an inexact learned model with exact measurement constraints and (b) assumed exact model with inexact constraints.]
+      caption: [1D inverse problem example which isolates different types of uncertainty for the cases of (a) an inexact learned model with exact measurement constraints and (b) assumed exact model with inexact constraints.]
   ) <uncertainty_types>
 
   @uncertainty_types shows two cases of a 1D inverse problem which demonstrates the two types of uncertainty.
@@ -1986,7 +2082,7 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
 
   === Aleatoric Uncertainty Propagation with Delta Method and Implicit Function Theorem
 
-  While analytically propagating measurement uncertainty $Sigma_y$ through the retrieval process is impractical due to the highly nonlinear loss surface, it is possible to approximate $R$ locally as a linear function which permits a simple analytical mapping $Sigma_x = J_R Sigma_y J_R^T$, where $J_R = nabla_y R(y)$ represents the gradient or _Jacobian_ of $R$ with respect to $bold(y)$ @deltavariances.  This is known as the _delta method_, named as such because early derivations involved splitting random variable $bold(y)$ into a constant part and a stochastic part $delta_y$ @deltamethod @deltamethod2.
+  While analytically propagating measurement uncertainty $Sigma_y$ through the retrieval process is impractical due to the highly nonlinear loss surface, it is possible to approximate $R$ locally as a linear function which permits a simple analytical mapping $Sigma_rho = J_R Sigma_y J_R^T$, where $J_R = nabla_y R(bold(y))$ represents the gradient or _Jacobian_ of $R$ with respect to $bold(y)$ @deltavariances.  This is known as the _delta method_, named as such because early derivations involved splitting random variable $bold(y)$ into a constant part and a stochastic part $delta_y$ @deltamethod @deltamethod2.
 
   Unfortunately, computing $J_R$ efficiently is not trivial.  Computing gradients of functions implemented in automatic differentiation frameworks is straightforward but is particularly expensive when the function is defined in an iterative manner.  @torchgraph demonstrates the growing complexity of the computational graph needed to compute $J_R$ as number of iterations increases when solving a simple optimization problem such as
 
@@ -1999,10 +2095,10 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
   #figure(
       grid(
           columns: 2, column-gutter: 1em,
-          subfigure(image("figures/torchgraph_loss.svg", height: 15em), "implicit", [PyTorch computational graph of $R$ for single retrieval iteration]),
-          subfigure(image("figures/torchgraph_iterations.svg", height: 15em), "implicit", [Computational graph of $R$ for 3 iterations of gradient descent]),
+          subfigure(image("figures/torchgraph_loss.svg", height: 20em), "implicit", [PyTorch computational graph of $R$ for single retrieval iteration]),
+          subfigure(image("figures/torchgraph_iterations.svg", height: 20em), "implicit", [Computational graph of $R$ for 3 iterations of gradient descent]),
       ),
-      caption: [Jacobian $J_R$ is computationally expensive to produce when solving for $hat(bold(rho))$ involves many iterations. (b) shows only a small number of iterations, but real problems may require hundreds or thousands.]
+      caption: [Jacobian $J_R$ is computationally expensive to produce when solving for $hat(bold(rho))$ involves many iterations. (b) Shows only 3 iterations, but real problems may require hundreds or thousands.]
   ) <torchgraph>
 
   One approach which has recently been applied in deep learning is to recognize that $bold(hat(rho)) = R(bold(y))$ can be rewritten as an _implicit function_
@@ -2019,7 +2115,7 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
 
   for some neighborhood around $(bold(hat(rho)), bold(y))$.  Effectively, $bold(rho^*(bold(y)))$ serves as a local approximation of $R(bold(y))$.
 
-  Differentiating both sides with respect to $bold(y)$ and rearranging yields an expression for the Jacobian which depends only on the loss $cal(L)(x, y)$.
+  Differentiating both sides with respect to $bold(y)$ and rearranging yields an expression for the Jacobian which depends only on the loss $cal(L)(bold(rho), bold(y))$.
 
 
 
@@ -2047,62 +2143,30 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
   ) <implicit_matrices_size>
 
   == Dynamic Retrieval <dynamic_retrieval>
-  - dynamic system identification
-      - greybox/semi-physical modelling - incorporate justifiable knowledge about system without going into too much detail
-      - whitebox modelling - complete system identification
+
+  Dynamic tomography offers key advantages over static approaches when reconstructing atmospheric properties from limited-angle observations. Atmospheric states such as temperature or density evolve on hourly to daily timescales, and modeling them within a state-space framework enables incorporation of temporal dynamics, yielding more physically consistent reconstructions and better handling of sparse or noisy data. Both Butala et al. (2010) @solartomography1 and Cucho-Padin et al. (2020) @gonzalo_kalman attempt to exploit this by using Kalman filter-based techniques to reconstruct the solar corona or Earth exosphere, respectively. They rely on multi-viewpoint observations from spacecraft separated by ±60°, leveraging near-simultaneous angular diversity to improve the conditioning of the inverse problem and mitigate artifacts associated with the static assumption.
+
+  In contrast, we propose a framework tailored to single-spacecraft atmospheric tomography, where the vantage evolves slowly and observations are temporally spread over long periods. Our approach jointly estimates the state transition model and the atmospheric state, overcoming the limitations of prior work that used fixed, simplistic models like random walks. We leverage long-term measurements where the tomographic operator $F$ changes significantly over time to learn the dynamics, using a regularized estimation that accounts for the uncertainty in prior reconstructions.  This approach will try to exploit the fact that different system dynamics become visible under different viewing geometries, allowing the combination of temporally separated observations in a way not possible in the multi-view geometry used by Butala and Cucho-Padin.
 
 // = Dynamic Retrieval Validation
 //   - reconstruction requirements
 //       - spatial resolution requirements and reporting interval - same as static
 //       - change detection requirement
 
-= Conclusion
+// = Conclusion
 
-  #set heading(numbering: "A.1.1", supplement: [Appendix])
-  #counter(heading).update(0)
+//   #set heading(numbering: "A.1.1", supplement: [Appendix])
+//   #counter(heading).update(0)
 
-= Appendix - Instrument Simulation and Background Subtraction <appendix_sim>
+// = Appendix - Instrument Simulation and Background Subtraction <appendix_sim>
 
   // #rt([FIXME: delete this paragraph]) This section describes a statistical model for the instrument noise and background signals present in the NFI and WFI cameras during measurement of exospheric Lyman-α.  Modelling these processes is important for converting raw sensor measurements in digital numbers (DN) as telemetered by the spacecraft to corresponding radiances that can be used for tomographic reconstruction, summarized in @calibration.   A statistical model is also important for generating synthetic noisy measurements to validate the performance of retrieval algorithms.  As a result, the Carruthers cameras have undergone extensive laboratory characterization to determine instrument model parameters and periodic on-orbit calibration is planned to account for parameter drift due to exposure to the space environment.
 
-= Instrument Model and Central Limit Theorem <instrument_clt>
+= Appendix
+
+== Instrument Model and Central Limit Theorem <instrument_clt>
 
 
-  #figure(
-      table(columns: 4, align: horizon,
-          table.header("Binning\nType", "Derivation\n(2x2 binning example)", "", "Read Noise\n(NxN binning)"),
-          table.hline(stroke: 2pt),
-
-          "Digital",
-          math.equation(numbering:none, $
-              x_1, &..., x_4 tilde.op cal(N)([mu_1, ..., mu_4], sigma^2) \
-              y &= x_1 + ... + x_4 \
-                  &tilde.op cal(N)(mu_1 + ... + mu_4, 4sigma^2)
-          $),
-          image("figures/bin_digital.png", height: 10em),
-          $R tilde.op cal(N)(..., N^2 sigma^2)$,
-
-          "CMOS",
-          math.equation(numbering:none, $
-              x_a &tilde.op cal(N)(mu_1 + mu_3, sigma^2) \
-              x_b &tilde.op cal(N)(mu_2 + mu_4, sigma^2) \
-              y &= x_a + x_b \
-                  &tilde.op cal(N)(mu_1 + ... + mu_4, 2sigma^2)
-          $),
-          image("figures/bin_cmos.png", height: 7.5em),
-          $R tilde.op cal(N)(..., N sigma^2)$,
-
-          "CCD",
-          math.equation(numbering:none, $
-              x &tilde.op cal(N)(mu_1 + ... +  mu_4, sigma^2) \
-              y &= x
-              tilde.op cal(N)(mu_1 + ... + mu_4, sigma^2)
-          $),
-          image("figures/bin_ccd.png", height: 7.5em),
-          $R tilde.op cal(N)(..., sigma^2)$,
-      ),
-      caption: "Binned read noise for different detector binning types"
-  ) <binningtype>
 
   Let subscripts $m$, $n$, and $l$ denote i.i.d. copies of the random variables defined in the previous section.
 
@@ -2170,6 +2234,37 @@ To validate the accuracy of the approximation, we compare a Monte Carlo simulati
   //   #image("figures/clt_wfi.png", height: 15em)
   //   #image("figures/clt_nfi.png", height: 15em)
 
+== Moments of Random Sum of Random Variables <appendix_rvsum>
+
+    For brevity, denote $E = E_"phot" + E_"mcp"$ and $e = e_"phot" + e_"mcp"$ where $E tilde.op "Pois"(e)$.  Also let $G = G_"mcp"$, first raw moment $mu = ex(G)$, second raw moment $nu = ex(G^2)$, third raw moment $xi = ex(G^3)$ and
+
+    #math.equation(numbering:none,
+        $sum_(l=1)^(E) G_l = sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)$
+    )
+
+    $G_1, G_2, ...$ are assumed to be i.i.d. random variables.
+
+  Then, by definition of expectation
+
+  #math.equation(numbering:none,
+      $ex(sum_(l=1)^(E) G_l)
+      &= sum_(L=1)^infinity P(E = L) sum_(l=1)^L ex(G_l) \
+      &= sum_(L=1)^infinity P(E = L) L ex(G) \
+      &= ex(E) ex(G) = mu e
+  $)
+
+  #math.equation(numbering:none,
+      $ex(( sum_(l=1)^(E) G_l )^2)
+      &= sum_(L=1)^infinity P(E = L)  ex( ( sum_(l=1)^L G_l )^2) \
+      &= sum_(L=1)^infinity P(E = L)  ( sum_(l=1)^L ex(G^2) + sum_(l=1)^(L^2 - L) ex(G)^2 )^2 \
+      &= sum_(L=1)^infinity P(E = L)  ( L ex(G^2) + (L^2 - L) ex(G)^2 )^2 \
+      &= ex(G^2) sum_(L=1)^infinity P(E = L) L + ex(G)^2 sum_(L=1)^infinity P(E = L) L^2 - L  \
+      &= ex(G^2) ex(E) + ex(G)^2 (ex(E^2) - ex(E))  \
+          & #gt([Substituting moments of $G$ and $E$] + " " + [@poissonmoments]) \
+          &= nu e + mu^2 ((e + e^2) - e) = nu e + mu^2 e^2 \
+  var(sum_(l=1)^(E) G_l) &= ex(( sum_(l=1)^(E) G_l )^2) - ex(sum_(l=1)^(E) G_l)^2 \
+      &= nu e + mu^2 e^2 - mu^2 e^2 = nu e \
+  $)
 
 = Appendix - Boundary Crossing Direction <appendix_crossdir>
 
@@ -2212,37 +2307,6 @@ To validate the accuracy of the approximation, we compare a Monte Carlo simulati
 
   where $n_z$ is the $z$ component of vector $vc(n)$.
 
-  == Moments of Random Sum of Random Variables <appendix_rvsum>
-
-    For brevity, denote $E = E_"phot" + E_"mcp"$ and $e = e_"phot" + e_"mcp"$ where $E tilde.op "Pois"(e)$.  Also let $G = G_"mcp"$, first raw moment $mu = ex(G)$, second raw moment $nu = ex(G^2)$, third raw moment $xi = ex(G^3)$ and
-
-    #math.equation(numbering:none,
-        $sum_(l=1)^(E) G_l = sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)$
-    )
-
-    $G_1, G_2, ...$ are assumed to be i.i.d. random variables.
-
-  Then, by definition of expectation
-
-  #math.equation(numbering:none,
-      $ex(sum_(l=1)^(E) G_l)
-      &= sum_(L=1)^infinity P(E = L) sum_(l=1)^L ex(G_l) \
-      &= sum_(L=1)^infinity P(E = L) L ex(G) \
-      &= ex(E) ex(G) = mu e
-  $)
-
-  #math.equation(numbering:none,
-      $ex(( sum_(l=1)^(E) G_l )^2)
-      &= sum_(L=1)^infinity P(E = L)  ex( ( sum_(l=1)^L G_l )^2) \
-      &= sum_(L=1)^infinity P(E = L)  ( sum_(l=1)^L ex(G^2) + sum_(l=1)^(L^2 - L) ex(G)^2 )^2 \
-      &= sum_(L=1)^infinity P(E = L)  ( L ex(G^2) + (L^2 - L) ex(G)^2 )^2 \
-      &= ex(G^2) sum_(L=1)^infinity P(E = L) L + ex(G)^2 sum_(L=1)^infinity P(E = L) L^2 - L  \
-      &= ex(G^2) ex(E) + ex(G)^2 (ex(E^2) - ex(E))  \
-          & #gt([Substituting moments of $G$ and $E$] + " " + [@poissonmoments]) \
-          &= nu e + mu^2 ((e + e^2) - e) = nu e + mu^2 e^2 \
-  var(sum_(l=1)^(E) G_l) &= ex(( sum_(l=1)^(E) G_l )^2) - ex(sum_(l=1)^(E) G_l)^2 \
-      &= nu e + mu^2 e^2 - mu^2 e^2 = nu e \
-  $)
 
   // berry esseen
 
@@ -2259,14 +2323,13 @@ To validate the accuracy of the approximation, we compare a Monte Carlo simulati
   // $)
 
 
-
 = Glossary
-
 
 
   // - *#acr("LOS")* - #acrfull("LOS")
 
-  #print-glossary(glossary)
+#show: make-glossary
+#print-glossary(glossary)
 
   // - *MCP* - microchannel plate 23, 24
   // - *SNR* - signal-to-noise ratio 26, 27
