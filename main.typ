@@ -96,6 +96,27 @@ Finally, this document proposes two new research directions for the completion o
 #set text(bottom-edge: "descender")
 #set grid(row-gutter: 0.5em,)
 
+// show chapter on figure numbering
+#set figure(numbering: (..num) =>
+  numbering("1.1", counter(heading).get().first(), num.pos().first())
+)
+
+// show chapter on equation numbering
+#set math.equation(numbering: (..num) =>
+  numbering("(1.1)", counter(heading).get().first(), num.pos().first())
+)
+
+#show heading.where(level: 1): it => {
+  // reset figure counters so they are counted per chapter
+  counter(math.equation).update(0)
+  counter(figure.where(kind: image)).update(0)
+  counter(figure.where(kind: table)).update(0)
+  counter(figure.where(kind: raw)).update(0)
+
+  // ...
+}
+
+
 #outline(indent: auto, depth: 2)
 
 #colbreak()
@@ -157,13 +178,13 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
         subfigure(image("figures/mooncarruthers.png", height: 10em), "meas", [Apollo 16 Carruthers camera @apollo2]),
         subfigure(image("figures/swan_soho.png", height: 10em), "meas", [OGO-5 composite @ogo5]),
     ),
-      caption: "Wide-field measurements of exospheric Lyman-α"
+      caption: "Wide-field measurements of exospheric Lyman-α.  Only 3 are known to exist"
   ) <previous_measurements>
 
 
   #figure(
       image("figures/previous_missions.svg", width: 100%),
-      caption: "Past observations of exospheric hydrogen at Lyman-α.\n* not representative of actual spacecraft location"
+      caption: "Past observations of exospheric hydrogen at Lyman-α.  Carruthers is the only mission dedicated to longterm exospheric study from a distant vantage.  \n* not representative of actual spacecraft location"
   ) <previous_mission>
 
   // #s([*OGO-5 (1968)* - Measurement at 24 Re, 15.5° FOV @ogo5 @baliukin], [
@@ -242,10 +263,10 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   The main contributions of this thesis are listed below:
 
-  - A GPU-accelerated rayracer in spherical coordinates designed to be integrated into machine learning frameworks.  Includes common projection types like cone-bean and parallel-beam and easily composes these together to support complex viewing geometries.
+  - A GPU-accelerated raytracer in spherical coordinates designed to be integrated into machine learning frameworks.  Includes common projection types like cone-beam and parallel-beam and easily composes these together to support complex viewing geometries.
   - An H density model which utilizes a truncated spherical harmonic basis and cubic b-splines to enforce a smooth H density distribution without overly strict assumptions of a functional form for radial decay or relying on any density priors
   - A novel demonstration of the flexibility of automatic differentiation frameworks in exospheric density retrievals, enabled by the differentiability of the above raytracer and density model
-  - A stochastic model of the #gls("GCI") instrument and an accurate approximation of it which can generate simulated observations for the purpose of retrieval validation.
+  - A stochastic model of the #gls("GCI") instrument and an accurate approximation of it which can generate simulated observations for the purpose of retrieval validation
 
   This document is organized as follows:  @measurement_constraints describes the details of the Carruthers orbit, camera geometry and post-processing algorithm, and covers the physics of the emission model which relates an H density distribution to measurable Lyman-α radiance.
   @inverse_problem lays out the concepts of linear inverse problems and describes how to discretize the tomographic inverse problem associated with exospheric H density retrieval.
@@ -279,7 +300,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
     #figure(
         grid(
             rows: 2, gutter: 1em,
-            subfigure(image("figures/orbit.svg", width: 35em), "orbitfig", [6 month Carruthers orbit around L1.  Earth/Moon not to scale #footnote[Earth/Moon courtesy of Wikimedia user Master Uegly]]),
+            subfigure(image("figures/orbit.svg", width: 35em), "orbitfig", [6 month Carruthers orbit around L1.  Earth/Moon not to scale #footnote[Earth/Moon courtesy of https://de.wikipedia.org/wiki/Benutzer:Master_Uegly]]),
             subfigure(image("figures/los_evolution_15d.png", width: 40em), "orbitfig", "Two week angular diversity of orbit in ecliptic plane from beginning (red) to end (blue) of the observation window")
         ),
         caption: [Carruthers orbit and view geometry]
@@ -314,7 +335,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   Numerically modelling the physics of radiative transfer is a computationally complex task, as solar Lyman-α photons entering the atmosphere usually scatter multiple times in several locations, creating complicated interdependencies between distant portions of the exosphere.  However, in regions of the atmosphere where hydrogen is sparse (known as the #gls("optically thin") regime) it is a valid approximation that incident photons scatter only once @ostgaard, simplifying computational requirements and implementation complexity of the emission model.
 
-  Anderson and Hord Jr. @opticaldepththin, define the optically thin regime as starting when $tau <= 0.1$, where optical depth $tau$ is a measure of the proportion of photons scattering only once.
+  Anderson and Hord Jr. @opticaldepththin define the optically thin regime as starting when $tau <= 0.1$, where optical depth $tau$ is a measure of the proportion of photons scattering only once.
 
   With these assumptions, the measurement by the spacecraft is proportional to a line integral of the total mass of hydrogen present in the atmosphere along the #gls("LOS") of a particular pixel, given by photon radiance
 
@@ -325,16 +346,16 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
     // #rt([FIXME: notation inconsistent with other sections])
 
 
-  where $S$ is the pixel #gls("LOS"), $g_t$ is solar g-factor, $t$ is time, $phi.alt$ is the scattering phase function, $bold(a)_t$ is albedo, $vc(s)$ is position vector and $bold(rho)$ is hydrogen density, illustrated in @emission_model_physics.  $I_"exo,t"$ is _line-integrated_ radiance, an integral over wavelength of the Lyman-α emission line whose width is due to thermal broadening.
+  where $S$ is the pixel #gls("LOS"), $g_t$ is solar g-factor, $t$ is time, $phi.alt$ is the scattering phase function, $bold(a)_t$ is albedo, $vc(s)$ is position vector and $bold(rho)$ is hydrogen density, illustrated in @emission_model_physics.
+  @emission_units gives an overview of different measurement quantities and their units.
+
+  $I_"exo,t"$ is _line-integrated_ radiance, an integral over wavelength of the Lyman-α emission line whose width is due to thermal broadening.
     // Through Beer's law and a logarithmic transform, this integral equation is also valid for many modalities featuring absorptive rather than emissive media.
 
     #figure(
         image("figures/physics.svg", height:20em),
-        caption: [Emission model overview for a #gls("LOS"). Not to scale]
+        caption: [Emission model overview for a #gls("LOS"). Not to scale.]
     ) <emission_model_physics>
-
-    @emission_units gives an overview of different measurement quantities and their units.
-
 
     // knlown as a #gls("LOS"), an example of the Fredholm integral of the first kind.
 
@@ -342,31 +363,6 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
     // #math.equation(
     //     $y prop integral_V bold(rho)(v) dif v$
     // )
-
-
-  Scattering phase function $phi.alt$ represents the directional distribution of resonantly-scattered photons relative to the direction of the Sun, shown in @scatteringphase.
-
-    #figure(
-        image("figures/physics_scattering.svg", height: 15em),
-        caption: [Scattering phase function]
-    ) <scatteringphase>
-
-  #rt([
-      Solar g-factor $g_t$ (phot/s/atom) relates hydrogen density (atoms/cm³) to photon flux emitted per unit volume (phot/s/cm³) @gfactor.   The quantity $g_t / (4 pi) phi.alt(beta)$ describes the rate of photons being emitted into a part of the sky (1 steradian) from a unit volume of gas and is assumed to be a known, external input to the emission model.
-  ])
-
-    // #figure(
-    //     grid(
-    //         columns: 2, gutter: 12pt,
-    //         subfigure(image("figures/g_factor_angular.svg", height:8em), "gfact", "Angular"),
-    //         subfigure(image("figures/g_factor.svg", height:8em), "gfact", "Isotropic"),
-    //     ),
-    //     caption: [Angular vs. Isotropic g-factor.  Angular g-factor measures scattered photon flux emitted per steradian from an infinitesimal unit volume, while isotropic measures the flux over the whole 4π sphere],
-    // ) <gfactor_difference>
-
-    Finally, $bold(a)_t (vc(s))$ is a unitless multiplicative correction factor (assumed known) to account for high-density regions of the inner optically thick exosphere which act as a secondary source of Lyman-α photons illuminating the outer exosphere from below.
-
-    // - #rt([FIXME: derivation of line integral from first principles?  Make use of etendue, pixel area, paraxial approximation to convert volume integral to line integral]) //
 
 
     #figure(
@@ -382,8 +378,32 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
             // "Emissivity", "", "",
             // "Pixel solid angle", "Ω", "steradian (sr)",
             // "Pixel area", "A", "cm²",
-        )
+        ),
+        caption: [Quantities involved in emission model and their units.]
     ) <emission_units>
+
+  Scattering phase function $phi.alt$ represents the directional distribution of resonantly-scattered photons relative to the direction of the Sun, shown in @scatteringphase.
+
+    #figure(
+        image("figures/physics_scattering.svg", height: 15em),
+        caption: [Scattering phase function.  Directional distribution of scattered photons relative to Solar direction.]
+    ) <scatteringphase>
+
+      Solar g-factor $g_t$ (phot/s/atom) relates hydrogen density (atoms/cm³) to photon flux emitted per unit volume (phot/s/cm³) @gfactor.   The quantity $g_t / (4 pi) phi.alt(beta)$ describes the rate of photons being emitted into a part of the sky (1 steradian) from a unit volume of gas and is assumed to be a known, external input to the emission model.
+
+    // #figure(
+    //     grid(
+    //         columns: 2, gutter: 12pt,
+    //         subfigure(image("figures/g_factor_angular.svg", height:8em), "gfact", "Angular"),
+    //         subfigure(image("figures/g_factor.svg", height:8em), "gfact", "Isotropic"),
+    //     ),
+    //     caption: [Angular vs. Isotropic g-factor.  Angular g-factor measures scattered photon flux emitted per steradian from an infinitesimal unit volume, while isotropic measures the flux over the whole 4π sphere],
+    // ) <gfactor_difference>
+
+    Finally, $bold(a)_t (vc(s))$ is a unitless multiplicative correction factor (assumed known) to account for high-density regions of the inner optically thick exosphere which act as a secondary source of Lyman-α photons illuminating the outer exosphere from below.
+
+    // - #rt([FIXME: derivation of line integral from first principles?  Make use of etendue, pixel area, paraxial approximation to convert volume integral to line integral]) //
+
 
   Zoennchen et al. @zoennchen_new have found that extending the optically thin model to include extinction along the LOS and extinction between the Sun and scattering point reduced discrepancy between tomographic retrievals and physics-based simulations.  The scope of this manuscript does not include these correction terms.
 
@@ -423,7 +443,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   // TODO: WIP
 
-  - *optical filter wheel* - provides multispectral capability for out-of-band signal measurement used in thick exosphere retrievals. Has 6 settings:
+  - *optical filter wheel* - provides multispectral capability for out-of-band signal measurement used in thick exosphere retrievals. It has 6 settings:
       - open and blocked - for making measurements and dark images
       - 2 longpass filters (CaF₂, SrF₂) and 2 narrowband transmission filters
   - *KBr photocathode* - potassium bromide photocathode for converting #gls("UV") photons to electrons (known as _photoelectrons_)
@@ -441,7 +461,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   Let $L_("exo")(lambda) + L_("bkg")(lambda)$ represent exospheric photon spectral radiance and background.  The spectral photons incident on the instrument aperture, which has area $A$, within the solid angle of a detector pixel $Omega$, is
 
-  #math.equation(numbering: none,
+  #math.equation(
       $p_("phot")(lambda) = lr(\[D(L_("exo")(lambda) + L_("bkg")(lambda)) * h)\]_j dot.op A dot.op Omega gt("(phot/s/nm)")$
   )
     where $A dot.op Omega$ is pixel etendue, $D$ is a non-linear spatial distortion, and $h$ is a convolutional kernel representing optical blur.  Subscript $j$ denotes that only a single pixel is considered of the spatially-distorted and blurred signal.
@@ -456,13 +476,13 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   After entering the instrument, the photons pass through an optical filter and photocathode where they are converted to a stream of photoelectrons (also known as _events_) with rate $e_"phot"$.  This conversion happens with efficiency $f_"opt" epsilon(lambda)$ (events/phot) where a unitless scaling factor $f_"opt"$ (known as a _flat-field_) accounts for spatial variation in the optics, filters and photocathode.
 
-  #math.equation(numbering: none,
+  #math.equation(
       $e_"phot" = f_"opt" integral_lambda p_("phot")(lambda) epsilon(lambda) dif lambda gt("(events/s)")$
   )
 
   Approximating $L_"exo"$ and $L_"bkg"$ as monochromatic sources with intensity $I_"exo"$ and $I_"bkg"$ and wavelength $lambda_0$
 
-  #math.equation(numbering:none,
+  #math.equation(
       $e_"phot" &= f_"opt" integral_lambda p_("phot")(lambda) epsilon(lambda) dif lambda \
           &= f_"opt" lr(\[D(integral_lambda L_("exo")(lambda) epsilon(lambda) dif lambda + integral_lambda L_("bkg")(lambda)  epsilon(lambda) dif lambda) * h\])_j dot.op A dot.op Omega \
           &= f_"opt" epsilon(lambda_0) \[D(I_"exo" + I_"bkg") * h\]_j dot.op A dot.op Omega gt("(events/s)")$
@@ -473,7 +493,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   Assuming Lyman-α photons follow a Poisson process, the actual number of photoelectrons created in a single camera frame of duration $t_"fr"$ is given by random variable
 
-  #math.equation(numbering:none,
+  #math.equation(
       $E_"phot" tilde.op "Pois"(t_"fr" e_"phot") gt("(events)")$
   )
 
@@ -481,7 +501,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   In general, single photoelectrons are difficult to detect, so the Carruthers cameras employ an #gls("MCP") for turning a single energetic photoelectron into a detectable cloud of lower energy electrons.  #glspl("MCP") consist of an array of small silicon tubes (channels) which are electrically charged so that a photoelectron striking the wall of one of these tubes will cause a cascade of particles via secondary emission @microchannelplate.  The small size of these channels ensures that the subsequent cloud of electrons exits the #gls("MCP") in approximately the same location as the photoelectron, minimizing spatial blurring.  Due to the nature of secondary emission, the signal gain from the #gls("MCP") from a photoelectron is given by the discrete random variable $G_"mcp"$, whose distribution is #gls("MCP") voltage-dependent and has been measured in the laboratory.  The number of electrons leaving the MCP due to Lyman-α photoelectrons is given by
 
-  #math.equation(numbering: none,
+  #math.equation(
       $f_"mcp" sum_(l=1)^(E_"phot") G_"mcp,l" gt("(counts/event)")$
   )
 
@@ -489,13 +509,13 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   Solar energetic particles which directly penetrate the spacecraft body and impinge on the MCP are modeled by $E_"mcp" tilde.op "Pois"(t_"fr" e_"mcp")$ and the number of counts is given by
 
-  #math.equation(numbering: none,
+  #math.equation(
       $f_"mcp" sum_(l=1)^(E_"mcp") G_"mcp,l" gt("(counts)")$
   )
 
   Additional sources of detected electron counts are solar energetic particles impinging on the #gls("APS") ($C_"aps"$), as well as thermally generated electrons from the instrument electronics known as _dark current_ ($C_"dark"$).  The charge from these electrons accumulates in the #gls("CMOS") until it is amplified and read out by the #gls("ADC") as #gls("DN") given by
 
-  #math.equation(numbering: none,
+  #math.equation(
       $Y &= (f_"mcp" sum_(l=1)^(E_"phot" + E_"mcp") G_"mcp,l" + C_"aps" + C_"dark") g_"aps" + R gt("(DN)")$
   )
 
@@ -529,7 +549,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
   [$N$], [APS binning factor], [unitless],
   [$M$], [number of frames to stack], [frames],
       ),
-      caption: "Known or derived quantities",
+      caption: "Known or derived quantities of instrument model.",
   ) <knownvariables>
 
 
@@ -548,7 +568,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
           [$C_"dark" tilde.op "Pois"(t_"fr" c_"dark")$], [Dark current], [counts],
           [$R tilde.op cal(N)(b, sigma^2)$], [Read noise and bias], [DN],
           ),
-      caption: "Random Variables",
+      caption: "Random variables of instrument model.",
   ) <randomvariables>
 
     == Frame Stacking, Time Binning, and Instrument Model Approximation
@@ -590,9 +610,9 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
         caption: "Camera Integration Time and Frame Stacking"
     ) <integrationtime>
 
-      Naively stacking and binning thousands of noisy frames generated using the model described in the last section can be computationally, especially when generating stacked images from many vantages.  Instead, the #gls("CLT") can be applied to generate a noisy stacked image $Z$ efficiently, assuming all individual frames are identically distributed.  #gls("CLT") states
+      Naively stacking and binning thousands of noisy frames generated using the model described in the last section can be computationally expensive, especially when generating stacked images from many vantages.  Instead, the #gls("CLT") can be applied to generate a noisy stacked image $Z$ efficiently, assuming all individual frames are identically distributed.  #gls("CLT") states
 
-    #math.equation(numbering:none,
+    #math.equation(
         $Z tilde.op cal(N)(M N^2mu_Y, M N^2sigma_Y^2)$
     )
 
@@ -604,7 +624,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
           table.hline(stroke: 2pt),
 
           "Digital",
-          math.equation(numbering:none, $
+          math.equation($
               x_1, &..., x_4 tilde.op cal(N)([mu_1, ..., mu_4], sigma^2) \
               y &= x_1 + ... + x_4 \
                   &tilde.op cal(N)(mu_1 + ... + mu_4, 4sigma^2)
@@ -613,7 +633,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
           $R tilde.op cal(N)(..., N^2 sigma^2)$,
 
           "CMOS",
-          math.equation(numbering:none, $
+          math.equation($
               x_a &tilde.op cal(N)(mu_1 + mu_3, sigma^2) \
               x_b &tilde.op cal(N)(mu_2 + mu_4, sigma^2) \
               y &= x_a + x_b \
@@ -623,7 +643,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
           $R tilde.op cal(N)(..., N sigma^2)$,
 
           "CCD",
-          math.equation(numbering:none, $
+          math.equation($
               x &tilde.op cal(N)(mu_1 + ... +  mu_4, sigma^2) \
               y &= x
               tilde.op cal(N)(mu_1 + ... + mu_4, sigma^2)
@@ -636,11 +656,11 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
 
   == Post-Processing and Calibration <post_processing>
 
-    As will be shown in @inverse_problem, many retrieval algorithms amount to applying the emission and instrument models to a candidate density and comparing the resulting candidate measurements to real measurements obtained on orbit to update the density in an iterative fashion.  However, this can be computationally expensive, especially when a retrieval algorithm requires hundreds or thousands of iterations to converge to a solution.   An alternative to applying the emission and instrument models every iteration is to reverse the effects of these models on the real measurements in a process known as _subtraction_ or _calibration_.  Subtraction need only occur once after images are downlinked, greatly accelerating the iterative retrieval process as in @subtraction_efficiency.
+    As will be shown in @inverse_problem, many retrieval algorithms amount to applying the emission and instrument models to a candidate density and comparing the resulting candidate measurements to real measurements obtained on orbit to update the density in an iterative fashion.  However, this can be computationally expensive, especially when a retrieval algorithm requires hundreds or thousands of iterations to converge to a solution.   An alternative to applying the emission and instrument models every iteration is to reverse the effects of these models on the real measurements in a process known as _calibration_ or _subtraction_.  Calibration need only occur once after images are downlinked, greatly accelerating the iterative retrieval process as in @subtraction_efficiency.
 
     #figure(
         image("figures/subtraction_efficiency.svg", height:25em),
-        caption: [Subtraction eliminates the need for most of the emission model and all of the instrument model from the retrieval loop.],
+        caption: [Calibration eliminates the need for most of the emission model and all of the instrument model from the retrieval loop.],
     ) <subtraction_efficiency>
 
     // Subtraction greatly accelerates retrieval and involves reversing the effects of all steps described in the past two sections excluding the integral given in @integral2.
@@ -664,7 +684,7 @@ This thesis is focused on remote sensing of the Earth's outermost neutral atmosp
                 #gt([Emission model subtraction])
                 10. Divide out g-factor and scattering phase function
             ])),
-        caption: [Subtraction process overview]
+        caption: [Calibration process overview]
     )
 
     Notably, subtraction excludes the integral given in @integral2, as this is the job of the retrieval algorithm.
@@ -1076,7 +1096,7 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
   // FIXME - use x instead of rho
 
     #math.equation(
-        $sum_(i=0)^(2(N_r + 1) + \ 2(N_e + 1) + \ (N_a + 1) - 1) bold(rho)[r_i, e_i, a_i] * Delta l_i = innerproduct(rho, Delta l)$
+        $sum_(i=0)^(2(N_r + 1) + \ 2(N_e + 1) + \ (N_a + 1) - 1) bold(rho)[r_i, e_i, a_i] dot.op Delta l_i = innerproduct(rho, Delta l)$
     )
 
     where $bold(rho)$ is the object to be integrated and $r_i$, $e_i$, and $a_i$ are indices from the $i$th row of the table.
@@ -1421,7 +1441,7 @@ Direct analytic solutions to tomographic or other inverse problems are not alway
     #math.equation(
         $
             bold(hat(c)) = arg min_bold(c) ||bold(y) - bold(y)_bold(c)||_2^2 \
-            bold(hat(c)) = M(bold(hat(c)))
+            bold(hat(rho)) = M(bold(hat(c)))
         $
     )
 
@@ -2238,7 +2258,7 @@ To validate the accuracy of the approximation, we compare a Monte Carlo simulati
 
     For brevity, denote $E = E_"phot" + E_"mcp"$ and $e = e_"phot" + e_"mcp"$ where $E tilde.op "Pois"(e)$.  Also let $G = G_"mcp"$, first raw moment $mu = ex(G)$, second raw moment $nu = ex(G^2)$, third raw moment $xi = ex(G^3)$ and
 
-    #math.equation(numbering:none,
+    #math.equation(
         $sum_(l=1)^(E) G_l = sum_(l=1)^(E_"phot" + E_"mcp") G_("mcp",l)$
     )
 
@@ -2246,14 +2266,14 @@ To validate the accuracy of the approximation, we compare a Monte Carlo simulati
 
   Then, by definition of expectation
 
-  #math.equation(numbering:none,
+  #math.equation(
       $ex(sum_(l=1)^(E) G_l)
       &= sum_(L=1)^infinity P(E = L) sum_(l=1)^L ex(G_l) \
       &= sum_(L=1)^infinity P(E = L) L ex(G) \
       &= ex(E) ex(G) = mu e
   $)
 
-  #math.equation(numbering:none,
+  #math.equation(
       $ex(( sum_(l=1)^(E) G_l )^2)
       &= sum_(L=1)^infinity P(E = L)  ex( ( sum_(l=1)^L G_l )^2) \
       &= sum_(L=1)^infinity P(E = L)  ( sum_(l=1)^L ex(G^2) + sum_(l=1)^(L^2 - L) ex(G)^2 )^2 \

@@ -109,8 +109,14 @@
     set list(indent: 10pt, body-indent: 9pt)
 
     // Configure headings.
-    set heading(numbering: "1.1.1.")
+    set heading(numbering: "1.1.1.", supplement: [Chapter])
     show heading.where(level: 2): set text(14pt)
+    // Page break on level 1 headings, except first chapter
+    show heading.where(level: 1, outlined: true): it => {
+        colbreak()
+        it
+    }
+
     // show heading: it => locate(loc => {
     // Find out the final number of the heading counter.
     //   let levels = counter(heading).at(loc)
